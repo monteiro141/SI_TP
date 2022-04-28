@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #A2A3BB;"
+            xmlns="http://javafx.com/javafx/18" fx:controller="com.sitp.challengeaccepted.client.controller"
+            xmlns:fx="http://javafx.com/fxml">
+   <top>
+      <AnchorPane prefHeight="83.0" prefWidth="607.0" style="-fx-background-color: #A2A3BB;" BorderPane.alignment="CENTER">
+         <children>
+            <Text fill="#000807" layoutY="59.0" stroke="#fbf9ff" strokeType="OUTSIDE" strokeWidth="2.0" text="CHALLENGE-ACCEPTED" textAlignment="CENTER" underline="true" wrappingWidth="607.2">
+               <font>
+                  <Font size="48.0" />
+               </font>
+            </Text>
+         </children>
+      </AnchorPane>
+   </top>
+</BorderPane>
