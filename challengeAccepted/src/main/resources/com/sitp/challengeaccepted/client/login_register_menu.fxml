@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -19,8 +20,20 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="TOP" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Button fx:id="Login" mnemonicParsing="false" prefHeight="45.0" prefWidth="126.0" text="Login" />
-            <Button fx:id="Registar" mnemonicParsing="false" prefHeight="45.0" prefWidth="126.0" text="Registar" GridPane.rowIndex="1" />
+            <Button fx:id="Login" mnemonicParsing="false" onAction="#switchCredentialsMenu" prefHeight="45.0" prefWidth="126.0" style="-fx-background-color: #FBF9FF;" text="Login" textAlignment="CENTER">
+               <effect>
+                  <DropShadow />
+               </effect>
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font></Button>
+            <Button fx:id="Registar" depthTest="DISABLE" mnemonicParsing="false" prefHeight="45.0" prefWidth="126.0" style="-fx-background-color: #FBF9FF;" text="Registar" textAlignment="CENTER" GridPane.rowIndex="1">
+               <effect>
+                  <DropShadow />
+               </effect>
+               <font>
+                  <Font name="Tw Cen MT Bold" size="14.0" />
+               </font></Button>
          </children>
       </GridPane>
    </center>

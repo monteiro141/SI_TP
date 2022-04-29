@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class Client extends Application {
+
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxloader = new FXMLLoader(Client.class.getResource("login_register_menu.fxml"));
@@ -27,13 +28,24 @@ public class Client extends Application {
         control.gridCenter.setPrefWidth(150);
         control.Login.setPrefWidth(150);
         control.Registar.setPrefWidth(150);
-        //control.resize();
 
         control.titleElement.wrappingWidthProperty().bind(scene.widthProperty().subtract(15));
-        //control.titleElement.minHeight((scene.getHeight()) - (scene.getHeight()))
+
+        System.out.println(control.buttonLoginState);
     }
 
     public static void main(String[] args) {
         launch();
     }
 }
+
+/*if(control.buttonLoginState){
+            System.out.println(control.buttonLoginState);
+            fxloader = new FXMLLoader(Client.class.getResource("credentials_client_menu.fxml"));
+            scene = new Scene(fxloader.load(), 600, 400);
+            stage.setMinWidth(700);
+            stage.setMinHeight(400);
+            stage.setTitle("Challenge Accepted");
+            stage.setScene(scene);
+            stage.show();
+}*/
