@@ -5,22 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c773fbe2-b81d-4ae0-abc9-92aa114e096a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/client/Client.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/client/controller.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/Main.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/teste.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/com/sitp/challengeaccepted/client/login_register_menu.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/HelloApplication.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/HelloController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/com/sitp/challengeaccepted/hello-view.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/HelloApplication.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/HelloController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/hello-view.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/module-info.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/module-info.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/client/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/client/Client.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/client/controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/client/controller.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/com/sitp/challengeaccepted/client/login_register_menu.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/com/sitp/challengeaccepted/client/login_register_menu.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/Client.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/Client.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/controller.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/controller.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/login_register_menu.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/login_register_menu.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -96,7 +87,8 @@
       <updated>1651154088691</updated>
       <workItem from="1651154089884" duration="60000" />
       <workItem from="1651156225458" duration="850000" />
-      <workItem from="1651162801098" duration="2735000" />
+      <workItem from="1651162801098" duration="11468000" />
+      <workItem from="1651176863561" duration="384000" />
     </task>
     <servers />
   </component>

@@ -1,22 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #A2A3BB;"
-            xmlns="http://javafx.com/javafx/18" fx:controller="com.sitp.challengeaccepted.client.controller"
-            xmlns:fx="http://javafx.com/fxml">
-   <top>
-      <AnchorPane prefHeight="83.0" prefWidth="607.0" style="-fx-background-color: #A2A3BB;" BorderPane.alignment="CENTER">
+<BorderPane fx:id="borderPaneLogin" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #A2A3BB;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sitp.challengeaccepted.client.controller">
+   <center>
+      <GridPane fx:id="gridCenter" prefHeight="310.0" prefWidth="600.0" style="-fx-background-color: #A2A3BB;" BorderPane.alignment="CENTER">
+        <columnConstraints>
+          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="TOP" vgrow="SOMETIMES" />
+        </rowConstraints>
          <children>
-            <Text fill="#000807" layoutY="59.0" stroke="#fbf9ff" strokeType="OUTSIDE" strokeWidth="2.0" text="CHALLENGE-ACCEPTED" textAlignment="CENTER" underline="true" wrappingWidth="607.2">
+            <Button fx:id="Login" mnemonicParsing="false" prefHeight="45.0" prefWidth="126.0" text="Login" />
+            <Button fx:id="Registar" mnemonicParsing="false" prefHeight="45.0" prefWidth="126.0" text="Registar" GridPane.rowIndex="1" />
+         </children>
+      </GridPane>
+   </center>
+   <top>
+      <GridPane prefHeight="74.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Text fx:id="titleElement" fill="#000807" layoutX="-4.0" layoutY="66.0" stroke="#fbf9ff" strokeType="OUTSIDE" strokeWidth="2.0" text="CHALLENGE-ACCEPTED" textAlignment="CENTER" underline="true" wrappingWidth="603.587585568428">
                <font>
                   <Font size="48.0" />
                </font>
             </Text>
          </children>
-      </AnchorPane>
+      </GridPane>
    </top>
 </BorderPane>
