@@ -9,4 +9,6 @@ module com.sitp.challengeaccepted {
     exports com.sitp.challengeaccepted.server;
     exports com.sitp.challengeaccepted.client;
     opens com.sitp.challengeaccepted.client to javafx.fxml;
+    exports com.sitp.challengeaccepted.server.keys;
+    exports com.sitp.challengeaccepted.server.keysClasses;
 }
