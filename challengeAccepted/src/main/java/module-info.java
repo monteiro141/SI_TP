@@ -3,6 +3,7 @@ module com.sitp.challengeaccepted {
     requires javafx.fxml;
 
     requires org.kordamp.bootstrapfx.core;
+    requires java.sql;
 
     opens com.sitp.challengeaccepted to javafx.fxml;
     exports com.sitp.challengeaccepted.server;
