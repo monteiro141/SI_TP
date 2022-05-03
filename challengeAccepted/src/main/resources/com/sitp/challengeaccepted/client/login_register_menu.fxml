@@ -20,14 +20,14 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="TOP" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Button fx:id="Login" mnemonicParsing="false" onAction="#switchCredentialsMenu" prefHeight="45.0" prefWidth="126.0" style="-fx-background-color: #FBF9FF;" text="Login" textAlignment="CENTER">
+            <Button fx:id="Login" mnemonicParsing="false" onAction="#switchCredentialsMenuLogin" prefHeight="45.0" prefWidth="126.0" style="-fx-background-color: #FBF9FF;" text="Login" textAlignment="CENTER">
                <effect>
                   <DropShadow />
                </effect>
                <font>
                   <Font name="System Bold" size="14.0" />
                </font></Button>
-            <Button fx:id="Registar" depthTest="DISABLE" mnemonicParsing="false" prefHeight="45.0" prefWidth="126.0" style="-fx-background-color: #FBF9FF;" text="Registar" textAlignment="CENTER" GridPane.rowIndex="1">
+            <Button fx:id="Registar" depthTest="DISABLE" mnemonicParsing="false" onAction="#switchCredentialsMenuRegister" prefHeight="45.0" prefWidth="126.0" style="-fx-background-color: #FBF9FF;" text="Registar" textAlignment="CENTER" GridPane.rowIndex="1">
                <effect>
                   <DropShadow />
                </effect>
@@ -46,7 +46,7 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Text fx:id="titleElement" fill="#000807" layoutX="-4.0" layoutY="66.0" stroke="#fbf9ff" strokeType="OUTSIDE" strokeWidth="2.0" text="CHALLENGE-ACCEPTED" textAlignment="CENTER" underline="true" wrappingWidth="603.587585568428">
+            <Text fx:id="titleElement" fill="#000807" stroke="#fbf9ff" strokeType="OUTSIDE" strokeWidth="2.0" text="CHALLENGE-ACCEPTED" textAlignment="CENTER" underline="true" wrappingWidth="603.587585568428" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                <font>
                   <Font size="48.0" />
                </font>

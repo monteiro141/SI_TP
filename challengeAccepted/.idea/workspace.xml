@@ -5,18 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c773fbe2-b81d-4ae0-abc9-92aa114e096a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/CipherDecipher.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/ConnectionThread.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/keys/privatekey.der" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/keys/publickey.der" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/keys/publickey.pem" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/keys/sk-and-pk.pem" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/keysClasses/ConnectionKeys.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/keysClasses/PrivateKeyReader.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/keysClasses/PublicKeyReader.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/client/CipherDecipherClient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/Server.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/client/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/client/Client.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/client/controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/client/controller.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/com/sitp/challengeaccepted/client/credentials_client_menu.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/com/sitp/challengeaccepted/client/credentials_client_menu.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/com/sitp/challengeaccepted/client/login_register_menu.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/com/sitp/challengeaccepted/client/login_register_menu.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/Client.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/Client.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/controller.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/controller.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/credentials_client_menu.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/credentials_client_menu.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/login_register_menu.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/login_register_menu.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/server/Main.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/server/Server.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/server/Server.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/module-info.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/module-info.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -70,7 +70,7 @@
       <recent name="com.sitp.challengeaccepted.client" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Server">
+  <component name="RunManager" selected="Application.Client">
     <configuration name="Client" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.sitp.challengeaccepted.client.Client" />
       <module name="challengeAccepted" />
@@ -99,8 +99,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.Server" />
         <item itemvalue="Application.Client" />
+        <item itemvalue="Application.Server" />
       </list>
     </recent_temporary>
   </component>
@@ -118,6 +118,9 @@
       <workItem from="1651176863561" duration="384000" />
       <workItem from="1651227139270" duration="3539000" />
       <workItem from="1651411272611" duration="10106000" />
+      <workItem from="1651423139260" duration="2975000" />
+      <workItem from="1651519289318" duration="1770000" />
+      <workItem from="1651572632967" duration="4960000" />
     </task>
     <servers />
   </component>
