@@ -68,7 +68,7 @@
       <recent name="com.sitp.challengeaccepted.client" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Client">
+  <component name="RunManager" selected="Application.Server">
     <configuration name="Client" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.sitp.challengeaccepted.client.Client" />
       <module name="challengeAccepted" />
@@ -97,8 +97,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.Client" />
         <item itemvalue="Application.Server" />
+        <item itemvalue="Application.Client" />
       </list>
     </recent_temporary>
   </component>
