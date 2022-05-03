@@ -41,11 +41,10 @@ public class controller {
 
     //Group 2 - Login & Register Page Elements
     //elements for login and register page => credentials_client_menu.fxml
+
     public TextField emailInput;
     public TextField passwordInput;
 
-
-    //(implement controllers afterwards => and text and button elements)
     //END GROUP 2 -------------------------------
 
     //Group 3 - Group of operations
@@ -189,9 +188,24 @@ public class controller {
         if(login_method){
             byte [] login_bytes = CipherDecipherClient.encrypt("login",Client.client_server,"AES",null);
             byte [] login_bytes_hash = CipherDecipherClient.encrypt(getHash("login"),Client.client_server_hash,"AES",null);
+
+            byte [] email_bytes = CipherDecipherClient.encrypt(emailInput.getText(),Client.client_server,"AES",null);
+            byte [] email_hash_bytes = CipherDecipherClient.encrypt(getHash(emailInput.getText()),Client.client_server_hash,"AES",null);
+
+            byte [] password_bytes = CipherDecipherClient.encrypt(passwordInput.getText(),Client.client_server,"AES",null);
+            byte [] password_hash_bytes = CipherDecipherClient.encrypt(getHash(passwordInput.getText()),Client.client_server_hash,"AES",null);
+
             try{
                 Client.os.writeObject(login_bytes);
                 Client.os.writeObject(login_bytes_hash);
+                Client.os.flush();
+
+                Client.os.writeObject(email_bytes);
+                Client.os.writeObject(email_hash_bytes);
+                Client.os.flush();
+
+                Client.os.writeObject(password_bytes);
+                Client.os.writeObject(password_hash_bytes);
                 Client.os.flush();
             }catch(IOException e){
                 System.out.println("Connection closed");
@@ -205,9 +219,24 @@ public class controller {
         if(register_access){
             byte [] register_bytes = CipherDecipherClient.encrypt("register",Client.client_server,"AES",null);
             byte [] register_bytes_hash = CipherDecipherClient.encrypt(getHash("register"),Client.client_server_hash,"AES",null);
+
+            byte [] email_bytes_register = CipherDecipherClient.encrypt(emailInput.getText(),Client.client_server,"AES",null);
+            byte [] email_hash_bytes_register = CipherDecipherClient.encrypt(getHash(emailInput.getText()),Client.client_server_hash,"AES",null);
+
+            byte [] password_bytes_register = CipherDecipherClient.encrypt(passwordInput.getText(),Client.client_server,"AES",null);
+            byte [] password_hash_bytes_register = CipherDecipherClient.encrypt(getHash(passwordInput.getText()),Client.client_server_hash,"AES",null);
+
             try{
                 Client.os.writeObject(register_bytes);
                 Client.os.writeObject(register_bytes_hash);
+                Client.os.flush();
+
+                Client.os.writeObject(email_bytes_register);
+                Client.os.writeObject(email_hash_bytes_register);
+                Client.os.flush();
+
+                Client.os.writeObject(password_bytes_register);
+                Client.os.writeObject(password_hash_bytes_register);
                 Client.os.flush();
             }catch(SocketException e){
                 System.out.println("Connection closed");
