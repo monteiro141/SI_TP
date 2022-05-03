@@ -5,18 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c773fbe2-b81d-4ae0-abc9-92aa114e096a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/client/CipherDecipherClient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/client/CipherDecipherClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/client/CipherDecipherClient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/client/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/client/Client.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/client/controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/client/controller.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/com/sitp/challengeaccepted/client/credentials_client_menu.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/com/sitp/challengeaccepted/client/credentials_client_menu.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/com/sitp/challengeaccepted/client/login_register_menu.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/com/sitp/challengeaccepted/client/login_register_menu.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/Client.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/Client.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/controller.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/controller.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/credentials_client_menu.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/credentials_client_menu.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/login_register_menu.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/login_register_menu.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/server/Main.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/server/Server.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/server/Server.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/server/ConnectionThread.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/server/ConnectionThread.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/server/keysClasses/ConnectionKeys.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/server/keysClasses/ConnectionKeys.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/module-info.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/module-info.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -120,7 +118,8 @@
       <workItem from="1651411272611" duration="10106000" />
       <workItem from="1651423139260" duration="2975000" />
       <workItem from="1651519289318" duration="1770000" />
-      <workItem from="1651572632967" duration="4960000" />
+      <workItem from="1651572632967" duration="5356000" />
+      <workItem from="1651578079449" duration="11216000" />
     </task>
     <servers />
   </component>
