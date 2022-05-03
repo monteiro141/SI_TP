@@ -7,11 +7,10 @@ import com.sitp.challengeaccepted.server.keysClasses.PublicKeyReader;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.SecretKeySpec;
+import javax.crypto.spec.IvParameterSpec;
 import java.io.*;
 import java.net.Socket;
 import java.security.*;
-import java.util.Objects;
 
 public class ConnectionThread extends Thread {
     private Socket S;
@@ -19,13 +18,11 @@ public class ConnectionThread extends Thread {
     private PrivateKey privateKey;
     private ObjectInputStream is;
     private ObjectOutputStream os;
-    private ByteArrayInputStream bis;
-    private ByteArrayOutputStream bos;
     private ConnectionKeys connectionKeys;
-    private String decipheredTypeOfOperation;
-    private String decipheredTypeOfOperationHash;
-    private  byte [] typeOfOperation;
-    private  byte [] typeOfOperationHash;
+    private String decipheredMessage;
+    private String decipheredMessageHash;
+    private byte [] cipheredMessage;
+    private byte [] cipheredMessageHash;
 
     public ConnectionThread(Socket S){
         super();
@@ -74,8 +71,6 @@ public class ConnectionThread extends Thread {
     private void InputStreams(){
         is = null;
         os = null;
-        bis = null;
-        bos = null;
         try {
             is = new ObjectInputStream(S.getInputStream());
             os = new ObjectOutputStream(S.getOutputStream());
@@ -103,7 +98,7 @@ public class ConnectionThread extends Thread {
     }
 
     private void clientOperations() {
-            operationCase(getTypeOfOperation());
+            operationCase(finalDecipheredMessage());
     }
 
 
@@ -120,6 +115,7 @@ public class ConnectionThread extends Thread {
 
     private void registerOperation() {
         System.out.println("register method");
+        respondToClient();
     }
 
     private void loginOperation() {
@@ -128,41 +124,41 @@ public class ConnectionThread extends Thread {
     }
 
     private void respondToClient() {
-        
+        String email = finalDecipheredMessage();
+        String password = finalDecipheredMessage();
+        System.out.println(email);
+        System.out.println(password);
     }
-
-    private String getTypeOfOperation() {
+    private String finalDecipheredMessage() {
         try {
-            readOptionFromClient();
-            decipherMessageAndHash();
-        } catch (IOException | NoSuchPaddingException | NoSuchAlgorithmException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException | ClassNotFoundException e) {
+            readCipheredFromClient();
+            decipherMessageAndHash("AES",null);
+        } catch (IOException | ClassNotFoundException | NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException | BadPaddingException | InvalidKeyException e) {
             e.printStackTrace();
         }
         return checkHash();
     }
 
     private String checkHash() {
-        if(getHash(decipheredTypeOfOperation).equals(decipheredTypeOfOperationHash)){
-            return decipheredTypeOfOperation;
+        if(getHash(decipheredMessage,"SHA-256").equals(decipheredMessageHash)){
+            return decipheredMessage;
         }
         return null;
     }
 
-    private void decipherMessageAndHash() throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        decipheredTypeOfOperation = CipherDecipher.decrypt(typeOfOperation,connectionKeys.getInfo_client_server(),"AES",null);
-        decipheredTypeOfOperationHash = CipherDecipher.decrypt(typeOfOperationHash,connectionKeys.getInfo_client_server_hash(),"AES",null);
+    private void decipherMessageAndHash(String cipherAlgorithm, IvParameterSpec iv) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        decipheredMessage = CipherDecipher.decrypt(cipheredMessage,connectionKeys.getInfo_client_server(),cipherAlgorithm,iv);
+        decipheredMessageHash = CipherDecipher.decrypt(cipheredMessageHash,connectionKeys.getInfo_client_server_hash(),cipherAlgorithm,iv);
     }
 
-    private void readOptionFromClient() throws IOException, ClassNotFoundException {
-        decipheredTypeOfOperation = null;
-        decipheredTypeOfOperationHash = null;
-        typeOfOperation = (byte[]) is.readObject();
-        typeOfOperationHash = (byte[]) is.readObject();
+    private void readCipheredFromClient() throws IOException, ClassNotFoundException {
+        cipheredMessage = (byte[]) is.readObject();
+        cipheredMessageHash = (byte[]) is.readObject();
     }
 
-    private String getHash(String content){
+    private String getHash(String content, String hashAlgorithm){
         try{
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            MessageDigest md = MessageDigest.getInstance(hashAlgorithm);
             md.update(content.getBytes());
             return new String(md.digest());
         } catch (NoSuchAlgorithmException e) {
