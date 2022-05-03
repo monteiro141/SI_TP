@@ -8,11 +8,10 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.security.*;
+import java.util.Objects;
 
 public class ConnectionThread extends Thread {
     private Socket S;
@@ -20,7 +19,13 @@ public class ConnectionThread extends Thread {
     private PrivateKey privateKey;
     private ObjectInputStream is;
     private ObjectOutputStream os;
+    private ByteArrayInputStream bis;
+    private ByteArrayOutputStream bos;
     private ConnectionKeys connectionKeys;
+    private String decipheredTypeOfOperation;
+    private String decipheredTypeOfOperationHash;
+    private  byte [] typeOfOperation;
+    private  byte [] typeOfOperationHash;
 
     public ConnectionThread(Socket S){
         super();
@@ -34,7 +39,9 @@ public class ConnectionThread extends Thread {
         generatePrivatePublicKeys();
         sendPublicKeyToClient();
         receiveConnectionKeys();
-        //clientOperations();
+        while(true){
+            clientOperations();
+        }
     }
 
 
@@ -67,6 +74,8 @@ public class ConnectionThread extends Thread {
     private void InputStreams(){
         is = null;
         os = null;
+        bis = null;
+        bos = null;
         try {
             is = new ObjectInputStream(S.getInputStream());
             os = new ObjectOutputStream(S.getOutputStream());
@@ -82,36 +91,82 @@ public class ConnectionThread extends Thread {
             connectionKeys.setInfo_server_client(ConnectionKeys.generateKey(CipherDecipher.decrypt(is.readNBytes(128),privateKey)));
             connectionKeys.setInfo_server_client_hash(ConnectionKeys.generateKey(CipherDecipher.decrypt(is.readNBytes(128),privateKey)));
         } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException | IOException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
-        System.out.println(connectionKeys.toString());
+        /*System.out.println("Connection keys");
+        System.out.println(connectionKeys.getInfo_client_server().toString());
+        System.out.println(connectionKeys.getInfo_client_server_hash().toString());
+        System.out.println(connectionKeys.getInfo_server_client().toString());
+        System.out.println(connectionKeys.getInfo_server_client_hash().toString());
+        System.out.println("End");
+         */
     }
 
     private void clientOperations() {
-        String operation;
-        while(true){
-            if((operation = getTypeOfOperation()) == null){
-                return;
-            }
-            switch (operation){
-                case "login":
-                    System.out.println("login method");
-                    break;
-                case "register":
-                    System.out.println("register method");
-                    break;
-                default:
-                    System.out.println("no method");
-            }
-        }
+            operationCase(getTypeOfOperation());
+    }
 
+
+    private void operationCase(String operation) {
+        switch (operation) {
+            case "login": loginOperation();
+                break;
+            case "register": registerOperation();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void registerOperation() {
+        System.out.println("register method");
+    }
+
+    private void loginOperation() {
+        System.out.println("login method");
+        respondToClient();
+    }
+
+    private void respondToClient() {
+        
     }
 
     private String getTypeOfOperation() {
         try {
-            return (String) is.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println(e.getMessage());
+            readOptionFromClient();
+            decipherMessageAndHash();
+        } catch (IOException | NoSuchPaddingException | NoSuchAlgorithmException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return checkHash();
+    }
+
+    private String checkHash() {
+        if(getHash(decipheredTypeOfOperation).equals(decipheredTypeOfOperationHash)){
+            return decipheredTypeOfOperation;
+        }
+        return null;
+    }
+
+    private void decipherMessageAndHash() throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        decipheredTypeOfOperation = CipherDecipher.decrypt(typeOfOperation,connectionKeys.getInfo_client_server(),"AES",null);
+        decipheredTypeOfOperationHash = CipherDecipher.decrypt(typeOfOperationHash,connectionKeys.getInfo_client_server_hash(),"AES",null);
+    }
+
+    private void readOptionFromClient() throws IOException, ClassNotFoundException {
+        decipheredTypeOfOperation = null;
+        decipheredTypeOfOperationHash = null;
+        typeOfOperation = (byte[]) is.readObject();
+        typeOfOperationHash = (byte[]) is.readObject();
+    }
+
+    private String getHash(String content){
+        try{
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(content.getBytes());
+            return new String(md.digest());
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
         }
         return null;
     }
