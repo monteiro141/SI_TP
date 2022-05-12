@@ -166,7 +166,12 @@ public class ConnectionThread extends Thread {
         String option;
         while (!(option = finalDecipheredMessage()).equals("logout")) {
             switch (option) {
-                case "create": createChallenge();
+                case "create":
+                    if (createChallenge()) {
+                        sendLogInStatusToClient("true");
+                    } else {
+                        sendLogInStatusToClient("false");
+                    }
                     break;
                 case "resolve": // smth;
                     break;
@@ -176,57 +181,54 @@ public class ConnectionThread extends Thread {
         }
     }
 
-    private void createChallenge () {
-        boolean success = false;
+    private boolean createChallenge () {
         String challengeType = finalDecipheredMessage();
         if (challengeType.equals("Cifra")) {
-            String challengeSpecification = finalDecipheredMessage();
-            String message = finalDecipheredMessage();
-            String tips = finalDecipheredMessage();
-            String password = finalDecipheredMessage();
-            // MAKE CIPHER OPERATION
-            try {
-                String hmac = "something";
-                String cryptogram = "message";
-                String iv = "";
-                String salt = "salt";
-                ResultSet checkHMAC = databaseCaller.getStatement().executeQuery(Queries.checkHMAC(hmac));
-                if (checkHMAC.next())
-                    success = false;
-                else {
-                    ResultSet resultSet = databaseCaller.getStatement().executeQuery(Queries.createCipherChallenge(userLoggedIn, challengeSpecification, hmac, cryptogram, iv, salt, tips));
-                    if (resultSet.next())
-                        success = true;
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
+            return createCipherChallenge();
         }
         if (challengeType.equals("Hash")) {
-            String challengeSpecification = finalDecipheredMessage();
-            String message = finalDecipheredMessage();
-            String tips = finalDecipheredMessage();
-            try {
-                ResultSet checkHash = databaseCaller.getStatement().executeQuery(Queries.checkHash(message));
-                if (checkHash.next())
-                    success = false;
-                else {
-                    ResultSet resultSet = databaseCaller.getStatement().executeQuery(Queries.createHashChallenge(userLoggedIn, challengeSpecification, message, tips));
-                    if (resultSet.next())
-                        success = true;
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
+            return createHashChallenge();
         }
-        if (success) {
-            try {
-                cipherMessageAndHash("true", "AES", null);
-                writeCipheredToClient(cipheredMessage);
-                writeCipheredToClient(cipheredMessageHash);
-            } catch (BadPaddingException | NoSuchPaddingException | NoSuchAlgorithmException | IOException e) {
-                e.printStackTrace();
+        return true;
+    }
+
+    private boolean createCipherChallenge () {
+        String challengeSpecification = finalDecipheredMessage();
+        String message = finalDecipheredMessage();
+        String tips = finalDecipheredMessage();
+        String password = finalDecipheredMessage();
+        // MAKE CIPHER OPERATION
+        try {
+            String hmac = "something";
+            String cryptogram = "message";
+            String iv = "";
+            String salt = "salt";
+            ResultSet checkHMAC = databaseCaller.getStatement().executeQuery(Queries.checkHMAC(hmac));
+            if (checkHMAC.next())
+                return false;
+            else {
+                ResultSet resultSet = databaseCaller.getStatement().executeQuery(Queries.createCipherChallenge(userLoggedIn, challengeSpecification, hmac, cryptogram, iv, salt, tips));
+                return true;
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private boolean createHashChallenge () {
+        String challengeSpecification = finalDecipheredMessage();
+        String message = finalDecipheredMessage();
+        String tips = finalDecipheredMessage();
+        try {
+            ResultSet checkHash = databaseCaller.getStatement().executeQuery(Queries.checkHash(message));
+            if (checkHash.next())
+                return false;
+            else {
+                ResultSet resultSet = databaseCaller.getStatement().executeQuery(Queries.createHashChallenge(userLoggedIn, challengeSpecification, message, tips));
+                return true;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
