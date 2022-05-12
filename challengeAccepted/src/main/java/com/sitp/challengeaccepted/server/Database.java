@@ -32,13 +32,34 @@ public class Database {
             statement.executeUpdate(database);
             System.out.println("Database created successfully");
             // create the database tables
-            /*String userTable = "CREATE TABLE user" +
+            String userTable = "CREATE TABLE user" +
                     "(user_id INTEGER NOT NULL CHECK (user_id >= 1)" +
                     "email CHAR(50) not null" +
-                    "user_password CHAR(20) not null" +
+                    "user_password_salted CHAR(16) not null" +
                     "PRIMARY KEY (user_id))";
             statement.executeUpdate(userTable);
-            System.out.println("User table created.");*/
+            System.out.println("User table created.");
+            String cipherTable = "CREATE TABLE cipherChallenges" +
+                    "(cipher_id INTEGER NOT NULL CHECK (cipher_id >= 1)" +
+                    "user_id INTEGER KEY REFERENCES user (user_id)" +
+                    "cipher_specification CHAR(20) not null" +
+                    "cipher_hmac char(50) not null" +
+                    "cipher_message char(100) not null" +
+                    "iv char(16)" +
+                    "salt char(16) not null" +
+                    "PRIMARY KEY (cipher_id)" +
+                    "FOREIGN KEY (user_id))";
+            statement.executeUpdate(ciphersTable);
+            System.out.println("Cipher table created.");
+            String hashTable = "CREATE TABLE hashChallenges" +
+                    "(hash_id INTEGER NOT NULL CHECK (hash_id >= 1)" +
+                    "user_id INTEGER KEY REFERENCES user (user_id)" +
+                    "hash_specification CHAR(20) not null" +
+                    "hash_hash CHAR(50) not null" +
+                    "PRIMARY KEY (hash_id))" +
+                    "FOREIGN KEY (user_id))";
+            statement.executeUpdate(hashTable);
+            System.out.println("Hash table created.");
         } catch (Exception e) {
             System.out.println("Error creating the database/the table.");
         } finally {
