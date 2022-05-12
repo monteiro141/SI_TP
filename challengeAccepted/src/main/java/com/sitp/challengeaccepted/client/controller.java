@@ -41,19 +41,55 @@ public class controller {
 
     //Group 2 - Login & Register Page Elements
     //elements for login and register page => credentials_client_menu.fxml
-
     public TextField emailInput;
     public TextField passwordInput;
 
-    //END GROUP 2 -------------------------------
-
-    //Group 3 - Group of operations
-
-
-    //control variables for fxml
+    //control variables for credentials_client_menu.fxml
     public static boolean login_access = false;
     public static boolean login_method = false;
     public static boolean register_access = false;
+
+    //function to submit login or register data to server , as well if user did login or register
+    public void submit_data_server(ActionEvent event) throws IOException{
+        //TODO => main page of user after sucessfull login/register
+
+        //warning server if user choosed login or register
+        if(login_access){
+            login_method = true;
+            try {
+                send_Login_Register();
+            } catch (NoSuchPaddingException | BadPaddingException | NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
+        }else{
+            register_access = true;
+            try {
+                send_Login_Register();
+            } catch (NoSuchPaddingException | BadPaddingException | NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
+        }
+        if(event.getSource() instanceof Button){
+            Button buttonPressed = (Button) event.getSource();
+            String nameOfButton = buttonPressed.getText();
+        }
+
+        //NEED TO RECEIVE DATA FROM SERVER TO VALIDATE USER'S LOGIN
+    }
+
+    public void dataExchange() throws NoSuchPaddingException, IOException, BadPaddingException, NoSuchAlgorithmException, ClassNotFoundException {
+        initiateSocket();
+        generateKeys();
+        //send 4 keys to server
+        cipherKeys(Client.is,Client.os);
+    }
+    //END GROUP 2 -------------------------------
+
+    //Group 3 - Elements of Main Menu => main_menu.fxml
+    public Button createChallengeButton;
+    public Button resolveChallengeButton;
+    public Button logoutButton;
+
     //END GROUP 3 -------------------------------
 
     //Group Scenes - Functions to change scenes => to change fxml files (pages)
@@ -84,7 +120,6 @@ public class controller {
     }
 
     public void switchCredentialsMenuRegister(ActionEvent event) throws IOException{
-
         //stage switching and creation
         root = FXMLLoader.load(Client.class.getResource("credentials_client_menu.fxml"));
         stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
@@ -95,7 +130,36 @@ public class controller {
         stage.show();
     }
 
-    public void submit_data_server(ActionEvent event) throws IOException{
+    public void switchMainMenu(ActionEvent event) throws IOException{
+        //stage switching and creation
+        root = FXMLLoader.load(Client.class.getResource("main_menu.fxml"));
+        stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+        scene = new Scene(root,stage.getWidth(),stage.getHeight());
+        stage.setMinWidth(600);
+        stage.setMinHeight(400);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    public void switchCreateChallengeMenu(ActionEvent event) throws IOException{
+        //stage switching and creation
+        root = FXMLLoader.load(Client.class.getResource("create_challenge.fxml"));
+        stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+        scene = new Scene(root,stage.getWidth(),stage.getHeight());
+        stage.setMinWidth(600);
+        stage.setMinHeight(400);
+        stage.setScene(scene);
+        stage.show();
+    }
+    //END GROUP SCENES -------------------------------
+
+    //Group 4 - Elements of create challenge menu
+
+
+
+    //END GROUP 4 -------------------------------
+
+    /*public void submit_data_server(ActionEvent event) throws IOException{
         //TODO => main page of user after sucessfull login/register
 
         //warning server if user choosed login or register
@@ -117,9 +181,9 @@ public class controller {
         if(event.getSource() instanceof Button){
             Button buttonPressed = (Button) event.getSource();
             String nameOfButton = buttonPressed.getText();
-            System.out.println(nameOfButton);
         }
 
+        //NEEDED FUNCTION TO VERIFY BD
     }
 
     public void dataExchange() throws NoSuchPaddingException, IOException, BadPaddingException, NoSuchAlgorithmException, ClassNotFoundException {
@@ -127,8 +191,8 @@ public class controller {
         generateKeys();
         //send 4 keys to server
         cipherKeys(Client.is,Client.os);
-    }
-    //...
+    }*/
+
 
     //END GROUP SCENES -------------------------------
 
@@ -271,6 +335,22 @@ public class controller {
             e.printStackTrace();
         }
     }
+
+    public void verifyLoginRegister(){
+        try {
+            byte[] statusResponse = (byte[]) Client.is.readObject();
+            byte[] statusResponseHash = (byte[]) Client.is.readObject();
+            String decipheredResponseStatus = CipherDecipherClient.decrypt(statusResponse,Client.server_client,"AES",null);
+            String decipheredResponseStatusHash = CipherDecipherClient.decrypt(statusResponse,Client.server_client,"AES",null);
+
+            System.out.println("LOGIN/REGISTER STATUS: " + decipheredResponseStatus);
+        }catch (IOException | ClassNotFoundException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    //function to verify if the login state of user is
     // END GROUP 3 - Group of operations
 
 
