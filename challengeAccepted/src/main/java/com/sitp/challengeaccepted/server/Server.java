@@ -1,5 +1,7 @@
 package com.sitp.challengeaccepted.server;
 
+import com.sitp.challengeaccepted.server.database.Database;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -11,6 +13,7 @@ public class Server {
     private static int port = 1099;
 
     public Server() {
+        Database.main(null);
         createServerSocket();
         acceptFromServerSocket();
     }

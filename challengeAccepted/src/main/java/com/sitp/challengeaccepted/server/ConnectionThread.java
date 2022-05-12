@@ -1,5 +1,6 @@
 package com.sitp.challengeaccepted.server;
 
+import com.sitp.challengeaccepted.server.database.Database;
 import com.sitp.challengeaccepted.server.keysClasses.ConnectionKeys;
 import com.sitp.challengeaccepted.server.keysClasses.PrivateKeyReader;
 import com.sitp.challengeaccepted.server.keysClasses.PublicKeyReader;
@@ -11,6 +12,7 @@ import javax.crypto.spec.IvParameterSpec;
 import java.io.*;
 import java.net.Socket;
 import java.security.*;
+import java.sql.ResultSet;
 
 public class ConnectionThread extends Thread {
     private Socket S;
@@ -125,7 +127,8 @@ public class ConnectionThread extends Thread {
     }
 
     private void loginVerification() {
-        
+        Database.ConnectToDatabase();
+        ResultSet resultSet
     }
 
     private void respondToClient() {
