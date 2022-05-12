@@ -1,5 +1,7 @@
 package com.sitp.challengeaccepted.server.database;
 
+import com.sitp.challengeaccepted.server.User;
+
 public class Queries {
     public Queries(){
 
@@ -54,5 +56,24 @@ public class Queries {
     public static String registerUser(String email, String salted_password){
         return "INSERT INTO User (email, user_password_salted) " +
                 "VALUES ('" + email + "', '" + salted_password + "');";
+    }
+    public static String checkHMAC (String hmac) {
+        return "SELECT cipher_hmac " +
+                "FROM CipherChallenges";
+    }
+
+    public static String checkHash (String hash) {
+        return "SELECT hash_hash " +
+                "FROM HashChallenges";
+    }
+
+    public static String createCipherChallenge (User user, String challengeSpecification, String hmac, String cryptogram, String iv, String salt, String tips) {
+        return "INSERT INTO CipherChallenges (user_id, cipher_specification, cipher_hmac, cipher_message, iv, salt, cipher_tips) " +
+                "VALUES (" + user.getUser_id() + ", '" + challengeSpecification + "', '" + hmac + "', '" + cryptogram + "', '" + iv + "', '" + salt + "', '" + tips + "');";
+    }
+
+    public static String createHashChallenge (User user, String challengeSpecification, String hash, String tips) {
+        return "INSERT INTO HashChallenges (user_id, hash_specification, hash_hash, hash_tips) " +
+                "VALUES (" + user.getUser_id() + "', '" + challengeSpecification + "', '" + hash + "', '" + tips + "');";
     }
 }

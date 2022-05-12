@@ -41,6 +41,8 @@
                   <MenuItem fx:id="md5_choice" mnemonicParsing="false" text="MD5" />
                   <MenuItem fx:id="sha256_choice" mnemonicParsing="false" text="SHA256" />
                   <MenuItem fx:id="sha512_choice" mnemonicParsing="false" text="SHA512" />
+                  <MenuItem fx:id="vigenere_choice" mnemonicParsing="false" text="Vigenere" />
+                  <MenuItem fx:id="cesar_choice" mnemonicParsing="false" text="Cesar" />
               </items>
                <effect>
                   <DropShadow />

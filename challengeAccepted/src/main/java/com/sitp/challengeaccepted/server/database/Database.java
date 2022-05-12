@@ -8,7 +8,7 @@ import java.sql.Statement;
 public class Database {
     //static final String driver = "com.mysql.jdbc.Driver";
     static final String url = "jdbc:mysql://localhost:3306/challengeaccepted";
-    static final String user = "root";
+    static final String user = "SI_USER";
     static final String pass = "root";
     private Connection connection;
     private Statement statement;

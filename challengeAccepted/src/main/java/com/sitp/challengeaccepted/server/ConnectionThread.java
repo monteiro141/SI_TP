@@ -131,6 +131,7 @@ public class ConnectionThread extends Thread {
 
 
     private void operationCase(String operation) {
+        userLoggedIn = new User();
         switch (operation) {
             case "login": loginOperation();
                 break;
@@ -154,9 +155,78 @@ public class ConnectionThread extends Thread {
         if(loginVerification(email,password)){
             System.out.println("Log in suc.");
             sendLogInStatusToClient("true");
+            operationMenu();
         }else{
             System.out.println("Log in failed.");
             sendLogInStatusToClient("false");
+        }
+    }
+
+    private void operationMenu() {
+        String option;
+        while (!(option = finalDecipheredMessage()).equals("logout")) {
+            switch (option) {
+                case "create": createChallenge();
+                    break;
+                case "resolve": // smth;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    private void createChallenge () {
+        boolean success = false;
+        String challengeType = finalDecipheredMessage();
+        if (challengeType.equals("Cifra")) {
+            String challengeSpecification = finalDecipheredMessage();
+            String message = finalDecipheredMessage();
+            String tips = finalDecipheredMessage();
+            String password = finalDecipheredMessage();
+            // MAKE CIPHER OPERATION
+            try {
+                String hmac = "something";
+                String cryptogram = "message";
+                String iv = "";
+                String salt = "salt";
+                ResultSet checkHMAC = databaseCaller.getStatement().executeQuery(Queries.checkHMAC(hmac));
+                if (checkHMAC.next())
+                    success = false;
+                else {
+                    ResultSet resultSet = databaseCaller.getStatement().executeQuery(Queries.createCipherChallenge(userLoggedIn, challengeSpecification, hmac, cryptogram, iv, salt, tips));
+                    if (resultSet.next())
+                        success = true;
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (challengeType.equals("Hash")) {
+            String challengeSpecification = finalDecipheredMessage();
+            String message = finalDecipheredMessage();
+            String tips = finalDecipheredMessage();
+            try {
+                ResultSet checkHash = databaseCaller.getStatement().executeQuery(Queries.checkHash(message));
+                if (checkHash.next())
+                    success = false;
+                else {
+                    ResultSet resultSet = databaseCaller.getStatement().executeQuery(Queries.createHashChallenge(userLoggedIn, challengeSpecification, message, tips));
+                    if (resultSet.next())
+                        success = true;
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (success) {
+            try {
+                cipherMessageAndHash("true", "AES", null);
+                writeCipheredToClient(cipheredMessage);
+                writeCipheredToClient(cipheredMessageHash);
+            } catch (BadPaddingException | NoSuchPaddingException | NoSuchAlgorithmException | IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -210,10 +280,14 @@ public class ConnectionThread extends Thread {
             ResultSet resultSet = databaseCaller.getStatement().executeQuery(Queries.loginUser(email));
             if(resultSet.next())
                return false;
-            resultSet = databaseCaller.getStatement().executeQuery(Queries.registerUser(email,password));
+            databaseCaller.getStatement().executeUpdate(Queries.registerUser(email,password));
+            ResultSet resultSet2 = databaseCaller.getStatement().executeQuery(Queries.loginUser(email));
+            resultSet2.next();
             userLoggedIn = new User();
-            userLoggedIn.setUser_id(resultSet.getInt(1));
-            userLoggedIn.setEmail(resultSet.getString(2));
+            userLoggedIn.setUser_id(resultSet2.getInt(1));
+            userLoggedIn.setEmail(resultSet2.getString(2));
+            System.out.println("user" + userLoggedIn.getUser_id());
+            System.out.println("-- "+ userLoggedIn.getEmail());
         } catch (SQLException e) {
             e.printStackTrace();
             return false;

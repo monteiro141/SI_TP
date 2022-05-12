@@ -335,7 +335,7 @@ public class controller {
             System.out.println(decipheredtypeResponseHash);
 
             if(getHash(decipheredtypeResponse).equals(decipheredtypeResponseHash)){
-                System.out.println("They are the same");
+                //System.out.println("They are the same");
             }else{
                 System.out.println("Not the same");
             }
@@ -355,7 +355,7 @@ public class controller {
             System.out.println("LOGIN/REGISTER STATUSHASH: " + decipheredResponseStatusHash);
 
             if (getHash(decipheredResponseStatus).equals(decipheredResponseStatusHash)) {
-                System.out.println("They are the same!");
+                //System.out.println("They are the same!");
                 if(Boolean.parseBoolean(decipheredResponseStatus)){
                     System.out.println("Login bem sucedido!");
                     switchMainMenu(event);
@@ -363,7 +363,7 @@ public class controller {
                     textCredentials.setText("Credenciais incorretas!");
                 }
             } else {
-                System.out.println("They are not the same!");
+                //System.out.println("They are not the same!");
             }
         } catch (IOException | ClassNotFoundException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
             e.printStackTrace();
