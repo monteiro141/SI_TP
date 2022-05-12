@@ -10,11 +10,32 @@ public class Database {
     static final String url = "jdbc:mysql://localhost:3306/challengeaccepted";
     static final String user = "root";
     static final String pass = "root";
-    private static Connection connection = null;
-    private static Statement statement = null;
+    private Connection connection = null;
+    private Statement statement = null;
+
+    public Database(){
+        this.ConnectToDatabase();
+    }
+
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public void setConnection(Connection connection) {
+        this.connection = connection;
+    }
+
+    public Statement getStatement() {
+        return statement;
+    }
+
+    public void setStatement(Statement statement) {
+        this.statement = statement;
+    }
 
     public static void main (String [] args) {
-
+        Connection connection = null;
+        Statement statement = null;
         System.out.println("Loading driver...");
 
         try {
@@ -100,18 +121,20 @@ public class Database {
         }
     }
 
-    public static void ConnectToDatabase(){
+    public boolean ConnectToDatabase(){
         try {
             connection = DriverManager.getConnection(url, user, pass);
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
-        System.out.println("Creating database.");
         try {
             statement = connection.createStatement();
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
+        return true;
     }
 
 }

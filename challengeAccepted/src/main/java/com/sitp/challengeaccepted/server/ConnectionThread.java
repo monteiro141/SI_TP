@@ -1,6 +1,7 @@
 package com.sitp.challengeaccepted.server;
 
 import com.sitp.challengeaccepted.server.database.Database;
+import com.sitp.challengeaccepted.server.database.Queries;
 import com.sitp.challengeaccepted.server.keysClasses.ConnectionKeys;
 import com.sitp.challengeaccepted.server.keysClasses.PrivateKeyReader;
 import com.sitp.challengeaccepted.server.keysClasses.PublicKeyReader;
@@ -13,6 +14,7 @@ import java.io.*;
 import java.net.Socket;
 import java.security.*;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class ConnectionThread extends Thread {
     private Socket S;
@@ -25,6 +27,8 @@ public class ConnectionThread extends Thread {
     private String decipheredMessageHash;
     private byte [] cipheredMessage;
     private byte [] cipheredMessageHash;
+    private Database databaseCaller;
+    private User userLoggedIn;
 
     public ConnectionThread(Socket S){
         super();
@@ -38,8 +42,11 @@ public class ConnectionThread extends Thread {
         generatePrivatePublicKeys();
         sendPublicKeyToClient();
         receiveConnectionKeys();
-        while(true){
-            clientOperations();
+        if(databaseCaller.ConnectToDatabase())
+        {
+            while(true){
+                clientOperations();
+            }
         }
     }
 
@@ -115,29 +122,79 @@ public class ConnectionThread extends Thread {
         }
     }
 
-    private void registerOperation() {
-        System.out.println("register method");
-        respondToClient();
-    }
-
     private void loginOperation() {
         System.out.println("login method");
-        respondToClient();
-        loginVerification();
+        respondToClientLogin();
     }
 
-    private void loginVerification() {
-        Database.ConnectToDatabase();
-        ResultSet resultSet
-    }
-
-    private void respondToClient() {
+    private void respondToClientLogin() {
         String email = finalDecipheredMessage();
         String password = finalDecipheredMessage();
-        System.out.println(email);
-        System.out.println(password);
-
+        if(loginVerification(email,password)){
+            System.out.println("Log in suc.");
+            sendLogInStatusToClient(true);
+        }else{
+            System.out.println("Log in failed.");
+            sendLogInStatusToClient(false);
+        }
     }
+
+    private void sendLogInStatusToClient(boolean status) {
+        try {
+            cipherMessageAndHash(String.valueOf(status),"AES",null);
+            writeCipheredToClient(cipheredMessage);
+            writeCipheredToClient(cipheredMessageHash);
+        } catch (BadPaddingException | NoSuchPaddingException | NoSuchAlgorithmException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void registerOperation() {
+        System.out.println("register method");
+        respondToClientRegister();
+    }
+
+    private void respondToClientRegister() {
+        String email = finalDecipheredMessage();
+        String password = finalDecipheredMessage();
+        if(registerVerification(email,password)){
+            System.out.println("Register suc");
+        }else{
+            System.out.println("Register failed");
+        }
+    }
+
+    private boolean loginVerification(String email, String password) {
+        try {
+            ResultSet resultSet = databaseCaller.getStatement().executeQuery(Queries.loginUser(email,password));
+            if(!resultSet.next())
+                return false;
+            userLoggedIn = new User();
+            userLoggedIn.setUser_id(resultSet.getInt(1));
+            userLoggedIn.setEmail(resultSet.getString(2));
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    private boolean registerVerification(String email, String password) {
+        try {
+            ResultSet resultSet = databaseCaller.getStatement().executeQuery(Queries.loginUser(email));
+            if(resultSet.next())
+               return false;
+            resultSet = databaseCaller.getStatement().executeQuery(Queries.registerUser(email,password));
+            userLoggedIn = new User();
+            userLoggedIn.setUser_id(resultSet.getInt(1));
+            userLoggedIn.setEmail(resultSet.getString(2));
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
     private String finalDecipheredMessage() {
         try {
             readCipheredFromClient();
@@ -159,10 +216,18 @@ public class ConnectionThread extends Thread {
         decipheredMessage = CipherDecipher.decrypt(cipheredMessage,connectionKeys.getInfo_client_server(),cipherAlgorithm,iv);
         decipheredMessageHash = CipherDecipher.decrypt(cipheredMessageHash,connectionKeys.getInfo_client_server_hash(),cipherAlgorithm,iv);
     }
-
+    private void cipherMessageAndHash(String data,String cipherAlgorithm, IvParameterSpec iv) throws NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException {
+        cipheredMessage = CipherDecipher.encrypt(data,connectionKeys.getInfo_server_client(),cipherAlgorithm,iv);
+        cipheredMessageHash = CipherDecipher.encrypt(getHash(data,"SHA-256"),connectionKeys.getInfo_server_client_hash(),cipherAlgorithm,iv);
+    }
     private void readCipheredFromClient() throws IOException, ClassNotFoundException {
         cipheredMessage = (byte[]) is.readObject();
         cipheredMessageHash = (byte[]) is.readObject();
+    }
+
+    private void writeCipheredToClient(byte [] data) throws IOException {
+        os.write(data);
+        os.flush();
     }
 
     private String getHash(String content, String hashAlgorithm){

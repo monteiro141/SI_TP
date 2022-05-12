@@ -39,4 +39,20 @@ public class Queries {
                 "PRIMARY KEY (hash_id), " +
                 "CONSTRAINT fk_user_id_hash FOREIGN KEY (user_id) REFERENCES User(user_id))";
     }
+
+    public static String loginUser(String email, String salted_password){
+        return "SELECT user_id, email "+
+                "FROM User" +
+                " WHERE email = " + email +
+                " AND user_password_salted = "+ salted_password;
+    }
+    public static String loginUser(String email){
+        return "SELECT user_id, email "+
+                "FROM User" +
+                " WHERE email = " + email;
+    }
+    public static String registerUser(String email, String salted_password){
+        return "INSERT INTO User (email, user_password_salted) " +
+                "VALUES (" + email + ", " + salted_password + ");";
+    }
 }
