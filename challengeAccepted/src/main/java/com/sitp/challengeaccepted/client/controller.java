@@ -6,6 +6,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -43,6 +45,7 @@ public class controller {
     //elements for login and register page => credentials_client_menu.fxml
     public TextField emailInput;
     public TextField passwordInput;
+    public Text textCredentials;
 
     //control variables for credentials_client_menu.fxml
     public static boolean login_access = false;
@@ -74,7 +77,8 @@ public class controller {
             String nameOfButton = buttonPressed.getText();
         }
 
-        //NEED TO RECEIVE DATA FROM SERVER TO VALIDATE USER'S LOGIN
+        //function to validate register/login done by user
+        verifyLoginRegister(event);
     }
 
     public void dataExchange() throws NoSuchPaddingException, IOException, BadPaddingException, NoSuchAlgorithmException, ClassNotFoundException {
@@ -94,6 +98,9 @@ public class controller {
 
     //Group Scenes - Functions to change scenes => to change fxml files (pages)
     public void switchLoginMenu(ActionEvent event) throws IOException{
+
+        sendOperationMethodstoServer("logout");
+
         root = FXMLLoader.load(Client.class.getResource("login_register_menu.fxml"));
         stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
         scene = new Scene(root,600,400);
@@ -141,7 +148,31 @@ public class controller {
         stage.show();
     }
 
+    //before going to create_challenge_menu ,send type of operation chosen
+    public void sendOperationMethodstoServer(String data){
+        try {
+            byte [] sendOperationCreate = CipherDecipherClient.encrypt(data,Client.client_server,"AES",null);
+            byte [] sendOperationCreateHash = CipherDecipherClient.encrypt(getHash(data),Client.client_server_hash,"AES",null);
+
+            Client.os.writeObject(sendOperationCreate);
+            Client.os.writeObject(sendOperationCreateHash);
+            Client.os.flush();
+        } catch (BadPaddingException | NoSuchPaddingException | NoSuchAlgorithmException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void switchCreateChallengeMenu(ActionEvent event) throws IOException{
+
+        //send type of operation "create" to inform server that user has chosen to create a challenge
+        sendOperationMethodstoServer("create");
+
+        //hide elements of challenge menu from the start
+        dropdownTypes.hide();
+        messageInsert.setVisible(false);
+        tips.setVisible(false);
+        passInsert.setVisible(false);
+
         //stage switching and creation
         root = FXMLLoader.load(Client.class.getResource("create_challenge.fxml"));
         stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
@@ -154,47 +185,23 @@ public class controller {
     //END GROUP SCENES -------------------------------
 
     //Group 4 - Elements of create challenge menu
+    public MenuButton dropdownTypeChallenge;
+    public MenuItem cipherChoice;
+    public MenuItem hashChoice;
 
+    public MenuButton dropdownTypes;
+    public MenuItem aes128ecb_choice;
+    public MenuItem aes128cbc_choice;
+    public MenuItem aes128ctr_choice;
+    public MenuItem md5_choice;
+    public MenuItem sha256_choice;
+    public MenuItem sha512_choice;
 
+    public TextField messageInsert;
+    public TextField tips;
+    public TextField passInsert;
 
     //END GROUP 4 -------------------------------
-
-    /*public void submit_data_server(ActionEvent event) throws IOException{
-        //TODO => main page of user after sucessfull login/register
-
-        //warning server if user choosed login or register
-        if(login_access){
-            login_method = true;
-            try {
-                send_Login_Register();
-            } catch (NoSuchPaddingException | BadPaddingException | NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            }
-        }else{
-            register_access = true;
-            try {
-                send_Login_Register();
-            } catch (NoSuchPaddingException | BadPaddingException | NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            }
-        }
-        if(event.getSource() instanceof Button){
-            Button buttonPressed = (Button) event.getSource();
-            String nameOfButton = buttonPressed.getText();
-        }
-
-        //NEEDED FUNCTION TO VERIFY BD
-    }
-
-    public void dataExchange() throws NoSuchPaddingException, IOException, BadPaddingException, NoSuchAlgorithmException, ClassNotFoundException {
-        initiateSocket();
-        generateKeys();
-        //send 4 keys to server
-        cipherKeys(Client.is,Client.os);
-    }*/
-
-
-    //END GROUP SCENES -------------------------------
 
     //Group 3 - Group of operations
 
@@ -215,7 +222,8 @@ public class controller {
 
     //function to initiate socket connection to server
     private void initiateSocket() throws IOException, NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, ClassNotFoundException {
-        Socket S = new Socket("169.254.228.94",1099);
+        //Socket S = new Socket("169.254.65.233",1099);
+        Socket S = new Socket("127.0.0.1",1099);
         Client.os = new ObjectOutputStream(S.getOutputStream());
         Client.is = new ObjectInputStream(S.getInputStream());
     }
@@ -336,18 +344,30 @@ public class controller {
         }
     }
 
-    public void verifyLoginRegister(){
+    public void verifyLoginRegister(ActionEvent event) {
         try {
             byte[] statusResponse = (byte[]) Client.is.readObject();
             byte[] statusResponseHash = (byte[]) Client.is.readObject();
-            String decipheredResponseStatus = CipherDecipherClient.decrypt(statusResponse,Client.server_client,"AES",null);
-            String decipheredResponseStatusHash = CipherDecipherClient.decrypt(statusResponse,Client.server_client,"AES",null);
+            String decipheredResponseStatus = CipherDecipherClient.decrypt(statusResponse, Client.server_client, "AES", null);
+            String decipheredResponseStatusHash = CipherDecipherClient.decrypt(statusResponseHash, Client.server_client_hash, "AES", null);
 
             System.out.println("LOGIN/REGISTER STATUS: " + decipheredResponseStatus);
-        }catch (IOException | ClassNotFoundException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
+            System.out.println("LOGIN/REGISTER STATUSHASH: " + decipheredResponseStatusHash);
+
+            if (getHash(decipheredResponseStatus).equals(decipheredResponseStatusHash)) {
+                System.out.println("They are the same!");
+                if(Boolean.parseBoolean(decipheredResponseStatus)){
+                    System.out.println("Login bem sucedido!");
+                    switchMainMenu(event);
+                }else{
+                    textCredentials.setText("Credenciais incorretas!");
+                }
+            } else {
+                System.out.println("They are not the same!");
+            }
+        } catch (IOException | ClassNotFoundException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
             e.printStackTrace();
         }
-
     }
 
     //function to verify if the login state of user is
