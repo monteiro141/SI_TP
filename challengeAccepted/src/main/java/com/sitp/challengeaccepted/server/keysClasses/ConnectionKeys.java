@@ -49,4 +49,14 @@ public class ConnectionKeys {
         byte[] decodedKey = Base64.getDecoder().decode(keyString);
         return new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
     }
+
+    @Override
+    public String toString() {
+        return "ConnectionKeys{" +
+                "info_client_server=" + info_client_server +
+                ", info_server_client=" + info_server_client +
+                ", info_client_server_hash=" + info_client_server_hash +
+                ", info_server_client_hash=" + info_server_client_hash +
+                '}';
+    }
 }

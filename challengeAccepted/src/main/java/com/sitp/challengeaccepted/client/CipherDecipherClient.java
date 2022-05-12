@@ -1,16 +1,16 @@
-package com.sitp.challengeaccepted.server;
+package com.sitp.challengeaccepted.client;
 
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import java.security.*;
 
-public class CipherDecipher {
-    public CipherDecipher(){}
-    public static byte[] encrypt(String data, PublicKey publicKey) throws BadPaddingException, NoSuchPaddingException, NoSuchAlgorithmException {
+public class CipherDecipherClient {
+    public CipherDecipherClient(){}
+    public static byte[] encrypt(String data_key, PublicKey key) throws BadPaddingException, NoSuchPaddingException, NoSuchAlgorithmException {
         try {
             Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-            return cipher.doFinal(data.getBytes());
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+            return cipher.doFinal(data_key.getBytes());
         } catch (IllegalBlockSizeException e) {
             System.out.println(e.getMessage());
         } catch (InvalidKeyException e) {
@@ -46,6 +46,7 @@ public class CipherDecipher {
         }
         return null;
     }
+
     public static String decrypt(byte[] data, SecretKey secretKey, String cipherString, IvParameterSpec iv) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
         if(iv == null){
             Cipher cipher = Cipher.getInstance(cipherString);
@@ -63,5 +64,4 @@ public class CipherDecipher {
             return new String(cipher.doFinal(data));
         }
     }
-
 }
