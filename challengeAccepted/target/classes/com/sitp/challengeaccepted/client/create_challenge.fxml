@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TextField?>
@@ -33,28 +34,10 @@
             <RowConstraints maxHeight="146.99997558593753" minHeight="10.0" prefHeight="38.40000610351561" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <MenuButton fx:id="dropdownTypes" mnemonicParsing="false" popupSide="RIGHT" prefHeight="35.0" prefWidth="170.0" style="-fx-background-color: #FBF9FF;" text="Tipos" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
-              <items>
-                  <MenuItem fx:id="aes128ecb_choice" mnemonicParsing="false" text="AES-128-ECB" />
-                <MenuItem fx:id="aes128cbc_choice" mnemonicParsing="false" text="AES-128-CBC" />
-                <MenuItem fx:id="aes128ctr_choice" mnemonicParsing="false" text="AES-128-CTR" />
-                  <MenuItem fx:id="md5_choice" mnemonicParsing="false" text="MD5" />
-                  <MenuItem fx:id="sha256_choice" mnemonicParsing="false" text="SHA256" />
-                  <MenuItem fx:id="sha512_choice" mnemonicParsing="false" text="SHA512" />
-                  <MenuItem fx:id="vigenere_choice" mnemonicParsing="false" text="Vigenere" />
-                  <MenuItem fx:id="cesar_choice" mnemonicParsing="false" text="Cesar" />
-              </items>
-               <effect>
-                  <DropShadow />
-               </effect>
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </MenuButton>
             <MenuButton fx:id="dropdownTypeChallenge" mnemonicParsing="false" popupSide="RIGHT" prefHeight="35.0" prefWidth="200.0" style="-fx-background-color: #FBF9FF;" text="Tipo de Desafio" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
               <items>
-                <MenuItem fx:id="cipherChoice" mnemonicParsing="false" text="Cifra" />
-                <MenuItem fx:id="hashCoice" mnemonicParsing="false" text="Hash" />
+                <MenuItem fx:id="cipherChoice" mnemonicParsing="false" onAction="#cipherChoiceInput" text="Cifra" />
+                <MenuItem fx:id="hashChoice" mnemonicParsing="false" onAction="#hashChoiceInput" text="Hash" />
               </items>
                <font>
                   <Font size="14.0" />
@@ -63,17 +46,17 @@
                   <DropShadow />
                </effect>
             </MenuButton>
-            <TextField fx:id="messageInsert" maxWidth="200.0" prefHeight="20.0" prefWidth="200.0" promptText="Mensagem a inserir" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+            <TextField fx:id="messageInsert" disable="true" maxWidth="200.0" prefHeight="20.0" prefWidth="200.0" promptText="Mensagem a inserir" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                <effect>
                   <DropShadow />
                </effect>
             </TextField>
-            <TextField fx:id="tips" maxWidth="200.0" prefHeight="20.0" prefWidth="200.0" promptText="Dicas a inserir" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+            <TextField fx:id="tips" disable="true" maxWidth="200.0" prefHeight="20.0" prefWidth="200.0" promptText="Dicas a inserir" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
                <effect>
                   <DropShadow />
                </effect>
             </TextField>
-            <TextField fx:id="passInsert" maxWidth="200.0" prefHeight="20.0" prefWidth="200.0" promptText="Palavra passe a inserir" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER">
+            <TextField fx:id="passInsert" disable="true" maxWidth="200.0" prefHeight="20.0" prefWidth="200.0" promptText="Palavra passe a inserir" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER">
                <effect>
                   <DropShadow />
                </effect>
@@ -103,6 +86,11 @@
                   <Font size="14.0" />
                </font>
             </Text>
+            <ChoiceBox fx:id="dropdownTypes" disable="true" prefHeight="35.0" prefWidth="200.0" style="-fx-background-color: #FBF9FF;" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+               <effect>
+                  <DropShadow />
+               </effect>
+            </ChoiceBox>
          </children>
       </GridPane>
    </center>
@@ -116,7 +104,7 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="35.0" prefWidth="82.0" text="Inserir" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+            <Button fx:id="insertButton" alignment="CENTER" contentDisplay="CENTER" disable="true" mnemonicParsing="false" onAction="#insertButtonInput" prefHeight="35.0" prefWidth="82.0" text="Inserir" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                <effect>
                   <DropShadow />
                </effect>
@@ -124,7 +112,7 @@
                   <Font name="System Bold Italic" size="14.0" />
                </font>
             </Button>
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="35.0" prefWidth="82.0" text="Cancelar" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+            <Button fx:id="cancelButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#cancelButtonInput" prefHeight="35.0" prefWidth="82.0" text="Cancelar" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                <effect>
                   <DropShadow />
                </effect>

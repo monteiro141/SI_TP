@@ -6,14 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="c773fbe2-b81d-4ae0-abc9-92aa114e096a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/artifacts/mysql/mysql.jar" beforeDir="false" afterPath="$PROJECT_DIR$/out/artifacts/mysql/mysql.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/client/controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/client/controller.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/ConnectionThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/ConnectionThread.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/database/Database.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/database/Database.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/database/Queries.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/database/Queries.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/com/sitp/challengeaccepted/client/create_challenge.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/com/sitp/challengeaccepted/client/create_challenge.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/controller.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/controller.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/server/ConnectionThread.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/server/ConnectionThread.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/module-info.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/module-info.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/create_challenge.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/create_challenge.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -139,7 +135,8 @@
       <workItem from="1652348040442" duration="21000" />
       <workItem from="1652348395812" duration="3477000" />
       <workItem from="1652356218896" duration="7044000" />
-      <workItem from="1652366160625" duration="2896000" />
+      <workItem from="1652366160625" duration="6533000" />
+      <workItem from="1652373116453" duration="1543000" />
     </task>
     <servers />
   </component>

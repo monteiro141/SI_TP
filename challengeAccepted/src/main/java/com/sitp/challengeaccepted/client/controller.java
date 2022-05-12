@@ -5,10 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -96,6 +93,118 @@ public class controller {
 
     //END GROUP 3 -------------------------------
 
+    //Group 4 - Elements of create challenge menu
+    public MenuButton dropdownTypeChallenge;
+    public MenuItem cipherChoice;
+    public MenuItem hashChoice;
+
+    public ChoiceBox<String>  dropdownTypes;
+    public MenuItem aes128ecb_choice;
+    public MenuItem aes128cbc_choice;
+    public MenuItem aes128ctr_choice;
+    public MenuItem md5_choice;
+    public MenuItem sha256_choice;
+    public MenuItem sha512_choice;
+
+    public TextField messageInsert;
+    public TextField tips;
+    public TextField passInsert;
+
+    public Button insertButton;
+    public Button cancelButton;
+
+    //list of cipher modes
+    public static String[] cipherModes = {"AES-128-ECB","AES-128-CBC","AES-128-CTR","VIGENERE","CESAR"};
+    //list of hash modes
+    public static String[] hashModes = {"MD5","SHA256","SHA512"};
+
+    public void cipherChoiceInput(ActionEvent event){
+        dropdownTypeChallenge.setText("Cifra");
+        dropdownTypes.setDisable(false);
+        messageInsert.setDisable(false);
+        tips.setDisable(false);
+        passInsert.setDisable(false);
+
+        messageInsert.clear();
+        tips.clear();
+        passInsert.clear();
+        dropdownTypes.getItems().clear();
+        dropdownTypes.getItems().addAll(cipherModes);
+        dropdownTypes.setValue(cipherModes[0]);
+        verifyContentTypes();
+    }
+
+    public void hashChoiceInput(ActionEvent event){
+        dropdownTypeChallenge.setText("Hash");
+        dropdownTypes.setDisable(false);
+        messageInsert.setDisable(false);
+        tips.setDisable(false);
+        passInsert.setDisable(true);
+        messageInsert.clear();
+        tips.clear();
+        passInsert.clear();
+        dropdownTypes.getItems().clear();
+        dropdownTypes.getItems().addAll(hashModes);
+        dropdownTypes.setValue(hashModes[0]);
+        verifyContentTypes();
+    }
+
+    public void verifyContentTypes(){
+
+        messageInsert.textProperty().addListener((observable, oldValue, newValue) ->{
+            //for cipher challenges
+            if(!passInsert.isDisable() && !newValue.equals("") && !tips.getText().equals("") && !passInsert.getText().equals("")){
+                //enable button
+                insertButton.setDisable(false);
+            }//for hash challenges
+            else if (passInsert.isDisable() && !newValue.equals("") && !tips.getText().equals("")){
+                //enable button
+                insertButton.setDisable(false);
+            }else {
+                //disable
+                insertButton.setDisable(true);
+            }
+        });
+
+       tips.textProperty().addListener((observable, oldValue, newValue) ->{
+           //for cipher challenges
+           if(!passInsert.isDisable() && !newValue.equals("") && !messageInsert.getText().equals("") && !passInsert.getText().equals("")){
+               //enable button
+               insertButton.setDisable(false);
+           }//for hash challenges
+           else if (passInsert.isDisable() && !newValue.equals("") && !messageInsert.getText().equals("")){
+               //enable button
+               insertButton.setDisable(false);
+           }else {
+               //disable
+               insertButton.setDisable(true);
+           }
+        });
+
+       if(!passInsert.isDisable()) {
+           passInsert.textProperty().addListener((observable, oldValue, newValue) -> {
+               if(!newValue.equals("") && !tips.getText().equals("") && !messageInsert.getText().equals("")){
+                   //enable button
+                   insertButton.setDisable(false);
+               }
+              else {
+                   //disable
+                   insertButton.setDisable(true);
+               }
+           });
+       }
+    }
+
+    public void insertButtonInput(ActionEvent event){
+
+    }
+
+    public void cancelButtonInput(ActionEvent event){
+
+    }
+
+    //END GROUP 4 -------------------------------
+
     //Group Scenes - Functions to change scenes => to change fxml files (pages)
     public void switchLoginMenu(ActionEvent event) throws IOException{
 
@@ -167,12 +276,6 @@ public class controller {
         //send type of operation "create" to inform server that user has chosen to create a challenge
         sendOperationMethodstoServer("create");
 
-        //hide elements of challenge menu from the start
-        dropdownTypes.hide();
-        messageInsert.setVisible(false);
-        tips.setVisible(false);
-        passInsert.setVisible(false);
-
         //stage switching and creation
         root = FXMLLoader.load(Client.class.getResource("create_challenge.fxml"));
         stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
@@ -181,27 +284,15 @@ public class controller {
         stage.setMinHeight(400);
         stage.setScene(scene);
         stage.show();
+
+        //System.out.println("TT: " + tips.getText());
+        //hide elements of challenge menu from the start
+        /*dropdownTypes.hide();
+        messageInsert.setVisible(false);
+        tips.setVisible(false);
+        passInsert.setVisible(false);*/
     }
     //END GROUP SCENES -------------------------------
-
-    //Group 4 - Elements of create challenge menu
-    public MenuButton dropdownTypeChallenge;
-    public MenuItem cipherChoice;
-    public MenuItem hashChoice;
-
-    public MenuButton dropdownTypes;
-    public MenuItem aes128ecb_choice;
-    public MenuItem aes128cbc_choice;
-    public MenuItem aes128ctr_choice;
-    public MenuItem md5_choice;
-    public MenuItem sha256_choice;
-    public MenuItem sha512_choice;
-
-    public TextField messageInsert;
-    public TextField tips;
-    public TextField passInsert;
-
-    //END GROUP 4 -------------------------------
 
     //Group 3 - Group of operations
 
