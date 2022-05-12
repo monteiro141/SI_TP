@@ -121,6 +121,11 @@ public class ConnectionThread extends Thread {
     private void loginOperation() {
         System.out.println("login method");
         respondToClient();
+        loginVerification();
+    }
+
+    private void loginVerification() {
+        
     }
 
     private void respondToClient() {
@@ -128,6 +133,7 @@ public class ConnectionThread extends Thread {
         String password = finalDecipheredMessage();
         System.out.println(email);
         System.out.println(password);
+
     }
     private String finalDecipheredMessage() {
         try {
