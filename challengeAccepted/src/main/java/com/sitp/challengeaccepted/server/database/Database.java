@@ -10,11 +10,10 @@ public class Database {
     static final String url = "jdbc:mysql://localhost:3306/challengeaccepted";
     static final String user = "root";
     static final String pass = "root";
-    private Connection connection = null;
-    private Statement statement = null;
+    private Connection connection;
+    private Statement statement;
 
     public Database(){
-        this.ConnectToDatabase();
     }
 
     public Connection getConnection() {

@@ -12,6 +12,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 import java.security.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,19 +36,27 @@ public class ConnectionThread extends Thread {
         System.out.println("New connection!");
         this.S = S;
         connectionKeys = new ConnectionKeys();
-        start();
+        try {
+            start();
+        }catch (Exception e){
+            System.out.println("Socket shut down");
+        }
+
     }
 
     public void run(){
         generatePrivatePublicKeys();
         sendPublicKeyToClient();
         receiveConnectionKeys();
+        databaseCaller = new Database();
         if(databaseCaller.ConnectToDatabase())
         {
             while(true){
                 clientOperations();
             }
         }
+        EndThread:
+        System.out.println();
     }
 
 
@@ -72,7 +81,11 @@ public class ConnectionThread extends Thread {
         InputStreams();
         try {
             os.writeObject(publicKey);
-        } catch (IOException e) {
+            os.flush();
+        }catch (SocketException e){
+            Thread.currentThread().stop();
+        }
+        catch (IOException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -83,7 +96,10 @@ public class ConnectionThread extends Thread {
         try {
             is = new ObjectInputStream(S.getInputStream());
             os = new ObjectOutputStream(S.getOutputStream());
-        } catch (IOException e) {
+        }catch (SocketException e){
+            Thread.currentThread().stop();
+        }
+        catch (IOException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -94,7 +110,10 @@ public class ConnectionThread extends Thread {
             connectionKeys.setInfo_client_server_hash(ConnectionKeys.generateKey(CipherDecipher.decrypt(is.readNBytes(128),privateKey)));
             connectionKeys.setInfo_server_client(ConnectionKeys.generateKey(CipherDecipher.decrypt(is.readNBytes(128),privateKey)));
             connectionKeys.setInfo_server_client_hash(ConnectionKeys.generateKey(CipherDecipher.decrypt(is.readNBytes(128),privateKey)));
-        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException | IOException e) {
+        }catch (SocketException e){
+            Thread.currentThread().stop();
+        }
+        catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException | IOException e) {
             e.printStackTrace();
         }
         /*System.out.println("Connection keys");
@@ -121,7 +140,9 @@ public class ConnectionThread extends Thread {
                 break;
         }
     }
-
+    /**
+     * Login operations
+     */
     private void loginOperation() {
         System.out.println("login method");
         respondToClientLogin();
@@ -132,16 +153,16 @@ public class ConnectionThread extends Thread {
         String password = finalDecipheredMessage();
         if(loginVerification(email,password)){
             System.out.println("Log in suc.");
-            sendLogInStatusToClient(true);
+            sendLogInStatusToClient("true");
         }else{
             System.out.println("Log in failed.");
-            sendLogInStatusToClient(false);
+            sendLogInStatusToClient("false");
         }
     }
 
-    private void sendLogInStatusToClient(boolean status) {
+    private void sendLogInStatusToClient(String status) {
         try {
-            cipherMessageAndHash(String.valueOf(status),"AES",null);
+            cipherMessageAndHash(status,"AES",null);
             writeCipheredToClient(cipheredMessage);
             writeCipheredToClient(cipheredMessageHash);
         } catch (BadPaddingException | NoSuchPaddingException | NoSuchAlgorithmException | IOException e) {
@@ -149,6 +170,9 @@ public class ConnectionThread extends Thread {
         }
     }
 
+    /**
+     * Register operations
+     */
     private void registerOperation() {
         System.out.println("register method");
         respondToClientRegister();
@@ -159,8 +183,10 @@ public class ConnectionThread extends Thread {
         String password = finalDecipheredMessage();
         if(registerVerification(email,password)){
             System.out.println("Register suc");
+            sendLogInStatusToClient("true");
         }else{
             System.out.println("Register failed");
+            sendLogInStatusToClient("false");
         }
     }
 
@@ -195,11 +221,18 @@ public class ConnectionThread extends Thread {
         return true;
     }
 
+    /**
+     * Ciphers and hashes
+     */
     private String finalDecipheredMessage() {
         try {
             readCipheredFromClient();
             decipherMessageAndHash("AES",null);
-        } catch (IOException | ClassNotFoundException | NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException | BadPaddingException | InvalidKeyException e) {
+        } catch (ClassNotFoundException | NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException | BadPaddingException | InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (SocketException e){
+            Thread.currentThread().stop();
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return checkHash();
@@ -216,21 +249,25 @@ public class ConnectionThread extends Thread {
         decipheredMessage = CipherDecipher.decrypt(cipheredMessage,connectionKeys.getInfo_client_server(),cipherAlgorithm,iv);
         decipheredMessageHash = CipherDecipher.decrypt(cipheredMessageHash,connectionKeys.getInfo_client_server_hash(),cipherAlgorithm,iv);
     }
+
     private void cipherMessageAndHash(String data,String cipherAlgorithm, IvParameterSpec iv) throws NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException {
         cipheredMessage = CipherDecipher.encrypt(data,connectionKeys.getInfo_server_client(),cipherAlgorithm,iv);
         cipheredMessageHash = CipherDecipher.encrypt(getHash(data,"SHA-256"),connectionKeys.getInfo_server_client_hash(),cipherAlgorithm,iv);
     }
+
     private void readCipheredFromClient() throws IOException, ClassNotFoundException {
         cipheredMessage = (byte[]) is.readObject();
         cipheredMessageHash = (byte[]) is.readObject();
     }
 
     private void writeCipheredToClient(byte [] data) throws IOException {
-        os.write(data);
+        os.writeObject(data);
         os.flush();
     }
 
     private String getHash(String content, String hashAlgorithm){
+        if(content == null)
+            return null;
         try{
             MessageDigest md = MessageDigest.getInstance(hashAlgorithm);
             md.update(content.getBytes());
