@@ -1,5 +1,7 @@
 package com.sitp.challengeaccepted.server;
 
+import com.sitp.challengeaccepted.server.challenges.CipherDecipherChallenges;
+import com.sitp.challengeaccepted.server.challenges.GenerateValues;
 import com.sitp.challengeaccepted.server.database.Database;
 import com.sitp.challengeaccepted.server.database.Queries;
 import com.sitp.challengeaccepted.server.keysClasses.ConnectionKeys;
@@ -7,6 +9,7 @@ import com.sitp.challengeaccepted.server.keysClasses.PrivateKeyReader;
 import com.sitp.challengeaccepted.server.keysClasses.PublicKeyReader;
 
 import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
@@ -18,12 +21,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ConnectionThread extends Thread {
-    private Socket S;
+    private final Socket S;
     private PublicKey publicKey;
     private PrivateKey privateKey;
     private ObjectInputStream is;
     private ObjectOutputStream os;
-    private ConnectionKeys connectionKeys;
+    private final ConnectionKeys connectionKeys;
     private String decipheredMessage;
     private String decipheredMessageHash;
     private byte [] cipheredMessage;
@@ -196,20 +199,48 @@ public class ConnectionThread extends Thread {
         String challengeSpecification = finalDecipheredMessage();
         String message = finalDecipheredMessage();
         String tips = finalDecipheredMessage();
-        String password = finalDecipheredMessage();
+        byte[] salt = null;
+        byte[] iv = null;
+        IvParameterSpec ivVector=null;
+        String cipherText=null;
 
-        // MAKE CIPHER OPERATION
+        // CIPHER OPERATION
+        if(challengeSpecification.contains("AES")){
+            salt = GenerateValues.getSalt();
+            if(challengeSpecification.contains("CBC") || challengeSpecification.contains("CTR")){
+                iv= GenerateValues.getIvVector();
+                if (iv != null) {
+                    ivVector = new IvParameterSpec(iv);
+                }
+            }
+        }
+
+        if(!challengeSpecification.equals("CESAR")){
+            cipherText = CipherDecipherChallenges.encryptCipher(challengeSpecification, message, finalDecipheredMessage(), salt, ivVector);
+        }
+        else{
+            // Password in the case of cesar's cipher is a offset
+            cipherText = CipherDecipherChallenges.encryptCesar(message, Integer.parseInt(finalDecipheredMessage()));
+        }
+
+
 
         try {
-            String hmac = "something";
-            String cryptogram = "message";
-            String iv = "";
-            String salt = "salt";
+            String hmac = null; //= GenerateValues.doHMACMessage(message,"ola"); falta secret key
+            String cryptogram = cipherText;
+            String ivToSave=null;
+            String saltToSave=null;
+            if (iv != null) {
+                ivToSave = new String(iv);
+            }
+            if (salt != null) {
+                saltToSave = new String(salt);
+            }
             ResultSet checkHMAC = databaseCaller.getStatement().executeQuery(Queries.checkHMAC(hmac));
             if (checkHMAC.next())
                 return false;
             else {
-                ResultSet resultSet = databaseCaller.getStatement().executeQuery(Queries.createCipherChallenge(userLoggedIn, challengeSpecification, hmac, cryptogram, iv, salt, tips));
+                ResultSet resultSet = databaseCaller.getStatement().executeQuery(Queries.createCipherChallenge(userLoggedIn, challengeSpecification, hmac, cryptogram, ivToSave, saltToSave, tips));
                 return true;
             }
         } catch (SQLException e) {
