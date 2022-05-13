@@ -5,11 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c773fbe2-b81d-4ae0-abc9-92aa114e096a" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/057d1c23-b78a-44e2-bd5d-bb561116c2b4.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/057d1c23-b78a-44e2-bd5d-bb561116c2b4.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/client/controller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/client/controller.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/ConnectionThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/ConnectionThread.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/com/sitp/challengeaccepted/client/create_challenge.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/com/sitp/challengeaccepted/client/create_challenge.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/controller.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/controller.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/create_challenge.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/client/create_challenge.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/com/sitp/challengeaccepted/client/credentials_client_menu.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/com/sitp/challengeaccepted/client/credentials_client_menu.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/com/sitp/challengeaccepted/client/login_register_menu.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/com/sitp/challengeaccepted/client/login_register_menu.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/com/sitp/challengeaccepted/client/main_menu.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/com/sitp/challengeaccepted/client/main_menu.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,7 +46,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="TODO_SCOPE" value="All Places" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../../../SD/8-9/ficha9EE/second" />
     <property name="project.structure.last.edited" value="Libraries" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -136,7 +139,10 @@
       <workItem from="1652348395812" duration="3477000" />
       <workItem from="1652356218896" duration="7044000" />
       <workItem from="1652366160625" duration="6533000" />
-      <workItem from="1652373116453" duration="1543000" />
+      <workItem from="1652373116453" duration="1659000" />
+      <workItem from="1652383452998" duration="63000" />
+      <workItem from="1652393747279" duration="581000" />
+      <workItem from="1652432495294" duration="3669000" />
     </task>
     <servers />
   </component>

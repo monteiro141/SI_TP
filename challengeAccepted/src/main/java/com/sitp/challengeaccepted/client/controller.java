@@ -99,12 +99,6 @@ public class controller {
     public MenuItem hashChoice;
 
     public ChoiceBox<String>  dropdownTypes;
-    public MenuItem aes128ecb_choice;
-    public MenuItem aes128cbc_choice;
-    public MenuItem aes128ctr_choice;
-    public MenuItem md5_choice;
-    public MenuItem sha256_choice;
-    public MenuItem sha512_choice;
 
     public TextField messageInsert;
     public TextField tips;
@@ -195,11 +189,48 @@ public class controller {
        }
     }
 
+    //after values are inserted in create challenge send types of data according to type of challenge selected
     public void insertButtonInput(ActionEvent event){
+        try {
+            byte[] sendTypeChallenge = CipherDecipherClient.encrypt(dropdownTypeChallenge.getText(),Client.client_server,"AES",null);
+            byte[] sendTypeChallengeHash = CipherDecipherClient.encrypt(getHash(dropdownTypeChallenge.getText()),Client.client_server_hash,"AES",null);
 
-    }
+            byte[] sendType = CipherDecipherClient.encrypt(dropdownTypes.getValue(), Client.client_server,"AES",null);
+            byte[] sendTypeHash = CipherDecipherClient.encrypt(getHash(dropdownTypes.getValue()), Client.client_server_hash,"AES",null);
 
-    public void cancelButtonInput(ActionEvent event){
+            byte[] sendMessage = CipherDecipherClient.encrypt(messageInsert.getText(),Client.client_server,"AES",null);
+            byte[] sendMessageHash = CipherDecipherClient.encrypt(getHash(messageInsert.getText()),Client.client_server_hash,"AES",null);
+
+            byte[] sendTips = CipherDecipherClient.encrypt(tips.getText(),Client.client_server,"AES",null);
+            byte[] sendTipsHash = CipherDecipherClient.encrypt(getHash(tips.getText()),Client.client_server_hash,"AES",null);
+
+            Client.os.writeObject(sendTypeChallenge);
+            Client.os.writeObject(sendTypeChallengeHash);
+            Client.os.flush();
+
+            Client.os.writeObject(sendType);
+            Client.os.writeObject(sendTypeHash);
+            Client.os.flush();
+
+            Client.os.writeObject(sendMessage);
+            Client.os.writeObject(sendMessageHash);
+            Client.os.flush();
+
+            Client.os.writeObject(sendTips);
+            Client.os.writeObject(sendTipsHash);
+            Client.os.flush();
+
+            if(!passInsert.isDisable()) {
+                byte[] sendPassword = CipherDecipherClient.encrypt(passInsert.getText(), Client.client_server, "AES", null);
+                byte[] sendPasswordHash = CipherDecipherClient.encrypt(getHash(passInsert.getText()), Client.client_server_hash, "AES", null);
+                Client.os.writeObject(sendPassword);
+                Client.os.writeObject(sendPasswordHash);
+                Client.os.flush();
+            }
+
+        } catch (BadPaddingException | NoSuchPaddingException | NoSuchAlgorithmException | IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -284,13 +315,6 @@ public class controller {
         stage.setMinHeight(400);
         stage.setScene(scene);
         stage.show();
-
-        //System.out.println("TT: " + tips.getText());
-        //hide elements of challenge menu from the start
-        /*dropdownTypes.hide();
-        messageInsert.setVisible(false);
-        tips.setVisible(false);
-        passInsert.setVisible(false);*/
     }
     //END GROUP SCENES -------------------------------
 

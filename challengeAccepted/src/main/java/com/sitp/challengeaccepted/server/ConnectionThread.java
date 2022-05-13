@@ -197,7 +197,9 @@ public class ConnectionThread extends Thread {
         String message = finalDecipheredMessage();
         String tips = finalDecipheredMessage();
         String password = finalDecipheredMessage();
+
         // MAKE CIPHER OPERATION
+
         try {
             String hmac = "something";
             String cryptogram = "message";

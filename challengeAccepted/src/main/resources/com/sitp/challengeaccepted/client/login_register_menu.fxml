@@ -9,7 +9,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane fx:id="borderPaneLogin" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #A2A3BB;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sitp.challengeaccepted.client.controller">
+<BorderPane fx:id="borderPaneLogin" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #A2A3BB;" xmlns="http://javafx.com/javafx/17.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sitp.challengeaccepted.client.controller">
    <center>
       <GridPane fx:id="gridCenter" prefHeight="310.0" prefWidth="600.0" style="-fx-background-color: #A2A3BB;" BorderPane.alignment="CENTER">
         <columnConstraints>
