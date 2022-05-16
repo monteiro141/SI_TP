@@ -2,7 +2,9 @@ package com.sitp.challengeaccepted.server;
 
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
 import java.security.*;
+import java.security.spec.InvalidKeySpecException;
 
 public class CipherDecipher {
     public CipherDecipher(){}
@@ -62,6 +64,21 @@ public class CipherDecipher {
             }
             return new String(cipher.doFinal(data));
         }
+    }
+
+    public static byte[] getSaltToPassword(byte[] salt, String password){
+        SecretKeyFactory secretKeyFactory = null;
+        try {
+            secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512");
+            PBEKeySpec pbeKeySpec = new PBEKeySpec(password.toCharArray(), salt , 100000, 32);
+            return secretKeyFactory.generateSecret(pbeKeySpec).getEncoded();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
 }

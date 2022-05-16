@@ -4,8 +4,10 @@ import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
@@ -64,7 +66,23 @@ public class CipherDecipherChallenges {
 
         return null;
     }
-
+    public static String CreateHash(String algorithm, String message) {
+        MessageDigest digest = null;
+        try {
+            digest = MessageDigest.getInstance(algorithm);
+        } catch (NoSuchAlgorithmException ex) {
+            throw new RuntimeException("Unable to compute hash", ex);
+        }
+        if(digest!=null){
+            digest.update(message.getBytes());
+            //Convert o array de bytes (digest.digest()) na sua representação de magnitude de sinal
+            //Convert into Hex Value
+            BigInteger hash = new BigInteger(1, digest.digest());
+            //16 means Hexadecimal
+            return (hash.toString(16));
+        }
+        return null;
+    }
     public static String encryptVigenere(String message, String password){
         StringBuilder ciphertext = new StringBuilder();
         for (int i =0 ;i <message.length();i++) {
