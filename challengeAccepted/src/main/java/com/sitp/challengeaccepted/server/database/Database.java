@@ -7,7 +7,8 @@ import java.sql.Statement;
 
 public class Database {
     //static final String driver = "com.mysql.jdbc.Driver";
-    static final String url = "jdbc:mysql://localhost:3306/challengeaccepted";
+    static final String url = "jdbc:mysql://localhost:3306/";
+    static final String db_url = "challengeaccepted";
     static final String user = "SI_USER";
     static final String pass = "root";
     private Connection connection;
@@ -65,6 +66,8 @@ public class Database {
         }
         // create the database tables
         try {
+            connection = DriverManager.getConnection(url+db_url, user, pass);
+            statement = connection.createStatement();
             String userTable = Queries.createUserTable();
             statement.executeUpdate(userTable);
             System.out.println("User table created.");
@@ -122,7 +125,7 @@ public class Database {
 
     public boolean ConnectToDatabase(){
         try {
-            connection = DriverManager.getConnection(url, user, pass);
+            connection = DriverManager.getConnection(url+db_url, user, pass);
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
