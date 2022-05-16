@@ -1,7 +1,5 @@
 package com.sitp.challengeaccepted.server;
 
-import com.sitp.challengeaccepted.server.challenges.CipherChallengesAttributes;
-
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;

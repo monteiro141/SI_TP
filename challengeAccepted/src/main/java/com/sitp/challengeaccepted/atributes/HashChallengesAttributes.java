@@ -1,4 +1,4 @@
-package com.sitp.challengeaccepted.client;
+package com.sitp.challengeaccepted.atributes;
 
 import java.io.Serializable;
 
@@ -45,5 +45,15 @@ public class HashChallengesAttributes implements Serializable {
 
     public void setHash_tips(String hash_tips) {
         this.hash_tips = hash_tips;
+    }
+
+    @Override
+    public String toString() {
+        return "HashChallengesAttributes{" +
+                "hash_id=" + hash_id +
+                ", hash_specification='" + hash_specification + '\'' +
+                ", hash_hash='" + hash_hash + '\'' +
+                ", hash_tips='" + hash_tips + '\'' +
+                '}';
     }
 }

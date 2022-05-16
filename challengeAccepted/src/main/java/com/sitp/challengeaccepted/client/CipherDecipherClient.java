@@ -1,6 +1,6 @@
 package com.sitp.challengeaccepted.client;
 
-import com.sitp.challengeaccepted.server.challenges.CipherDecipherChallenges;
+import com.sitp.challengeaccepted.atributes.CipherChallengesAttributes;
 
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
@@ -81,8 +81,8 @@ public class CipherDecipherClient {
                 ByteArrayInputStream bis = new ByteArrayInputStream(decipher);
                 ObjectInputStream ois = new ObjectInputStream(bis);
                 try {
-                    ArrayList<com.sitp.challengeaccepted.server.challenges.CipherChallengesAttributes> ch = (ArrayList<com.sitp.challengeaccepted.server.challenges.CipherChallengesAttributes>) ois.readObject();
-                    for(com.sitp.challengeaccepted.server.challenges.CipherChallengesAttributes element: ch){
+                    ArrayList<CipherChallengesAttributes> ch = (ArrayList<CipherChallengesAttributes>) ois.readObject();
+                    for(CipherChallengesAttributes element: ch){
                         System.out.println(element.toString());
                     }
                     //list_challenges.add(ois.readObject());

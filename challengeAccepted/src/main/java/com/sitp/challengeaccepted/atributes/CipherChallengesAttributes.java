@@ -1,4 +1,4 @@
-package com.sitp.challengeaccepted.server.challenges;
+package com.sitp.challengeaccepted.atributes;
 
 import java.io.Serializable;
 
@@ -45,5 +45,15 @@ public class CipherChallengesAttributes implements Serializable {
 
     public void setCipher_tips(String cipher_tips) {
         this.cipher_tips = cipher_tips;
+    }
+
+    @Override
+    public String toString() {
+        return "CipherChallengesAttributes{" +
+                "challenge_id=" + challenge_id +
+                ", type_cipher='" + type_cipher + '\'' +
+                ", cipher_message='" + cipher_message + '\'' +
+                ", cipher_tips='" + cipher_tips + '\'' +
+                '}';
     }
 }

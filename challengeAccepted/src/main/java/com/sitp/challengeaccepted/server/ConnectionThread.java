@@ -1,9 +1,9 @@
 package com.sitp.challengeaccepted.server;
 
-import com.sitp.challengeaccepted.server.challenges.CipherChallengesAttributes;
+import com.sitp.challengeaccepted.atributes.CipherChallengesAttributes;
+import com.sitp.challengeaccepted.atributes.HashChallengesAttributes;
 import com.sitp.challengeaccepted.server.challenges.CipherDecipherChallenges;
 import com.sitp.challengeaccepted.server.challenges.GenerateValues;
-import com.sitp.challengeaccepted.server.challenges.HashChallengesAttributes;
 import com.sitp.challengeaccepted.server.database.Database;
 import com.sitp.challengeaccepted.server.database.Queries;
 import com.sitp.challengeaccepted.server.keysClasses.ConnectionKeys;
