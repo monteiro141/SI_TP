@@ -189,7 +189,7 @@ public class ConnectionThread extends Thread {
         }
         return true;
     }
-    
+
     /**
      * Register operations
      */
@@ -245,6 +245,7 @@ public class ConnectionThread extends Thread {
                     }
                     break;
                 case "resolve":
+                    sendChallengesList();
                     if(resolveChallenge()){
                         sendLogInStatusToClient("true");
                     } else {
@@ -257,6 +258,8 @@ public class ConnectionThread extends Thread {
         }
 
     }
+
+
 
     /**
      * Ciphers and hashes
@@ -367,6 +370,10 @@ public class ConnectionThread extends Thread {
     private boolean resolveHashChallenge() {
         //Completar com hash resolver
         return false;
+    }
+
+    private void sendChallengesList() {
+        
     }
 
     private String finalDecipheredMessage() {

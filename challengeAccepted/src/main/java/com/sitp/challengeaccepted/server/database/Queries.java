@@ -79,4 +79,16 @@ public class Queries {
         return "INSERT INTO HashChallenges (user_id, hash_specification, hash_hash, hash_tips) " +
                 "VALUES (" + user.getUser_id() + "', '" + challengeSpecification + "', '" + hash + "', '" + tips + "');";
     }
+
+    public static String challengesCipherList(String user_id){
+        return "SELECT cipher_id, cipher_specification, cipher_message, cipher_tips "+
+                "FROM CipherChallenges "+
+                "WHERE user_id != '"+user_id+"'";
+    }
+
+    public static String challengesHashList(String user_id){
+        return "SELECT hash_id, hash_specification, hash_hash, hash_tips "+
+                "FROM HashChallenges "+
+                "WHERE user_id != '"+user_id+"'";
+    }
 }
