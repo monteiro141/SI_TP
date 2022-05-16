@@ -291,6 +291,31 @@ public class controller {
 
     //END GROUP 4 -------------------------------
 
+    //Group 5 - Elements of resolve challenge menu
+
+    public MenuButton dropdownTypeChoose;
+
+    public ChoiceBox dropdownChoose;
+    public Text typeText;
+
+    public Text challenge_content;
+    public Text challenge_content_text;
+
+    public Text challenge_tips;
+    public Text challenge_tips_text;
+
+    public TextField challenge_answer;
+
+
+    /*dropdownTypes.showingProperty().addListener((observable, oldValue, newValue) ->{
+        messageInsert.clear();
+        tips.clear();
+        passInsert.clear();
+        insertButton.setDisable(true);
+    });*/
+
+    //END GROUP 5 -------------------------------
+
     //Group Scenes - Functions to change scenes => to change fxml files (pages)
     public void switchLoginMenu(ActionEvent event) throws IOException{
 
@@ -412,8 +437,11 @@ public class controller {
         //send type of operation "resolve" to inform server that user has chosen to resolve a challenge
         sendOperationMethodstoServer("resolve");
 
+        //receive lists of cipher and hash from server
+        //verifyResponsesLists();
+
         //stage switching and creation
-        root = FXMLLoader.load(Client.class.getResource("choose_challenge.fxml"));
+        root = FXMLLoader.load(Client.class.getResource("resolve_challenge.fxml"));
         stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
         scene = new Scene(root,stage.getWidth(),stage.getHeight());
         stage.setMinWidth(600);
@@ -444,7 +472,7 @@ public class controller {
     private void initiateSocket() throws IOException, NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, ClassNotFoundException {
         //Socket S = new Socket("169.254.65.233",1099);
         //Socket S = new Socket("127.0.0.1",1099);
-        Socket S = new Socket("0.tcp.eu.ngrok.io",16757);
+        Socket S = new Socket("5.tcp.eu.ngrok.io",16672);
         Client.os = new ObjectOutputStream(S.getOutputStream());
         Client.is = new ObjectInputStream(S.getInputStream());
     }
@@ -524,6 +552,24 @@ public class controller {
         }
     }
 
+    public void verifyResponsesLists(byte[] response, byte[] response_hash){
+        try {
+            response = (byte[]) Client.is.readObject();
+            response_hash = (byte[]) Client.is.readObject();
+
+            String decipheredtypeResponse = CipherDecipherClient.decrypt(response,Client.server_client,"AES",null);
+            String decipheredtypeResponseHash = CipherDecipherClient.decrypt(response_hash,Client.server_client_hash,"AES",null);
+
+            if(getHash(decipheredtypeResponse).equals(decipheredtypeResponseHash)){
+                //System.out.println("They are the same");
+            }else{
+                System.out.println("Not the same");
+            }
+        } catch (IOException | ClassNotFoundException | InvalidKeyException | IllegalBlockSizeException | NoSuchPaddingException | NoSuchAlgorithmException | BadPaddingException e) {
+            e.printStackTrace();
+        }
+    }
+
     //function to verify if operation is valid or invalid
     public boolean verifyResponsesValid(){
         try {
@@ -574,9 +620,5 @@ public class controller {
             e.printStackTrace();
         }
     }
-
-    //function to verify if the login state of user is
     // END GROUP 3 - Group of operations
-
-
 }
