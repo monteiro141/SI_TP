@@ -1,7 +1,9 @@
 package com.sitp.challengeaccepted.server;
 
+import com.sitp.challengeaccepted.server.challenges.CipherChallengesAttributes;
 import com.sitp.challengeaccepted.server.challenges.CipherDecipherChallenges;
 import com.sitp.challengeaccepted.server.challenges.GenerateValues;
+import com.sitp.challengeaccepted.server.challenges.HashChallengesAttributes;
 import com.sitp.challengeaccepted.server.database.Database;
 import com.sitp.challengeaccepted.server.database.Queries;
 import com.sitp.challengeaccepted.server.keysClasses.ConnectionKeys;
@@ -17,6 +19,7 @@ import java.net.SocketException;
 import java.security.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class ConnectionThread extends Thread {
     private final Socket S;
@@ -199,7 +202,7 @@ public class ConnectionThread extends Thread {
 
     private void respondToClientRegister() {
         String email = finalDecipheredMessage();
-        byte[] saltedPassword = CipherDecipher.getSaltToPassword("OneMoreEasterEgg".getBytes(),finalDecipheredMessage());
+        byte[] saltedPassword = CipherDecipher.getSaltToPassword("One1Mor3E4ster6g9".getBytes(),finalDecipheredMessage());
         if(saltedPassword != null && registerVerification(email,new String(saltedPassword))){
             System.out.println("Register suc");
             sendLogInStatusToClient("true");
@@ -208,8 +211,6 @@ public class ConnectionThread extends Thread {
             sendLogInStatusToClient("false");
         }
     }
-
-
 
     private boolean registerVerification(String email, String password) {
         try {
@@ -373,7 +374,58 @@ public class ConnectionThread extends Thread {
     }
 
     private void sendChallengesList() {
-        
+        ArrayList<CipherChallengesAttributes> cipherChallengesList = ciphersFromDatabase(userLoggedIn.getUser_id());
+        ArrayList<HashChallengesAttributes> hashChallengesList = hashFromDatabase(userLoggedIn.getUser_id());
+        sendListToClient(cipherChallengesList);
+        sendListToClient(hashChallengesList);
+    }
+
+    private void sendListToClient(ArrayList<?> challengesList) {
+        try {
+            cipherMessageAndHash(challengesList,"AES",null);
+            writeCipheredToClient(cipheredMessage);
+            writeCipheredToClient(cipheredMessageHash);
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException | BadPaddingException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+    private ArrayList<CipherChallengesAttributes> ciphersFromDatabase(int user_id) {
+        ArrayList<CipherChallengesAttributes> cipherChallengesList = new ArrayList<>();
+        ResultSet ciphersCaller;
+        try {
+            do {
+                ciphersCaller = databaseCaller.getStatement().executeQuery(Queries.challengesCipherList(String.valueOf(user_id)));
+                int challengeId = ciphersCaller.getInt(1);
+                String type_cipher = ciphersCaller.getString(2);
+                String cipher_message = ciphersCaller.getString(3);
+                String cipher_tips = ciphersCaller.getString(4);
+                cipherChallengesList.add(new CipherChallengesAttributes(challengeId,type_cipher,cipher_message,cipher_tips));
+            } while (ciphersCaller.next());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return cipherChallengesList;
+    }
+
+    private ArrayList<HashChallengesAttributes> hashFromDatabase(int user_id) {
+        ArrayList<HashChallengesAttributes> hashChallengesList = new ArrayList<>();
+        ResultSet hashCaller;
+        try{
+            do {
+                hashCaller = databaseCaller.getStatement().executeQuery(Queries.challengesHashList(String.valueOf(user_id)));
+                int hash_id = hashCaller.getInt(1);
+                String hash_specification = hashCaller.getString(2);
+                String hash_hash = hashCaller.getString(3);
+                String hash_tips = hashCaller.getString(4);
+                hashChallengesList.add(new HashChallengesAttributes(hash_id,hash_specification,hash_hash,hash_tips));
+            }while (hashCaller.next());
+        }catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return hashChallengesList;
     }
 
     private String finalDecipheredMessage() {
@@ -403,6 +455,11 @@ public class ConnectionThread extends Thread {
         decipheredMessageHash = CipherDecipher.decrypt(cipheredMessageHash,connectionKeys.getInfo_client_server_hash(),cipherAlgorithm,iv);
     }
 
+    private void cipherMessageAndHash(ArrayList<?> data,String cipherAlgorithm, IvParameterSpec iv) throws NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException {
+        cipheredMessage = CipherDecipher.encrypt(data,connectionKeys.getInfo_server_client(),cipherAlgorithm,iv);
+        cipheredMessageHash = CipherDecipher.encrypt(getHash(data,"SHA-256"),connectionKeys.getInfo_server_client_hash(),cipherAlgorithm,iv);
+    }
+
     private void cipherMessageAndHash(String data,String cipherAlgorithm, IvParameterSpec iv) throws NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException {
         cipheredMessage = CipherDecipher.encrypt(data,connectionKeys.getInfo_server_client(),cipherAlgorithm,iv);
         cipheredMessageHash = CipherDecipher.encrypt(getHash(data,"SHA-256"),connectionKeys.getInfo_server_client_hash(),cipherAlgorithm,iv);
@@ -424,6 +481,19 @@ public class ConnectionThread extends Thread {
         try{
             MessageDigest md = MessageDigest.getInstance(hashAlgorithm);
             md.update(content.getBytes());
+            return new String(md.digest());
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private String getHash(ArrayList<?> content, String hashAlgorithm){
+        if(content == null)
+            return null;
+        try{
+            MessageDigest md = MessageDigest.getInstance(hashAlgorithm);
+            md.update(CipherDecipher.bytesFromArrayList(content));
             return new String(md.digest());
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
