@@ -306,9 +306,6 @@ public class controller {
 
     public TextField challenge_answer;
 
-    private ArrayList<CipherChallengesAttributes> cipher_list_challenges;
-    private ArrayList<HashChallengesAttributes> hash_list_challenges;
-
     /*dropdownTypes.showingProperty().addListener((observable, oldValue, newValue) ->{
         messageInsert.clear();
         tips.clear();
@@ -561,27 +558,28 @@ public class controller {
         try {
             //receive first cipher challenges list
             byte[] responseCipher = (byte[]) Client.is.readObject();
+            byte[] responseCipherHash = (byte[]) Client.is.readObject();
+
+            //check hash
 
             //receive second hash challenges list
             byte[] responseHash = (byte[]) Client.is.readObject();
+            byte[] responseHash_Hash = (byte[]) Client.is.readObject();
 
-            ArrayList decipheredtypeResponse = CipherDecipherClient.decryptLists(responseCipher,responseHash,Client.server_client,"AES",null);
+            ArrayList<CipherChallengesAttributes> cipherResponse = CipherDecipherClient.CipherdecryptLists(responseCipher,Client.server_client,"AES",null);
 
-            cipher_list_challenges = (ArrayList<CipherChallengesAttributes>) decipheredtypeResponse.get(0);
-            for(CipherChallengesAttributes element: cipher_list_challenges){
+            ArrayList<HashChallengesAttributes> hashResponse = CipherDecipherClient.HashdecryptLists(responseHash,Client.server_client,"AES",null);
+
+            for(CipherChallengesAttributes element: cipherResponse){
                 System.out.println(element.toString());
             }
 
-            System.out.println("-------------------");
+            System.out.println("---------------------------");
 
-            hash_list_challenges = (ArrayList<HashChallengesAttributes>) decipheredtypeResponse.get(1);
-
-            for(HashChallengesAttributes element: hash_list_challenges){
+            for(HashChallengesAttributes element: hashResponse){
                 System.out.println(element.toString());
             }
 
-            System.out.println("CIPHER first: " + cipher_list_challenges.get(0));
-            System.out.println("Hash first: " + hash_list_challenges.get(0));
         } catch (IOException | ClassNotFoundException | InvalidKeyException | IllegalBlockSizeException | NoSuchPaddingException | NoSuchAlgorithmException | BadPaddingException e) {
             e.printStackTrace();
         }
