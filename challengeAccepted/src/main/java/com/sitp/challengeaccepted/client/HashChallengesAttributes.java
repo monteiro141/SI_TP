@@ -1,6 +1,8 @@
 package com.sitp.challengeaccepted.client;
 
-public class HashChallengesAttributes {
+import java.io.Serializable;
+
+public class HashChallengesAttributes implements Serializable {
     private int hash_id;
     private String hash_specification;
     private String hash_hash;

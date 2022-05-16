@@ -1,6 +1,8 @@
 package com.sitp.challengeaccepted.client;
 
-public class CipherChallengesAttributes {
+import java.io.Serializable;
+
+public class CipherChallengesAttributes implements Serializable {
     private int challenge_id;
     private String type_cipher;
     private String cipher_message;

@@ -1,8 +1,14 @@
 package com.sitp.challengeaccepted.client;
 
+import com.sitp.challengeaccepted.server.challenges.CipherDecipherChallenges;
+
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.security.*;
+import java.util.ArrayList;
 
 public class CipherDecipherClient {
     public CipherDecipherClient(){}
@@ -62,6 +68,84 @@ public class CipherDecipherClient {
                 System.out.println(e.getMessage());
             }
             return new String(cipher.doFinal(data));
+        }
+    }
+
+    public static ArrayList decryptLists(byte[] data, byte[] data2, SecretKey secretKey, String cipherString, IvParameterSpec iv) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+        ArrayList list_challenges = new ArrayList();
+        if(iv == null){
+            Cipher cipher = Cipher.getInstance(cipherString);
+            cipher.init(Cipher.DECRYPT_MODE, secretKey);
+            byte[] decipher = cipher.doFinal(data);
+            try {
+                ByteArrayInputStream bis = new ByteArrayInputStream(decipher);
+                ObjectInputStream ois = new ObjectInputStream(bis);
+                try {
+                    ArrayList<com.sitp.challengeaccepted.server.challenges.CipherChallengesAttributes> ch = (ArrayList<com.sitp.challengeaccepted.server.challenges.CipherChallengesAttributes>) ois.readObject();
+                    for(com.sitp.challengeaccepted.server.challenges.CipherChallengesAttributes element: ch){
+                        System.out.println(element.toString());
+                    }
+                    //list_challenges.add(ois.readObject());
+                    ois.close();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            byte[] decipher2 = cipher.doFinal(data2);
+            try {
+                ByteArrayInputStream bis = new ByteArrayInputStream(decipher2);
+                ObjectInputStream ois = new ObjectInputStream(bis);
+                try {
+                    list_challenges.add(ois.readObject());
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return list_challenges;
+        }
+        else
+        {
+            Cipher cipher = Cipher.getInstance(cipherString);
+            try {
+                cipher.init(Cipher.DECRYPT_MODE, secretKey,iv);
+            } catch (InvalidAlgorithmParameterException e) {
+                System.out.println(e.getMessage());
+            }
+
+            byte[] decipher = cipher.doFinal(data);
+            try {
+                ByteArrayInputStream bis = new ByteArrayInputStream(decipher);
+                ObjectInputStream ois = new ObjectInputStream(bis);
+                try {
+                    list_challenges.add(ois.readObject());
+                    ois.close();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            byte[] decipher2 = cipher.doFinal(data2);
+            try {
+                ByteArrayInputStream bis = new ByteArrayInputStream(decipher2);
+                ObjectInputStream ois = new ObjectInputStream(bis);
+                try {
+                    list_challenges.add(ois.readObject());
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return list_challenges;
         }
     }
 }

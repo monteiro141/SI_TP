@@ -22,6 +22,7 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 
@@ -54,7 +55,6 @@ public class controller {
         if(login_access){
             try {
                 send_Login_Register("login");
-                login_access = false;
             } catch (NoSuchPaddingException | BadPaddingException | NoSuchAlgorithmException e) {
                 e.printStackTrace();
             }
@@ -306,6 +306,8 @@ public class controller {
 
     public TextField challenge_answer;
 
+    private ArrayList<CipherChallengesAttributes> cipher_list_challenges;
+    private ArrayList<HashChallengesAttributes> hash_list_challenges;
 
     /*dropdownTypes.showingProperty().addListener((observable, oldValue, newValue) ->{
         messageInsert.clear();
@@ -318,6 +320,8 @@ public class controller {
 
     //Group Scenes - Functions to change scenes => to change fxml files (pages)
     public void switchLoginMenu(ActionEvent event) throws IOException{
+
+        login_access = false;
 
         //send operation "logout" to server
         sendOperationMethodstoServer("logout");
@@ -438,7 +442,7 @@ public class controller {
         sendOperationMethodstoServer("resolve");
 
         //receive lists of cipher and hash from server
-        //verifyResponsesLists();
+        verifyResponsesLists();
 
         //stage switching and creation
         root = FXMLLoader.load(Client.class.getResource("resolve_challenge.fxml"));
@@ -552,19 +556,32 @@ public class controller {
         }
     }
 
-    public void verifyResponsesLists(byte[] response, byte[] response_hash){
+    public void verifyResponsesLists(){
+
         try {
-            response = (byte[]) Client.is.readObject();
-            response_hash = (byte[]) Client.is.readObject();
+            //receive first cipher challenges list
+            byte[] responseCipher = (byte[]) Client.is.readObject();
 
-            String decipheredtypeResponse = CipherDecipherClient.decrypt(response,Client.server_client,"AES",null);
-            String decipheredtypeResponseHash = CipherDecipherClient.decrypt(response_hash,Client.server_client_hash,"AES",null);
+            //receive second hash challenges list
+            byte[] responseHash = (byte[]) Client.is.readObject();
 
-            if(getHash(decipheredtypeResponse).equals(decipheredtypeResponseHash)){
-                //System.out.println("They are the same");
-            }else{
-                System.out.println("Not the same");
+            ArrayList decipheredtypeResponse = CipherDecipherClient.decryptLists(responseCipher,responseHash,Client.server_client,"AES",null);
+
+            cipher_list_challenges = (ArrayList<CipherChallengesAttributes>) decipheredtypeResponse.get(0);
+            for(CipherChallengesAttributes element: cipher_list_challenges){
+                System.out.println(element.toString());
             }
+
+            System.out.println("-------------------");
+
+            hash_list_challenges = (ArrayList<HashChallengesAttributes>) decipheredtypeResponse.get(1);
+
+            for(HashChallengesAttributes element: hash_list_challenges){
+                System.out.println(element.toString());
+            }
+
+            System.out.println("CIPHER first: " + cipher_list_challenges.get(0));
+            System.out.println("Hash first: " + hash_list_challenges.get(0));
         } catch (IOException | ClassNotFoundException | InvalidKeyException | IllegalBlockSizeException | NoSuchPaddingException | NoSuchAlgorithmException | BadPaddingException e) {
             e.printStackTrace();
         }
