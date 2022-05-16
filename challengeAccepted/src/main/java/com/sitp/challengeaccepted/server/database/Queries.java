@@ -77,7 +77,7 @@ public class Queries {
 
     public static String createHashChallenge (User user, String challengeSpecification, String hash, String tips) {
         return "INSERT INTO HashChallenges (user_id, hash_specification, hash_hash, hash_tips) " +
-                "VALUES (" + user.getUser_id() + "', '" + challengeSpecification + "', '" + hash + "', '" + tips + "');";
+                "VALUES (" + user.getUser_id() + ", '" + challengeSpecification + "', '" + hash + "', '" + tips + "');";
     }
 
     public static String challengesCipherList(String user_id){

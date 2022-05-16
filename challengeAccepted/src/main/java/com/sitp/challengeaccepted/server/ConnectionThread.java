@@ -237,8 +237,10 @@ public class ConnectionThread extends Thread {
         String option;
         while (true) {
             option = finalDecipheredMessage();
+            //System.out.println("option:"+option);
             switch (option) {
                 case "create":
+
                     if (createChallenge()) {
                         sendLogInStatusToClient("true");
                     } else {
@@ -267,6 +269,7 @@ public class ConnectionThread extends Thread {
      */
     private boolean createChallenge () {
         String challengeType = finalDecipheredMessage();
+        //System.out.println("challengetype:"+challengeType);
         return switch (challengeType) {
             case "Cifra" -> createCipherChallenge();
             case "Hash" -> createHashChallenge();
@@ -396,14 +399,19 @@ public class ConnectionThread extends Thread {
         ArrayList<CipherChallengesAttributes> cipherChallengesList = new ArrayList<>();
         ResultSet ciphersCaller;
         try {
+            ciphersCaller = databaseCaller.getStatement().executeQuery(Queries.challengesCipherList(String.valueOf(user_id)));
+            if(!ciphersCaller.next())
+                System.out.println("No ciphers available");
+            else
             do {
-                ciphersCaller = databaseCaller.getStatement().executeQuery(Queries.challengesCipherList(String.valueOf(user_id)));
+
                 int challengeId = ciphersCaller.getInt(1);
                 String type_cipher = ciphersCaller.getString(2);
                 String cipher_message = ciphersCaller.getString(3);
                 String cipher_tips = ciphersCaller.getString(4);
                 cipherChallengesList.add(new CipherChallengesAttributes(challengeId,type_cipher,cipher_message,cipher_tips));
             } while (ciphersCaller.next());
+            System.out.println("Has value: " + cipherChallengesList.size());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -414,14 +422,18 @@ public class ConnectionThread extends Thread {
         ArrayList<HashChallengesAttributes> hashChallengesList = new ArrayList<>();
         ResultSet hashCaller;
         try{
+            hashCaller = databaseCaller.getStatement().executeQuery(Queries.challengesHashList(String.valueOf(user_id)));
+            if(!hashCaller.next())
+                System.out.println("No hashs available");
+            else
             do {
-                hashCaller = databaseCaller.getStatement().executeQuery(Queries.challengesHashList(String.valueOf(user_id)));
                 int hash_id = hashCaller.getInt(1);
                 String hash_specification = hashCaller.getString(2);
                 String hash_hash = hashCaller.getString(3);
                 String hash_tips = hashCaller.getString(4);
                 hashChallengesList.add(new HashChallengesAttributes(hash_id,hash_specification,hash_hash,hash_tips));
             }while (hashCaller.next());
+            System.out.println("Has value: " + hashChallengesList.size());
         }catch (SQLException e) {
             throw new RuntimeException(e);
         }
