@@ -23,6 +23,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.util.Base64;
+import java.util.concurrent.TimeUnit;
 
 public class controller {
 
@@ -46,25 +47,20 @@ public class controller {
 
     //control variables for credentials_client_menu.fxml
     public static boolean login_access = false;
-    public static boolean login_method = false;
-    public static boolean register_access = false;
 
     //function to submit login or register data to server , as well if user did login or register
     public void submit_data_server(ActionEvent event) throws IOException{
-        //TODO => main page of user after sucessfull login/register
-
         //warning server if user choosed login or register
         if(login_access){
-            login_method = true;
             try {
-                send_Login_Register();
+                send_Login_Register("login");
+                login_access = false;
             } catch (NoSuchPaddingException | BadPaddingException | NoSuchAlgorithmException e) {
                 e.printStackTrace();
             }
         }else{
-            register_access = true;
             try {
-                send_Login_Register();
+                send_Login_Register("register");
             } catch (NoSuchPaddingException | BadPaddingException | NoSuchAlgorithmException e) {
                 e.printStackTrace();
             }
@@ -94,6 +90,7 @@ public class controller {
     //END GROUP 3 -------------------------------
 
     //Group 4 - Elements of create challenge menu
+    public Text createChallengeText;
     public MenuButton dropdownTypeChallenge;
     public MenuItem cipherChoice;
     public MenuItem hashChoice;
@@ -143,13 +140,38 @@ public class controller {
         verifyContentTypes();
     }
 
+    public boolean verifyMessageVigCes(String message){
+        if (message.matches("[a-zA-Z]+$")) {
+            return true;
+        }
+        return false;
+    }
+
     public void verifyContentTypes(){
+
+        dropdownTypes.showingProperty().addListener((observable, oldValue, newValue) ->{
+            messageInsert.clear();
+            tips.clear();
+            passInsert.clear();
+            insertButton.setDisable(true);
+        });
+
+        //TODO: VERIFICATION OF LENGTH OF ELEMENTS
+        //messageInsert.getText().length() <= 128) && (tips.getText().length() <= 128)
 
         messageInsert.textProperty().addListener((observable, oldValue, newValue) ->{
             //for cipher challenges
             if(!passInsert.isDisable() && !newValue.equals("") && !tips.getText().equals("") && !passInsert.getText().equals("")){
-                //enable button
-                insertButton.setDisable(false);
+                switch (dropdownTypes.getValue()){
+                    case "VIGENERE":
+                        insertButton.setDisable(!verifyMessageVigCes(messageInsert.getText()) || !verifyMessageVigCes(passInsert.getText()));
+                        break;
+                    case "CESAR":
+                        insertButton.setDisable(!verifyMessageVigCes(messageInsert.getText()) || !(passInsert.getText().matches("\\d+") && Integer.parseInt(passInsert.getText()) >= 1 && Integer.parseInt(passInsert.getText()) <= 25));
+                        break;
+                    default:
+                        insertButton.setDisable(false);
+                }
             }//for hash challenges
             else if (passInsert.isDisable() && !newValue.equals("") && !tips.getText().equals("")){
                 //enable button
@@ -163,8 +185,16 @@ public class controller {
        tips.textProperty().addListener((observable, oldValue, newValue) ->{
            //for cipher challenges
            if(!passInsert.isDisable() && !newValue.equals("") && !messageInsert.getText().equals("") && !passInsert.getText().equals("")){
-               //enable button
-               insertButton.setDisable(false);
+               switch (dropdownTypes.getValue()){
+                   case "VIGENERE":
+                       insertButton.setDisable(!verifyMessageVigCes(messageInsert.getText()) || !verifyMessageVigCes(passInsert.getText()));
+                       break;
+                   case "CESAR":
+                       insertButton.setDisable(!verifyMessageVigCes(messageInsert.getText()) || !(passInsert.getText().matches("\\d+") && Integer.parseInt(passInsert.getText()) >= 1 && Integer.parseInt(passInsert.getText()) <= 25));
+                       break;
+                   default:
+                       insertButton.setDisable(false);
+               }
            }//for hash challenges
            else if (passInsert.isDisable() && !newValue.equals("") && !messageInsert.getText().equals("")){
                //enable button
@@ -178,8 +208,16 @@ public class controller {
        if(!passInsert.isDisable()) {
            passInsert.textProperty().addListener((observable, oldValue, newValue) -> {
                if(!newValue.equals("") && !tips.getText().equals("") && !messageInsert.getText().equals("")){
-                   //enable button
-                   insertButton.setDisable(false);
+                   switch (dropdownTypes.getValue()){
+                       case "VIGENERE":
+                           insertButton.setDisable(!verifyMessageVigCes(messageInsert.getText()) || !verifyMessageVigCes(passInsert.getText()));
+                           break;
+                       case "CESAR":
+                           insertButton.setDisable(!verifyMessageVigCes(messageInsert.getText()) || !(passInsert.getText().matches("\\d+") && Integer.parseInt(passInsert.getText()) >= 1 && Integer.parseInt(passInsert.getText()) <= 25));
+                           break;
+                       default:
+                           insertButton.setDisable(false);
+                   }
                }
               else {
                    //disable
@@ -232,13 +270,56 @@ public class controller {
             e.printStackTrace();
         }
 
+        boolean validity = verifyResponsesValid();
+        if(validity){
+            createChallengeText.setText("Desafio criado com sucesso!");
+            try {
+                TimeUnit.SECONDS.sleep(2);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            try {
+                switchMainMenu(event);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else{
+            createChallengeText.setText("Insucesso! Volte a criar!");
+            sendOperationMethodstoServer("create");
+        }
     }
 
     //END GROUP 4 -------------------------------
 
+    //Group 5 - Elements of resolve challenge menu
+
+    public MenuButton dropdownTypeChoose;
+
+    public ChoiceBox dropdownChoose;
+    public Text typeText;
+
+    public Text challenge_content;
+    public Text challenge_content_text;
+
+    public Text challenge_tips;
+    public Text challenge_tips_text;
+
+    public TextField challenge_answer;
+
+
+    /*dropdownTypes.showingProperty().addListener((observable, oldValue, newValue) ->{
+        messageInsert.clear();
+        tips.clear();
+        passInsert.clear();
+        insertButton.setDisable(true);
+    });*/
+
+    //END GROUP 5 -------------------------------
+
     //Group Scenes - Functions to change scenes => to change fxml files (pages)
     public void switchLoginMenu(ActionEvent event) throws IOException{
 
+        //send operation "logout" to server
         sendOperationMethodstoServer("logout");
 
         root = FXMLLoader.load(Client.class.getResource("login_register_menu.fxml"));
@@ -288,6 +369,40 @@ public class controller {
         stage.show();
     }
 
+    public void switchMainMenuCreateChallenge(ActionEvent event) throws IOException{
+
+        //send operation "cancel" to server
+        sendOperationMethodstoServer("cancel");
+
+        verifyResponses();
+
+        //stage switching and creation
+        root = FXMLLoader.load(Client.class.getResource("main_menu.fxml"));
+        stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+        scene = new Scene(root,stage.getWidth(),stage.getHeight());
+        stage.setMinWidth(600);
+        stage.setMinHeight(400);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    public void switchMainMenuChooseChallenge(ActionEvent event) throws IOException{
+
+        //send operation "cancel" to server
+        sendOperationMethodstoServer("cancel");
+
+        verifyResponses();
+
+        //stage switching and creation
+        root = FXMLLoader.load(Client.class.getResource("main_menu.fxml"));
+        stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+        scene = new Scene(root,stage.getWidth(),stage.getHeight());
+        stage.setMinWidth(600);
+        stage.setMinHeight(400);
+        stage.setScene(scene);
+        stage.show();
+    }
+
     //before going to create_challenge_menu ,send type of operation chosen
     public void sendOperationMethodstoServer(String data){
         try {
@@ -309,6 +424,24 @@ public class controller {
 
         //stage switching and creation
         root = FXMLLoader.load(Client.class.getResource("create_challenge.fxml"));
+        stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+        scene = new Scene(root,stage.getWidth(),stage.getHeight());
+        stage.setMinWidth(600);
+        stage.setMinHeight(400);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    public void switchChooseChallengeMenu(ActionEvent event) throws IOException{
+
+        //send type of operation "resolve" to inform server that user has chosen to resolve a challenge
+        sendOperationMethodstoServer("resolve");
+
+        //receive lists of cipher and hash from server
+        //verifyResponsesLists();
+
+        //stage switching and creation
+        root = FXMLLoader.load(Client.class.getResource("resolve_challenge.fxml"));
         stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
         scene = new Scene(root,stage.getWidth(),stage.getHeight());
         stage.setMinWidth(600);
@@ -338,7 +471,8 @@ public class controller {
     //function to initiate socket connection to server
     private void initiateSocket() throws IOException, NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, ClassNotFoundException {
         //Socket S = new Socket("169.254.65.233",1099);
-        Socket S = new Socket("127.0.0.1",1099);
+        //Socket S = new Socket("127.0.0.1",1099);
+        Socket S = new Socket("5.tcp.eu.ngrok.io",16672);
         Client.os = new ObjectOutputStream(S.getOutputStream());
         Client.is = new ObjectInputStream(S.getInputStream());
     }
@@ -371,70 +505,32 @@ public class controller {
         return null;
     }
 
-    private void send_Login_Register() throws NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException {
-        if(login_method){
-            byte [] login_bytes = CipherDecipherClient.encrypt("login",Client.client_server,"AES",null);
-            byte [] login_bytes_hash = CipherDecipherClient.encrypt(getHash("login"),Client.client_server_hash,"AES",null);
+    private void send_Login_Register(String data) throws NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException {
+        byte [] login_bytes = CipherDecipherClient.encrypt(data,Client.client_server,"AES",null);
+        byte [] login_bytes_hash = CipherDecipherClient.encrypt(getHash(data),Client.client_server_hash,"AES",null);
 
-            byte [] email_bytes = CipherDecipherClient.encrypt(emailInput.getText(),Client.client_server,"AES",null);
-            byte [] email_hash_bytes = CipherDecipherClient.encrypt(getHash(emailInput.getText()),Client.client_server_hash,"AES",null);
+        byte [] email_bytes = CipherDecipherClient.encrypt(emailInput.getText(),Client.client_server,"AES",null);
+        byte [] email_hash_bytes = CipherDecipherClient.encrypt(getHash(emailInput.getText()),Client.client_server_hash,"AES",null);
 
-            byte [] password_bytes = CipherDecipherClient.encrypt(passwordInput.getText(),Client.client_server,"AES",null);
-            byte [] password_hash_bytes = CipherDecipherClient.encrypt(getHash(passwordInput.getText()),Client.client_server_hash,"AES",null);
+        byte [] password_bytes = CipherDecipherClient.encrypt(passwordInput.getText(),Client.client_server,"AES",null);
+        byte [] password_hash_bytes = CipherDecipherClient.encrypt(getHash(passwordInput.getText()),Client.client_server_hash,"AES",null);
 
-            try{
-                Client.os.writeObject(login_bytes);
-                Client.os.writeObject(login_bytes_hash);
-                Client.os.flush();
+        try{
+            Client.os.writeObject(login_bytes);
+            Client.os.writeObject(login_bytes_hash);
+            Client.os.flush();
 
-                Client.os.writeObject(email_bytes);
-                Client.os.writeObject(email_hash_bytes);
-                Client.os.flush();
+            Client.os.writeObject(email_bytes);
+            Client.os.writeObject(email_hash_bytes);
+            Client.os.flush();
 
-                Client.os.writeObject(password_bytes);
-                Client.os.writeObject(password_hash_bytes);
-                Client.os.flush();
-            }catch(IOException e){
-                System.out.println("Connection closed");
-            }
-            login_method = false;
-
-            //uncomment when server sends responses
-            //verifyResponses();
+            Client.os.writeObject(password_bytes);
+            Client.os.writeObject(password_hash_bytes);
+            Client.os.flush();
+        }catch(IOException e){
+            System.out.println("Connection closed");
         }
 
-        if(register_access){
-            byte [] register_bytes = CipherDecipherClient.encrypt("register",Client.client_server,"AES",null);
-            byte [] register_bytes_hash = CipherDecipherClient.encrypt(getHash("register"),Client.client_server_hash,"AES",null);
-
-            byte [] email_bytes_register = CipherDecipherClient.encrypt(emailInput.getText(),Client.client_server,"AES",null);
-            byte [] email_hash_bytes_register = CipherDecipherClient.encrypt(getHash(emailInput.getText()),Client.client_server_hash,"AES",null);
-
-            byte [] password_bytes_register = CipherDecipherClient.encrypt(passwordInput.getText(),Client.client_server,"AES",null);
-            byte [] password_hash_bytes_register = CipherDecipherClient.encrypt(getHash(passwordInput.getText()),Client.client_server_hash,"AES",null);
-
-            try{
-                Client.os.writeObject(register_bytes);
-                Client.os.writeObject(register_bytes_hash);
-                Client.os.flush();
-
-                Client.os.writeObject(email_bytes_register);
-                Client.os.writeObject(email_hash_bytes_register);
-                Client.os.flush();
-
-                Client.os.writeObject(password_bytes_register);
-                Client.os.writeObject(password_hash_bytes_register);
-                Client.os.flush();
-            }catch(SocketException e){
-                System.out.println("Connection closed");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            register_access = false;
-
-            //uncomment when server sends responses
-            //verifyResponses();
-        }
     }
 
     //function to verify if the keys are the same by comparing hash
@@ -446,8 +542,23 @@ public class controller {
             String decipheredtypeResponse = CipherDecipherClient.decrypt(typeResponse,Client.server_client,"AES",null);
             String decipheredtypeResponseHash = CipherDecipherClient.decrypt(typeResponseHash,Client.server_client_hash,"AES",null);
 
-            System.out.println(decipheredtypeResponse);
-            System.out.println(decipheredtypeResponseHash);
+            if(getHash(decipheredtypeResponse).equals(decipheredtypeResponseHash)){
+                //System.out.println("They are the same");
+            }else{
+                System.out.println("Not the same");
+            }
+        } catch (IOException | ClassNotFoundException | InvalidKeyException | IllegalBlockSizeException | NoSuchPaddingException | NoSuchAlgorithmException | BadPaddingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void verifyResponsesLists(byte[] response, byte[] response_hash){
+        try {
+            response = (byte[]) Client.is.readObject();
+            response_hash = (byte[]) Client.is.readObject();
+
+            String decipheredtypeResponse = CipherDecipherClient.decrypt(response,Client.server_client,"AES",null);
+            String decipheredtypeResponseHash = CipherDecipherClient.decrypt(response_hash,Client.server_client_hash,"AES",null);
 
             if(getHash(decipheredtypeResponse).equals(decipheredtypeResponseHash)){
                 //System.out.println("They are the same");
@@ -457,6 +568,31 @@ public class controller {
         } catch (IOException | ClassNotFoundException | InvalidKeyException | IllegalBlockSizeException | NoSuchPaddingException | NoSuchAlgorithmException | BadPaddingException e) {
             e.printStackTrace();
         }
+    }
+
+    //function to verify if operation is valid or invalid
+    public boolean verifyResponsesValid(){
+        try {
+            byte[] typeResponse = (byte[]) Client.is.readObject();
+            byte[] typeResponseHash = (byte[]) Client.is.readObject();
+
+            String decipheredtypeResponse = CipherDecipherClient.decrypt(typeResponse,Client.server_client,"AES",null);
+            String decipheredtypeResponseHash = CipherDecipherClient.decrypt(typeResponseHash,Client.server_client_hash,"AES",null);
+
+            System.out.println(decipheredtypeResponse);
+            System.out.println(decipheredtypeResponseHash);
+
+            if(getHash(decipheredtypeResponse).equals(decipheredtypeResponseHash)){
+                if(decipheredtypeResponse.equals("true")){
+                    return true;
+                }
+            }else{
+                System.out.println("Not the same");
+            }
+        } catch (IOException | ClassNotFoundException | InvalidKeyException | IllegalBlockSizeException | NoSuchPaddingException | NoSuchAlgorithmException | BadPaddingException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public void verifyLoginRegister(ActionEvent event) {
@@ -484,9 +620,5 @@ public class controller {
             e.printStackTrace();
         }
     }
-
-    //function to verify if the login state of user is
     // END GROUP 3 - Group of operations
-
-
 }
