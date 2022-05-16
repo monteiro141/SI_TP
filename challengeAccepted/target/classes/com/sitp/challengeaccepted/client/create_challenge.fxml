@@ -15,7 +15,7 @@
 
 <BorderPane fx:id="borderPaneLogin" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #A2A3BB;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sitp.challengeaccepted.client.controller">
    <top>
-      <Text fx:id="createChallengeText" stroke="WHITE" strokeType="OUTSIDE" text="Create Challenge" textAlignment="CENTER" wrappingWidth="601.3367004394531" BorderPane.alignment="CENTER">
+      <Text fx:id="createChallengeText" stroke="WHITE" strokeType="OUTSIDE" text="Criar Desafio" textAlignment="CENTER" wrappingWidth="601.3367004394531" BorderPane.alignment="CENTER">
          <font>
             <Font size="36.0" />
          </font>
