@@ -12,6 +12,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Base64;
+import java.util.Locale;
 
 public class CipherDecipherChallenges {
     public CipherDecipherChallenges(){}
@@ -29,7 +30,29 @@ public class CipherDecipherChallenges {
                     return encrypt("AES/CTR/NoPadding", message, getPasswordWithSalt(password, salt), ivVector);
                 }
                 case "VIGENERE" -> {
-                    return encryptVigenere(message, generateVigenereKey(message, password));
+                    return encryptVigenere(message.toUpperCase(), generateVigenereKey(message, password).toUpperCase());
+                }
+            }
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String decryptCipher (String type, String message, String password, byte[] salt, IvParameterSpec ivVector) {
+        try {
+            switch(type){
+                case "AES-128-ECB" -> {
+                    return decrypt("AES/ECB/NoPadding", message, getPasswordWithSalt(password, salt), null);
+                }
+                case "AES-128-CBC" -> {
+                    return decrypt("AES/CBC/NoPadding", message, getPasswordWithSalt(password, salt), ivVector);
+                }
+                case "AES-128-CTR" -> {
+                    return decrypt("AES/CTR/NoPadding", message, getPasswordWithSalt(password, salt), ivVector);
+                }
+                case "VIGENERE" -> {
+                    return decryptVigenere(message.toUpperCase(), generateVigenereKey(message, password).toUpperCase());
                 }
             }
         } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
@@ -54,7 +77,23 @@ public class CipherDecipherChallenges {
                 .encodeToString(cipherText);
     }
 
-    private static SecretKey getPasswordWithSalt(String password, byte[] salt){
+    public static String decrypt(String algorithm, String cipherText, SecretKey key,
+                                 IvParameterSpec iv) throws NoSuchPaddingException, NoSuchAlgorithmException,
+            InvalidAlgorithmParameterException, InvalidKeyException,
+            BadPaddingException, IllegalBlockSizeException {
+
+        Cipher cipher = Cipher.getInstance(algorithm);
+        if(algorithm.equals("AES/ECB/NoPadding")){
+            cipher.init(Cipher.DECRYPT_MODE, key);
+        }else{
+            cipher.init(Cipher.DECRYPT_MODE, key, iv);
+        }
+        byte[] plainText = cipher.doFinal(Base64.getDecoder()
+                .decode(cipherText));
+        return new String(plainText);
+    }
+
+    public static SecretKey getPasswordWithSalt(String password, byte[] salt){
         KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 1045733,128); //65536
         try {
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
@@ -96,14 +135,14 @@ public class CipherDecipherChallenges {
         return ciphertext.toString();
     }
 
-    public static String encryptCesar(String message, int offset){
+    public static String decryptVigenere(String message, String password){
         StringBuilder ciphertext = new StringBuilder();
-        for(char character : message.toCharArray()){
-            if(character != ' '){
-                int newCharacter = ((character - 'A') + offset) % 26;
+        for (int i =0 ;i <message.length();i++) {
+            if (message.charAt(i) != ' '){
+                int newCharacter = ((message.charAt(i) - 'A') - (password.charAt(i)- 'A') + 26) % 26;
                 ciphertext.append((char)('A' + newCharacter));
             }else{
-                ciphertext.append(character);
+                ciphertext.append(message.charAt(i));
             }
         }
         return ciphertext.toString();
@@ -128,5 +167,31 @@ public class CipherDecipherChallenges {
             }
         }
         return key.toString();
+    }
+
+    public static String encryptCesar(String message, int offset){
+        StringBuilder ciphertext = new StringBuilder();
+        for(char character : message.toCharArray()){
+            if(character != ' '){
+                int newCharacter = ((character - 'A') + offset) % 26;
+                ciphertext.append((char)('A' + newCharacter));
+            }else{
+                ciphertext.append(character);
+            }
+        }
+        return ciphertext.toString();
+    }
+
+    public static String decryptCesar(String message, int offset){
+        StringBuilder ciphertext = new StringBuilder();
+        for(char character : message.toCharArray()){
+            if(character != ' '){
+                int newCharacter = ((character - 'A') - offset) % 26;
+                ciphertext.append((char)('A' + newCharacter));
+            }else{
+                ciphertext.append(character);
+            }
+        }
+        return ciphertext.toString();
     }
 }

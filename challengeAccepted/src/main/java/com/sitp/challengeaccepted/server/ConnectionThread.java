@@ -16,6 +16,7 @@ import javax.crypto.spec.IvParameterSpec;
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -248,12 +249,10 @@ public class ConnectionThread extends Thread {
                     }
                     break;
                 case "resolve":
-                    sendChallengesList();
-                    if(resolveChallenge()){
-                        sendLogInStatusToClient("true");
-                    } else {
-                        sendLogInStatusToClient("false");
+                    if (!sendChallengesList()) {
+                        break;
                     }
+                    resolveChallenge();
                     break;
                 case "logout":
                     return;
@@ -302,7 +301,7 @@ public class ConnectionThread extends Thread {
         }
         else{
             // Password in the case of cesar's cipher is a offset
-            cipherText = CipherDecipherChallenges.encryptCesar(message, Integer.parseInt(finalDecipheredMessage()));
+            cipherText = CipherDecipherChallenges.encryptCesar(message.toUpperCase(), Integer.parseInt(finalDecipheredMessage()));
         }
 
         String hmac = GenerateValues.doHMACMessage(message,adminSecretKey);
@@ -357,30 +356,96 @@ public class ConnectionThread extends Thread {
         }
     }
 
-    private boolean resolveChallenge() {
-        String challengeType = finalDecipheredMessage();
-        return switch (challengeType) {
-            case "Cifra" -> resolveCipherChallenge();
-            case "Hash" -> resolveHashChallenge();
-            default -> false;
-        };
+    private void resolveChallenge() {
+        while (true) {
+            String challengeType = finalDecipheredMessage();
+            switch (challengeType) {
+                case "Cifra":
+                    resolveCipherChallenge();
+                    break;
+                case "Hash":
+                    resolveHashChallenge();
+                    break;
+                default:
+                    return;
+            }
+        }
     }
 
-    private boolean resolveCipherChallenge(){
-        //Completar com cipher resolver
-        return false;
+    private void resolveCipherChallenge(){
+        String id = finalDecipheredMessage();
+        String password = finalDecipheredMessage();
+        String specification, hmac, message, iv, salt, plaintext = "";
+        try {
+            ResultSet challengeData = databaseCaller.getStatement().executeQuery(Queries.getCipherChallengeData(id));
+            specification = challengeData.getString(1);
+            hmac = challengeData.getString(2);
+            message = challengeData.getString(3);
+            iv = challengeData.getString(4);
+            salt = challengeData.getString(5);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        if (iv != null && !specification.equals("CESAR")) {
+            plaintext = CipherDecipherChallenges.decryptCipher(specification, message, password, salt.getBytes(), new IvParameterSpec(iv.getBytes()));
+        } else if (!specification.equals("CESAR")) {
+            plaintext = CipherDecipherChallenges.decryptCipher(specification, message, password, salt.getBytes(), null);
+        } else {
+            plaintext = CipherDecipherChallenges.decryptCesar(message, Integer.parseInt(password));
+        }
+        if (plaintext != null) {
+            String hmacPlaintext = GenerateValues.doHMACMessage(plaintext, adminSecretKey);
+            if (hmac.equals(hmacPlaintext)) {
+                sendLogInStatusToClient("good decipher");
+                sendLogInStatusToClient(plaintext);
+            } else {
+                sendLogInStatusToClient("bad decipher");
+            }
+        }
     }
 
-    private boolean resolveHashChallenge() {
-        //Completar com hash resolver
-        return false;
+    private void resolveHashChallenge() {
+        String id = finalDecipheredMessage();
+        String password = finalDecipheredMessage();
+        String specification, hash, result = "";
+        try {
+            ResultSet challengeData = databaseCaller.getStatement().executeQuery(Queries.getHashChallengeData(id));
+            specification = challengeData.getString(1);
+            hash = challengeData.getString(2);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        result = CipherDecipherChallenges.CreateHash(specification, password);
+        if (result.equals(hash)) {
+            sendLogInStatusToClient("good hash");
+        } else {
+            sendLogInStatusToClient("bad hash");
+        }
     }
 
-    private void sendChallengesList() {
+    private boolean sendChallengesList() {
+        boolean cipher = false, hash = false;
         ArrayList<CipherChallengesAttributes> cipherChallengesList = ciphersFromDatabase(userLoggedIn.getUser_id());
         ArrayList<HashChallengesAttributes> hashChallengesList = hashFromDatabase(userLoggedIn.getUser_id());
-        sendListToClient(cipherChallengesList);
-        sendListToClient(hashChallengesList);
+        cipher = checkChallengesList(cipherChallengesList, "cipher");
+        hash = checkChallengesList(hashChallengesList, "hash");
+        if (cipher) {
+            sendListToClient(cipherChallengesList);
+        }
+        if (hash) {
+            sendListToClient(hashChallengesList);
+        }
+        return cipher || hash;
+    }
+
+    private boolean checkChallengesList (ArrayList<?> challengesList, String type) {
+        if (challengesList.size() == 0) {
+            sendLogInStatusToClient("empty");
+            return false;
+        } else {
+            sendLogInStatusToClient(type);
+            return true;
+        }
     }
 
     private void sendListToClient(ArrayList<?> challengesList) {
@@ -392,8 +457,6 @@ public class ConnectionThread extends Thread {
             e.printStackTrace();
         }
     }
-
-
 
     private ArrayList<CipherChallengesAttributes> ciphersFromDatabase(int user_id) {
         ArrayList<CipherChallengesAttributes> cipherChallengesList = new ArrayList<>();

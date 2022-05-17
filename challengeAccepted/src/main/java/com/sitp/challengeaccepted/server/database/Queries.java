@@ -91,4 +91,16 @@ public class Queries {
                 "FROM HashChallenges "+
                 "WHERE user_id != '"+user_id+"'";
     }
+
+    public static String getCipherChallengeData(String cipher_id) {
+        return "SELECT cipher_specification, cipher_hmac, cipher_message, iv, salt " +
+                "FROM CipherChallenges " +
+                "WHERE cipher_id = '" + cipher_id + "'";
+    }
+
+    public static String getHashChallengeData (String hash_id) {
+        return "SELECT hash_specification, hash_hash " +
+                "FROM HashChallenges " +
+                "WHERE hash_id = '" + hash_id + "'";
+    }
 }
