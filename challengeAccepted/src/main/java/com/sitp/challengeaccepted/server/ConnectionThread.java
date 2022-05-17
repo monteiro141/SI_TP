@@ -237,11 +237,11 @@ public class ConnectionThread extends Thread {
     private void operationMenu() {
         String option;
         while (true) {
+            System.out.println("Option:");
             option = finalDecipheredMessage();
-            //System.out.println("option:"+option);
+            System.out.println(option);
             switch (option) {
                 case "create":
-
                     if (createChallenge()) {
                         sendLogInStatusToClient("true");
                     } else {
@@ -253,6 +253,7 @@ public class ConnectionThread extends Thread {
                         break;
                     }
                     resolveChallenge();
+                    sendLogInStatusToClient("true");
                     break;
                 case "logout":
                     return;
@@ -357,8 +358,11 @@ public class ConnectionThread extends Thread {
     }
 
     private void resolveChallenge() {
-        while (true) {
-            String challengeType = finalDecipheredMessage();
+        String challengeType;
+         do{
+            System.out.println("ChallengeType:");
+             challengeType = finalDecipheredMessage();
+            System.out.println(challengeType);
             switch (challengeType) {
                 case "Cifra":
                     resolveCipherChallenge();
@@ -369,7 +373,7 @@ public class ConnectionThread extends Thread {
                 default:
                     return;
             }
-        }
+        }while (true);
     }
 
     private void resolveCipherChallenge(){

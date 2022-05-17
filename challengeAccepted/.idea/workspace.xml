@@ -5,17 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c773fbe2-b81d-4ae0-abc9-92aa114e096a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/keysClasses/SymmetricKeyReader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/057d1c23-b78a-44e2-bd5d-bb561116c2b4.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/057d1c23-b78a-44e2-bd5d-bb561116c2b4.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/artifacts/mysql/mysql.jar" beforeDir="false" afterPath="$PROJECT_DIR$/out/artifacts/mysql/mysql.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/CipherDecipher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/CipherDecipher.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/ConnectionThread.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/ConnectionThread.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/challenges/CipherDecipherChallenges.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/challenges/CipherDecipherChallenges.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/database/Database.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/database/Database.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/database/Queries.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/sitp/challengeaccepted/server/database/Queries.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/server/ConnectionThread.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/sitp/challengeaccepted/server/ConnectionThread.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -33,6 +24,14 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -112,8 +111,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.Server" />
         <item itemvalue="Application.Client" />
+        <item itemvalue="Application.Server" />
         <item itemvalue="Application.Database" />
       </list>
     </recent_temporary>
@@ -164,5 +163,10 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/challengeAccepted$Server.ic" NAME="Server Coverage Results" MODIFIED="1652810949814" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>com.sitp.challengeaccepted.server.keysClasses.*</FILTER>
+    </SUITE>
   </component>
 </project>
