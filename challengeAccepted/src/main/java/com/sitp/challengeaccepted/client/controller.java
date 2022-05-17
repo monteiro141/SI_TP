@@ -24,6 +24,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class controller {
@@ -292,8 +293,11 @@ public class controller {
     //END GROUP 4 -------------------------------
 
     //Group 5 - Elements of resolve challenge menu
+    public Text titleResolve;
 
     public MenuButton dropdownTypeChoose;
+    public MenuItem cipherChoice_resolve;
+    public MenuItem hashChoice_resolve;
 
     public ChoiceBox dropdownChoose;
     public Text typeText;
@@ -305,13 +309,108 @@ public class controller {
     public Text challenge_tips_text;
 
     public TextField challenge_answer;
+    public Text challenge_answer_text;
 
-    /*dropdownTypes.showingProperty().addListener((observable, oldValue, newValue) ->{
-        messageInsert.clear();
-        tips.clear();
-        passInsert.clear();
-        insertButton.setDisable(true);
-    });*/
+    public Button insertButtonChoose;
+    public Button cancelButtonChoose;
+
+    private ArrayList<CipherChallengesAttributes> cipherResponse;
+    private ArrayList<HashChallengesAttributes> hashResponse;
+
+    //function for button insert in resolve challenge menu
+    public void insertButtonResolve(ActionEvent ent){
+        //send type of challenge
+        sendResolveDataToServer(dropdownTypeChoose.getText());
+        //send id of challenge
+        sendResolveDataToServer(dropdownChoose.getValue().toString());
+        //send answer of challenge
+        sendResolveDataToServer(challenge_answer.getText());
+    }
+
+    public void sendResolveDataToServer(String sent_data){
+        try{
+            byte[] sendData = CipherDecipherClient.encrypt(sent_data,Client.client_server,"AES",null);
+            byte[] sendData_Hash = CipherDecipherClient.encrypt(getHash(sent_data),Client.client_server_hash,"AES",null);
+
+            Client.os.writeObject(sendData);
+            Client.os.writeObject(sendData_Hash);
+            Client.os.flush();
+        } catch (NoSuchPaddingException | BadPaddingException | NoSuchAlgorithmException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void controlResolveElements(){
+        dropdownChoose.showingProperty().addListener((observable, oldValue, newValue) ->{
+            challenge_answer.clear();
+            insertButtonChoose.setDisable(true);
+        });
+
+        challenge_content.textProperty().addListener((observable, oldValue, newValue) ->{
+            if(!(challenge_content.getText().equals(""))){
+                insertButtonChoose.setDisable(false);
+            }
+        });
+    }
+
+    //when user chooses type "Cifra"
+    public void cipherChoose_resolve(){
+        if(cipherResponse.size() != 0) {
+            dropdownChoose.setDisable(false);
+            challenge_answer.setDisable(false);
+            challenge_content_text.setText("Criptograma :");
+
+            if(dropdownChoose.getValue().toString().toLowerCase().contains("cesar"))
+                challenge_answer_text.setText("Offset :");
+            else
+                challenge_answer_text.setText("Palavra Passe :");
+
+            dropdownChoose.getItems().clear();
+            dropdownChoose = new ChoiceBox<CipherChallengesAttributes>();
+            for(CipherChallengesAttributes element: cipherResponse){
+                dropdownChoose.getItems().add(element);
+            }
+
+            dropdownChoose.setValue(cipherResponse.get(0));
+
+            challenge_answer.clear();
+            titleResolve.setText("Resolver Desafio");
+            controlResolveElements();
+        }else{
+            titleResolve.setText("Não existem desafios de cifra!");
+        }
+    }
+
+    //when user chooses type "Hash"
+    public void hashChoose_resolve(){
+        if(hashResponse.size() != 0) {
+            dropdownChoose.setDisable(false);
+            challenge_answer.setDisable(false);
+            challenge_content_text.setText("Hash :");
+            challenge_answer_text.setText("Mensagem :");
+
+            dropdownChoose.getItems().clear();
+
+            dropdownChoose = new ChoiceBox<HashChallengesAttributes>();
+            for(HashChallengesAttributes element: hashResponse){
+                dropdownChoose.getItems().add(element);
+            }
+
+            dropdownChoose.setValue(hashResponse.get(0));
+
+            challenge_answer.clear();
+            titleResolve.setText("Resolver Desafio");
+            controlResolveElements();
+        }else{
+            titleResolve.setText("Não existem desafios de hash!");
+        }
+    }
+
+    public void chooseTypeChallenge(ActionEvent event){
+
+    }
+
+
 
     //END GROUP 5 -------------------------------
 
@@ -439,16 +538,24 @@ public class controller {
         sendOperationMethodstoServer("resolve");
 
         //receive lists of cipher and hash from server
-        verifyResponsesLists();
+        boolean changeView = verifyResponsesLists();
 
-        //stage switching and creation
-        root = FXMLLoader.load(Client.class.getResource("resolve_challenge.fxml"));
-        stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
-        scene = new Scene(root,stage.getWidth(),stage.getHeight());
-        stage.setMinWidth(600);
-        stage.setMinHeight(400);
-        stage.setScene(scene);
-        stage.show();
+        if(changeView) {
+            //stage switching and creation
+            root = FXMLLoader.load(Client.class.getResource("resolve_challenge.fxml"));
+            stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+            scene = new Scene(root,stage.getWidth(),stage.getHeight());
+            stage.setMinWidth(600);
+            stage.setMinHeight(400);
+            stage.setScene(scene);
+            stage.show();
+        }else{
+            try {
+                PopoutEmptyLists.display("Sem desafios!","Não existem desafios para resolver! Tente mais tarde!");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
     //END GROUP SCENES -------------------------------
 
@@ -472,8 +579,8 @@ public class controller {
     //function to initiate socket connection to server
     private void initiateSocket() throws IOException, NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, ClassNotFoundException {
         //Socket S = new Socket("169.254.65.233",1099);
-        //Socket S = new Socket("127.0.0.1",1099);
-        Socket S = new Socket("5.tcp.eu.ngrok.io",16672);
+        Socket S = new Socket("127.0.0.1",1099);
+        //Socket S = new Socket("5.tcp.eu.ngrok.io",16672);
         Client.os = new ObjectOutputStream(S.getOutputStream());
         Client.is = new ObjectInputStream(S.getInputStream());
     }
@@ -553,36 +660,100 @@ public class controller {
         }
     }
 
-    public void verifyResponsesLists(){
+    public void receiveSizeLists(String option, String responseSizeResponse, byte[] data, byte[] dataHash){
+        switch (option){
+            case "CIFRA":
+                if(!(responseSizeResponse.equals("empty"))){
+                    //receive first cipher challenges list
+                    try {
+                        data = (byte[]) Client.is.readObject();
+                        dataHash = (byte[]) Client.is.readObject();
+                    } catch (IOException | ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
 
-        try {
-            //receive first cipher challenges list
-            byte[] responseCipher = (byte[]) Client.is.readObject();
-            byte[] responseCipherHash = (byte[]) Client.is.readObject();
+                    try {
+                        cipherResponse = CipherDecipherClient.CipherdecryptLists(data, Client.server_client, "AES", null);
+                    } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
+                        e.printStackTrace();
+                    }
+                }else{
+                    cipherResponse = new ArrayList<>();
+                }
+                break;
 
-            //check hash
+            case "HASH":
+                if(!(responseSizeResponse.equals("empty"))){
+                    //receive second hash challenges list
+                    try {
+                        data = (byte[]) Client.is.readObject();
+                        dataHash = (byte[]) Client.is.readObject();
+                    } catch (IOException | ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
 
-            //receive second hash challenges list
-            byte[] responseHash = (byte[]) Client.is.readObject();
-            byte[] responseHash_Hash = (byte[]) Client.is.readObject();
+                    try {
+                        hashResponse = CipherDecipherClient.HashdecryptLists(data, Client.server_client, "AES", null);
+                    } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
+                        e.printStackTrace();
+                    }
+                }else{
+                    hashResponse = new ArrayList<>();
+                }
+                break;
+        }
+    }
 
-            ArrayList<CipherChallengesAttributes> cipherResponse = CipherDecipherClient.CipherdecryptLists(responseCipher,Client.server_client,"AES",null);
+    public boolean verifyResponsesLists(){
+        String responseSizeResponse="";
+        String responseSizeHashResponse="";
 
-            ArrayList<HashChallengesAttributes> hashResponse = CipherDecipherClient.HashdecryptLists(responseHash,Client.server_client,"AES",null);
+        String responseSizeResponseV2="";
+        String responseSizeHashResponseV2="";
+        try{
+            //receive server response for size of lists => first response
+            byte[] responseSize = (byte[]) Client.is.readObject();
+            byte[] responseSizeHash = (byte[]) Client.is.readObject();
 
-            for(CipherChallengesAttributes element: cipherResponse){
+            //receive server response for size of lists => second response
+            byte[] responseSizeV2 = (byte[]) Client.is.readObject();
+            byte[] responseSizeHashV2 = (byte[]) Client.is.readObject();
+
+            responseSizeResponse = CipherDecipherClient.decrypt(responseSize,Client.server_client,"AES",null);
+            responseSizeHashResponse = CipherDecipherClient.decrypt(responseSizeHash,Client.server_client_hash,"AES",null);
+
+            responseSizeResponseV2 = CipherDecipherClient.decrypt(responseSizeV2,Client.server_client,"AES",null);
+            responseSizeHashResponseV2 = CipherDecipherClient.decrypt(responseSizeHashV2,Client.server_client_hash,"AES",null);
+
+        } catch (NoSuchPaddingException | IllegalBlockSizeException | IOException | NoSuchAlgorithmException | BadPaddingException | InvalidKeyException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        byte[] responseCipher = new byte[0];
+        byte[] responseCipherHash = new byte[0];
+        byte[] responseHash = new byte[0];
+        byte[] responseHashHash = new byte[0];
+
+        if(!(responseSizeResponse.equals("empty")) || !(responseSizeResponseV2.equals("empty"))) {
+
+            //cipher received first
+            receiveSizeLists("CIFRA",responseSizeResponse,responseCipher,responseCipherHash);
+
+            //hash received second
+            receiveSizeLists("HASH",responseSizeResponseV2,responseHash,responseHashHash);
+
+            for (CipherChallengesAttributes element : cipherResponse) {
                 System.out.println(element.toString());
             }
 
             System.out.println("---------------------------");
 
-            for(HashChallengesAttributes element: hashResponse){
+            for (HashChallengesAttributes element : hashResponse) {
                 System.out.println(element.toString());
             }
-
-        } catch (IOException | ClassNotFoundException | InvalidKeyException | IllegalBlockSizeException | NoSuchPaddingException | NoSuchAlgorithmException | BadPaddingException e) {
-            e.printStackTrace();
+            return true;
         }
+        return false;
     }
 
     //function to verify if operation is valid or invalid

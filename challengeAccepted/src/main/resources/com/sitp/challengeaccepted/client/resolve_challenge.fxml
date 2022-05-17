@@ -17,7 +17,7 @@
 
 <BorderPane fx:id="borderPaneLogin" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #A2A3BB;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sitp.challengeaccepted.client.controller">
    <top>
-      <Text stroke="WHITE" strokeType="OUTSIDE" text="Resolver Desafio" textAlignment="CENTER" wrappingWidth="601.3367004394531" BorderPane.alignment="CENTER">
+      <Text fx:id="title_resolve" stroke="WHITE" strokeType="OUTSIDE" text="Resolver Desafio" textAlignment="CENTER" wrappingWidth="601.3367004394531" BorderPane.alignment="CENTER">
          <font>
             <Font size="36.0" />
          </font>
@@ -38,8 +38,8 @@
          <children>
             <MenuButton fx:id="dropdownTypeChoose" mnemonicParsing="false" popupSide="RIGHT" prefHeight="35.0" prefWidth="200.0" style="-fx-background-color: #FBF9FF;" text="Tipo de Desafio" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
               <items>
-                <MenuItem fx:id="cipherChoice" mnemonicParsing="false" onAction="#cipherChoiceInput" text="Cifra" />
-                <MenuItem fx:id="hashChoice" mnemonicParsing="false" onAction="#hashChoiceInput" text="Hash" />
+                <MenuItem fx:id="cipherChoice_resolve" mnemonicParsing="false" onAction="#cipherChoose_resolve" text="Cifra" />
+                <MenuItem fx:id="hashChoice_resolve" mnemonicParsing="false" onAction="#hashChoose_resolve" text="Hash" />
               </items>
                <font>
                   <Font size="14.0" />
@@ -48,12 +48,12 @@
                   <DropShadow />
                </effect>
             </MenuButton>
-            <Text stroke="#f7f1f1" strokeType="OUTSIDE" text="Tipo:" textAlignment="CENTER" wrappingWidth="89.33680152893066" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+            <Text stroke="#f7f1f1" strokeType="OUTSIDE" text="   Tipo:" textAlignment="RIGHT" wrappingWidth="89.33680152893066" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                <font>
                   <Font size="14.0" />
                </font>
             </Text>
-            <Text fx:id="typeText" stroke="#f7f1f1" strokeType="OUTSIDE" text="Tipo de ... :" textAlignment="CENTER" wrappingWidth="125.3368091583252" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+            <Text fx:id="typeText" stroke="#f7f1f1" strokeType="OUTSIDE" text="   Desafio:" textAlignment="RIGHT" wrappingWidth="89.33680152893066" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                <font>
                   <Font size="14.0" />
                </font>
@@ -63,17 +63,17 @@
                   <DropShadow />
                </effect>
             </ChoiceBox>
-            <Text fx:id="challenge_content_text" stroke="#f7f1f1" strokeType="OUTSIDE" text="Conteúdo :" textAlignment="CENTER" wrappingWidth="123.73667979240417" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+            <Text fx:id="challenge_content_text" stroke="#f7f1f1" strokeType="OUTSIDE" text="   Conteúdo :" textAlignment="RIGHT" wrappingWidth="89.33680152893066" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                <font>
                   <Font size="14.0" />
                </font>
             </Text>
-            <Text fx:id="challenge_tips_text" stroke="#f7f1f1" strokeType="OUTSIDE" text="Dicas:" textAlignment="CENTER" wrappingWidth="95.13671875" GridPane.rowIndex="3">
+            <Text fx:id="challenge_tips_text" stroke="#f7f1f1" strokeType="OUTSIDE" text="   Dicas:" textAlignment="RIGHT" wrappingWidth="89.33680152893066" GridPane.rowIndex="3">
                <font>
                   <Font size="14.0" />
                </font>
             </Text>
-            <Text fx:id="challenge_answer_text" stroke="#f7f1f1" strokeType="OUTSIDE" text="Resposta:" textAlignment="CENTER" wrappingWidth="114.02618408203125" GridPane.rowIndex="4">
+            <Text fx:id="challenge_answer_text" stroke="#f7f1f1" strokeType="OUTSIDE" text="   Resposta:" textAlignment="RIGHT" wrappingWidth="89.33680152893066" GridPane.rowIndex="4">
                <font>
                   <Font size="14.0" />
                </font>
@@ -116,7 +116,7 @@
                   <DropShadow />
                </effect>
             </StackPane>
-            <TextField fx:id="challenge_answer" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="36.0" prefWidth="360.0" style="-fx-background-color: #FBF9FF;" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER">
+            <TextField fx:id="challenge_answer" disable="true" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="36.0" prefWidth="360.0" style="-fx-background-color: #FBF9FF;" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER">
                <effect>
                   <DropShadow />
                </effect>
@@ -134,7 +134,7 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Button fx:id="insertButtonChoose" alignment="CENTER" contentDisplay="CENTER" disable="true" mnemonicParsing="false" prefHeight="35.0" prefWidth="82.0" text="Inserir" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+            <Button fx:id="insertButtonChoose" alignment="CENTER" contentDisplay="CENTER" disable="true" mnemonicParsing="false" onAction="#insertButtonResolve" prefHeight="35.0" prefWidth="82.0" text="Inserir" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                <effect>
                   <DropShadow />
                </effect>
