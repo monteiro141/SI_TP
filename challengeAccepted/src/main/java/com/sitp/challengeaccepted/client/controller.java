@@ -293,7 +293,7 @@ public class controller {
     //END GROUP 4 -------------------------------
 
     //Group 5 - Elements of resolve challenge menu
-    public Text titleResolve;
+    public Text title_resolve;
 
     public MenuButton dropdownTypeChoose;
     public MenuItem cipherChoice_resolve;
@@ -314,8 +314,8 @@ public class controller {
     public Button insertButtonChoose;
     public Button cancelButtonChoose;
 
-    private ArrayList<CipherChallengesAttributes> cipherResponse;
-    private ArrayList<HashChallengesAttributes> hashResponse;
+    private static ArrayList<CipherChallengesAttributes> cipherResponse;
+    private static ArrayList<HashChallengesAttributes> hashResponse;
 
     //function for button insert in resolve challenge menu
     public void insertButtonResolve(ActionEvent ent){
@@ -341,6 +341,12 @@ public class controller {
     }
 
     public void controlResolveElements(){
+        dropdownTypeChoose.showingProperty().addListener((observable, oldValue, newValue) ->{
+            //dropdownChoose.
+            challenge_answer.clear();
+            insertButtonChoose.setDisable(true);
+        });
+
         dropdownChoose.showingProperty().addListener((observable, oldValue, newValue) ->{
             challenge_answer.clear();
             insertButtonChoose.setDisable(true);
@@ -359,6 +365,7 @@ public class controller {
             dropdownChoose.setDisable(false);
             challenge_answer.setDisable(false);
             challenge_content_text.setText("Criptograma :");
+            dropdownChoose.setValue(cipherResponse.get(0));
 
             if(dropdownChoose.getValue().toString().toLowerCase().contains("cesar"))
                 challenge_answer_text.setText("Offset :");
@@ -366,18 +373,19 @@ public class controller {
                 challenge_answer_text.setText("Palavra Passe :");
 
             dropdownChoose.getItems().clear();
-            dropdownChoose = new ChoiceBox<CipherChallengesAttributes>();
+
+            ChoiceBox<CipherChallengesAttributes> AUX = new ChoiceBox<CipherChallengesAttributes>();
+
             for(CipherChallengesAttributes element: cipherResponse){
-                dropdownChoose.getItems().add(element);
+                AUX.getItems().add(element);
             }
 
-            dropdownChoose.setValue(cipherResponse.get(0));
-
+            dropdownChoose.getItems().addAll(AUX.getItems());
             challenge_answer.clear();
-            titleResolve.setText("Resolver Desafio");
+            title_resolve.setText("Resolver Desafio");
             controlResolveElements();
         }else{
-            titleResolve.setText("Não existem desafios de cifra!");
+            title_resolve.setText("Não existem desafios de cifra!");
         }
     }
 
@@ -391,18 +399,20 @@ public class controller {
 
             dropdownChoose.getItems().clear();
 
-            dropdownChoose = new ChoiceBox<HashChallengesAttributes>();
+            ChoiceBox<HashChallengesAttributes> AUX = new ChoiceBox<HashChallengesAttributes>();
+
             for(HashChallengesAttributes element: hashResponse){
-                dropdownChoose.getItems().add(element);
+                AUX.getItems().add(element);
             }
 
+            dropdownChoose.getItems().addAll(AUX.getItems());
             dropdownChoose.setValue(hashResponse.get(0));
 
             challenge_answer.clear();
-            titleResolve.setText("Resolver Desafio");
+            title_resolve.setText("Resolver Desafio");
             controlResolveElements();
         }else{
-            titleResolve.setText("Não existem desafios de hash!");
+            title_resolve.setText("Não existem desafios de hash!");
         }
     }
 

@@ -58,7 +58,7 @@
                   <Font size="14.0" />
                </font>
             </Text>
-            <ChoiceBox fx:id="dropdownChoose" disable="true" prefHeight="35.0" prefWidth="200.0" style="-fx-background-color: #FBF9FF;" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+            <ChoiceBox fx:id="dropdownChoose" disable="true" prefHeight="35.0" prefWidth="340.0" style="-fx-background-color: #FBF9FF;" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                <effect>
                   <DropShadow />
                </effect>
