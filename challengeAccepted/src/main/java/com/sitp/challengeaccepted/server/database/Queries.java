@@ -36,7 +36,7 @@ public class Queries {
                 "(hash_id INTEGER NOT NULL AUTO_INCREMENT, " +
                 "user_id INTEGER NOT NULL, " +
                 "hash_specification CHAR(20) not null, " +
-                "hash_hash CHAR(64) not null, " +
+                "hash_hash CHAR(128) not null, " +
                 "hash_tips char(128), " +
                 "PRIMARY KEY (hash_id), " +
                 "CONSTRAINT fk_user_id_hash FOREIGN KEY (user_id) REFERENCES User(user_id))";

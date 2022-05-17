@@ -49,8 +49,8 @@ public class CipherChallengesAttributes implements Serializable {
 
     @Override
     public String toString() {
-        return "Desafio - " + challenge_id +
-                " | Tipo - " + type_cipher;
+        return challenge_id +
+                "|" + type_cipher;
 
     }
 }

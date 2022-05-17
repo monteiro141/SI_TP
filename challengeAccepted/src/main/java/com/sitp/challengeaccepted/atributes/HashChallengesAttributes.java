@@ -49,11 +49,8 @@ public class HashChallengesAttributes implements Serializable {
 
     @Override
     public String toString() {
-        return "HashChallengesAttributes{" +
-                "hash_id=" + hash_id +
-                ", hash_specification='" + hash_specification + '\'' +
-                ", hash_hash='" + hash_hash + '\'' +
-                ", hash_tips='" + hash_tips + '\'' +
-                '}';
+        return hash_id +
+                "|" + hash_specification;
+
     }
 }

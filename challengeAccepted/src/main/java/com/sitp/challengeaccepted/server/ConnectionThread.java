@@ -382,6 +382,7 @@ public class ConnectionThread extends Thread {
         String specification, hmac, message, iv, salt, plaintext = "";
         try {
             ResultSet challengeData = databaseCaller.getStatement().executeQuery(Queries.getCipherChallengeData(id));
+            challengeData.next();
             specification = challengeData.getString(1);
             hmac = challengeData.getString(2);
             message = challengeData.getString(3);

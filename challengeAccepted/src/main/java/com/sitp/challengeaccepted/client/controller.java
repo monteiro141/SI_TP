@@ -2,6 +2,9 @@ package com.sitp.challengeaccepted.client;
 
 import com.sitp.challengeaccepted.atributes.CipherChallengesAttributes;
 import com.sitp.challengeaccepted.atributes.HashChallengesAttributes;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -295,9 +298,7 @@ public class controller {
     //Group 5 - Elements of resolve challenge menu
     public Text title_resolve;
 
-    public MenuButton dropdownTypeChoose;
-    public MenuItem cipherChoice_resolve;
-    public MenuItem hashChoice_resolve;
+    public ChoiceBox dropdownTypeChoose;
 
     public ChoiceBox dropdownChoose;
     public Text typeText;
@@ -314,17 +315,31 @@ public class controller {
     public Button insertButtonChoose;
     public Button cancelButtonChoose;
 
+    public ChangeListener<Number> changeListener;
+
     private static ArrayList<CipherChallengesAttributes> cipherResponse;
     private static ArrayList<HashChallengesAttributes> hashResponse;
 
     //function for button insert in resolve challenge menu
     public void insertButtonResolve(ActionEvent ent){
         //send type of challenge
-        sendResolveDataToServer(dropdownTypeChoose.getText());
-        //send id of challenge
-        sendResolveDataToServer(dropdownChoose.getValue().toString());
-        //send answer of challenge
+        String id = "";
+        //System.out.println(dropdownTypeChoose.getValue());
+        switch (dropdownTypeChoose.getValue().toString()){
+            case "Cifra":
+                id = String.valueOf(((CipherChallengesAttributes)dropdownChoose.getValue()).getChallenge_id());
+                break;
+            case "Hash":
+                id = String.valueOf(((HashChallengesAttributes)dropdownChoose.getValue()).getHash_id());
+                break;
+        }
+
+        sendResolveDataToServer(dropdownTypeChoose.getValue().toString());
+        sendResolveDataToServer(id);
         sendResolveDataToServer(challenge_answer.getText());
+
+        //System.out.println(id);
+        //System.out.println(challenge_answer.getText());
     }
 
     public void sendResolveDataToServer(String sent_data){
@@ -341,22 +356,54 @@ public class controller {
     }
 
     public void controlResolveElements(){
-        dropdownTypeChoose.showingProperty().addListener((observable, oldValue, newValue) ->{
-            //dropdownChoose.
-            challenge_answer.clear();
-            insertButtonChoose.setDisable(true);
+        dropdownTypeChoose.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) ->{
+                switch ((int) newValue){
+                    case 0:
+                        cipherChoose_resolve();
+                        break;
+                    case 1:
+                        hashChoose_resolve();
+                        break;
+                }
+                //challenge_answer.clear();
+                insertButtonChoose.setDisable(true);
         });
 
-        dropdownChoose.showingProperty().addListener((observable, oldValue, newValue) ->{
-            challenge_answer.clear();
-            insertButtonChoose.setDisable(true);
-        });
-
-        challenge_content.textProperty().addListener((observable, oldValue, newValue) ->{
-            if(!(challenge_content.getText().equals(""))){
+        challenge_answer.textProperty().addListener((observable, oldValue, newValue) ->{
+            if(!(challenge_answer.getText().equals(""))){
                 insertButtonChoose.setDisable(false);
+            }else{
+                insertButtonChoose.setDisable(true);
             }
         });
+
+
+        changeListener = new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
+                switch (dropdownTypeChoose.getValue().toString()) {
+                    case "Cifra":
+                        if (cipherResponse.size() == 0 || (int) newValue < 0)
+                            break;
+                        challenge_content.setText(cipherResponse.get((int) newValue).getCipher_message());
+                        challenge_tips.setText(cipherResponse.get((int) newValue).getCipher_tips());
+                        challenge_content_text.setText("Criptograma :");
+                        if(dropdownChoose.getValue().toString().toLowerCase().contains("cesar"))
+                            challenge_answer_text.setText("Offset :");
+                        else
+                            challenge_answer_text.setText("Palavra Passe :");
+                        break;
+                    case "Hash":
+                        if (hashResponse.size() == 0 || (int) newValue < 0)
+                            break;
+                        challenge_content.setText(hashResponse.get((int) newValue).getHash_hash());
+                        challenge_tips.setText(hashResponse.get((int) newValue).getHash_tips());
+                        challenge_content_text.setText("Hash :");
+                        challenge_answer_text.setText("Mensagem :");
+                        break;
+                }
+            }
+        };
     }
 
     //when user chooses type "Cifra"
@@ -364,28 +411,23 @@ public class controller {
         if(cipherResponse.size() != 0) {
             dropdownChoose.setDisable(false);
             challenge_answer.setDisable(false);
-            challenge_content_text.setText("Criptograma :");
-            dropdownChoose.setValue(cipherResponse.get(0));
 
-            if(dropdownChoose.getValue().toString().toLowerCase().contains("cesar"))
-                challenge_answer_text.setText("Offset :");
-            else
-                challenge_answer_text.setText("Palavra Passe :");
+            dropdownChoose.getSelectionModel().selectedIndexProperty().removeListener(changeListener);
+            challenge_content.setText("");
+            challenge_tips.setText("");
 
             dropdownChoose.getItems().clear();
+            dropdownChoose.getItems().addAll(cipherResponse);
 
-            ChoiceBox<CipherChallengesAttributes> AUX = new ChoiceBox<CipherChallengesAttributes>();
-
-            for(CipherChallengesAttributes element: cipherResponse){
-                AUX.getItems().add(element);
-            }
-
-            dropdownChoose.getItems().addAll(AUX.getItems());
-            challenge_answer.clear();
-            title_resolve.setText("Resolver Desafio");
-            controlResolveElements();
+            dropdownChoose.getSelectionModel().selectedIndexProperty().addListener(changeListener);
+            dropdownChoose.setValue("Escolher Cifra");
         }else{
-            title_resolve.setText("Não existem desafios de cifra!");
+            dropdownChoose.getSelectionModel().selectedIndexProperty().removeListener(changeListener);
+            challenge_content.setText("");
+            challenge_tips.setText("");
+            dropdownChoose.getItems().clear();
+            dropdownChoose.setDisable(true);
+            challenge_answer.setDisable(true);
         }
     }
 
@@ -394,34 +436,25 @@ public class controller {
         if(hashResponse.size() != 0) {
             dropdownChoose.setDisable(false);
             challenge_answer.setDisable(false);
-            challenge_content_text.setText("Hash :");
-            challenge_answer_text.setText("Mensagem :");
+
+            dropdownChoose.getSelectionModel().selectedIndexProperty().removeListener(changeListener);
+            challenge_content.setText("");
+            challenge_tips.setText("");
 
             dropdownChoose.getItems().clear();
+            dropdownChoose.getItems().addAll(hashResponse);
 
-            ChoiceBox<HashChallengesAttributes> AUX = new ChoiceBox<HashChallengesAttributes>();
-
-            for(HashChallengesAttributes element: hashResponse){
-                AUX.getItems().add(element);
-            }
-
-            dropdownChoose.getItems().addAll(AUX.getItems());
-            dropdownChoose.setValue(hashResponse.get(0));
-
-            challenge_answer.clear();
-            title_resolve.setText("Resolver Desafio");
-            controlResolveElements();
+            dropdownChoose.getSelectionModel().selectedIndexProperty().addListener(changeListener);
+            dropdownChoose.setValue("Escolher Hash");
         }else{
-            title_resolve.setText("Não existem desafios de hash!");
+            dropdownChoose.getSelectionModel().selectedIndexProperty().removeListener(changeListener);
+            challenge_content.setText("");
+            challenge_tips.setText("");
+            dropdownChoose.getItems().clear();
+            dropdownChoose.setDisable(true);
+            challenge_answer.setDisable(true);
         }
     }
-
-    public void chooseTypeChallenge(ActionEvent event){
-
-    }
-
-
-
     //END GROUP 5 -------------------------------
 
     //Group Scenes - Functions to change scenes => to change fxml files (pages)
@@ -552,13 +585,45 @@ public class controller {
 
         if(changeView) {
             //stage switching and creation
-            root = FXMLLoader.load(Client.class.getResource("resolve_challenge.fxml"));
+            FXMLLoader loader = new FXMLLoader(Client.class.getResource("resolve_challenge.fxml"));
+
+            //dropdownTypeChoose = loader.
+
+            //root = FXMLLoader.load(Client.class.getResource("resolve_challenge.fxml"));
+            //String types[] = {"Cifra","Hash"};
+            //dropdownTypeChoose = new ChoiceBox<>(FXCollections.observableArrayList(types));
+
             stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
-            scene = new Scene(root,stage.getWidth(),stage.getHeight());
+            scene = new Scene(loader.load(),stage.getWidth(),stage.getHeight());
             stage.setMinWidth(600);
             stage.setMinHeight(400);
             stage.setScene(scene);
+
+            dropdownTypeChoose = (ChoiceBox) loader.getNamespace().get("dropdownTypeChoose");
+            dropdownChoose = (ChoiceBox) loader.getNamespace().get("dropdownChoose");
+            challenge_content = (Text) loader.getNamespace().get("challenge_content");
+            challenge_tips = (Text) loader.getNamespace().get("challenge_tips");
+            challenge_answer = (TextField) loader.getNamespace().get("challenge_answer");
+
+            insertButtonChoose = (Button) loader.getNamespace().get("insertButtonChoose");
+            cancelButtonChoose = (Button) loader.getNamespace().get("cancelButtonChoose");
+
+            typeText = (Text) loader.getNamespace().get("typeText");
+            challenge_content_text = (Text) loader.getNamespace().get("challenge_content_text");
+            challenge_tips_text = (Text) loader.getNamespace().get("challenge_tips_text");
+            challenge_answer_text = (Text) loader.getNamespace().get("challenge_answer_text");
+
+            title_resolve = (Text) loader.getNamespace().get("title_resolve");
+
+            dropdownTypeChoose.getItems().add("Cifra");
+            dropdownTypeChoose.getItems().add("Hash");
+
+            dropdownTypeChoose.setValue("Tipo de Desafio");
             stage.show();
+
+            controlResolveElements();
+
+
         }else{
             try {
                 PopoutEmptyLists.display("Sem desafios!","Não existem desafios para resolver! Tente mais tarde!");
