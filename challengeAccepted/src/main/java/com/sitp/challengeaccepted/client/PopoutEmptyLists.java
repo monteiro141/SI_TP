@@ -17,7 +17,8 @@ public class PopoutEmptyLists{
         //Block events from another windows
         window.initModality(Modality.APPLICATION_MODAL);
         window.setTitle(title);
-        window.setMinWidth(200);
+        window.setWidth(400);
+        window.setHeight(100);
 
         //Create a description
         Label label = new Label();

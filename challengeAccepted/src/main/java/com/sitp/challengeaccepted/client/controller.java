@@ -321,7 +321,7 @@ public class controller {
     private static ArrayList<HashChallengesAttributes> hashResponse;
 
     //function for button insert in resolve challenge menu
-    public void insertButtonResolve(ActionEvent ent){
+    public void insertButtonResolve(ActionEvent event){
         //send type of challenge
         String id = "";
         //System.out.println(dropdownTypeChoose.getValue());
@@ -334,12 +334,12 @@ public class controller {
                 break;
         }
 
+        //send data to server
         sendResolveDataToServer(dropdownTypeChoose.getValue().toString());
         sendResolveDataToServer(id);
         sendResolveDataToServer(challenge_answer.getText());
 
-        //System.out.println(id);
-        //System.out.println(challenge_answer.getText());
+        verifyResponsesResolve(event);
     }
 
     public void sendResolveDataToServer(String sent_data){
@@ -488,7 +488,7 @@ public class controller {
         //fxmlLoader.setController(Client.control);
         root = fxmlLoader.load();
         stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
-        scene = new Scene(root,stage.getWidth(),stage.getHeight());
+        scene = new Scene(root,600,400);
         stage.setMinWidth(600);
         stage.setMinHeight(400);
         stage.setScene(scene);
@@ -502,7 +502,7 @@ public class controller {
         //stage switching and creation
         root = FXMLLoader.load(Client.class.getResource("credentials_client_menu.fxml"));
         stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
-        scene = new Scene(root,stage.getWidth(),stage.getHeight());
+        scene = new Scene(root,600,400);
         stage.setMinWidth(600);
         stage.setMinHeight(400);
         stage.setScene(scene);
@@ -513,7 +513,7 @@ public class controller {
         //stage switching and creation
         root = FXMLLoader.load(Client.class.getResource("main_menu.fxml"));
         stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
-        scene = new Scene(root,stage.getWidth(),stage.getHeight());
+        scene = new Scene(root,600,400);
         stage.setMinWidth(600);
         stage.setMinHeight(400);
         stage.setScene(scene);
@@ -530,7 +530,7 @@ public class controller {
         //stage switching and creation
         root = FXMLLoader.load(Client.class.getResource("main_menu.fxml"));
         stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
-        scene = new Scene(root,stage.getWidth(),stage.getHeight());
+        scene = new Scene(root,600,400);
         stage.setMinWidth(600);
         stage.setMinHeight(400);
         stage.setScene(scene);
@@ -547,7 +547,7 @@ public class controller {
         //stage switching and creation
         root = FXMLLoader.load(Client.class.getResource("main_menu.fxml"));
         stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
-        scene = new Scene(root,stage.getWidth(),stage.getHeight());
+        scene = new Scene(root,600,400);
         stage.setMinWidth(600);
         stage.setMinHeight(400);
         stage.setScene(scene);
@@ -576,7 +576,7 @@ public class controller {
         //stage switching and creation
         root = FXMLLoader.load(Client.class.getResource("create_challenge.fxml"));
         stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
-        scene = new Scene(root,stage.getWidth(),stage.getHeight());
+        scene = new Scene(root,600,400);
         stage.setMinWidth(600);
         stage.setMinHeight(400);
         stage.setScene(scene);
@@ -602,7 +602,7 @@ public class controller {
             //dropdownTypeChoose = new ChoiceBox<>(FXCollections.observableArrayList(types));
 
             stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
-            scene = new Scene(loader.load(),stage.getWidth(),stage.getHeight());
+            scene = new Scene(loader.load(),600,400);
             stage.setMinWidth(600);
             stage.setMinHeight(400);
             stage.setScene(scene);
@@ -737,6 +737,39 @@ public class controller {
                 //System.out.println("They are the same");
             }else{
                 System.out.println("Not the same");
+            }
+        } catch (IOException | ClassNotFoundException | InvalidKeyException | IllegalBlockSizeException | NoSuchPaddingException | NoSuchAlgorithmException | BadPaddingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //function to verify result of challenges
+    public void verifyResponsesResolve(ActionEvent event){
+        try {
+            byte[] typeResponse = (byte[]) Client.is.readObject();
+            byte[] typeResponseHash = (byte[]) Client.is.readObject();
+
+            String decipheredtypeResponse = CipherDecipherClient.decrypt(typeResponse,Client.server_client,"AES",null);
+            String decipheredtypeResponseHash = CipherDecipherClient.decrypt(typeResponseHash,Client.server_client_hash,"AES",null);
+
+            if(decipheredtypeResponse.equals("success")){
+                byte[] plaintextResponse = (byte[]) Client.is.readObject();
+                byte[] plaintextResponseHash = (byte[]) Client.is.readObject();
+
+                String decipheredplaintextResponse = CipherDecipherClient.decrypt(plaintextResponse,Client.server_client,"AES",null);
+                String decipheredplaintextResponseHash = CipherDecipherClient.decrypt(plaintextResponseHash,Client.server_client_hash,"AES",null);
+                try {
+                    PopoutEmptyLists.display("Sucesso!","Acertou o desafio! A solução é: " + decipheredplaintextResponse);
+                    switchMainMenu(event);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }else{
+                try {
+                    PopoutEmptyLists.display("Incorreto!","Errou o desafio! Volte a tentar!");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         } catch (IOException | ClassNotFoundException | InvalidKeyException | IllegalBlockSizeException | NoSuchPaddingException | NoSuchAlgorithmException | BadPaddingException e) {
             e.printStackTrace();

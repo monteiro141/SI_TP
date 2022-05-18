@@ -417,14 +417,14 @@ public class ConnectionThread extends Thread {
             String hmacPlaintext = GenerateValues.doHMACMessage(plaintext, adminSecretKey);
             if (hmac.equals(hmacPlaintext)) {
                 System.out.println("good decipher");
-                sendLogInStatusToClient("good decipher");
+                sendLogInStatusToClient("success");
                 sendLogInStatusToClient(plaintext);
             } else {
                 System.out.println("bad decipher");
-                sendLogInStatusToClient("bad decipher");
+                sendLogInStatusToClient("fail");
             }
         }else {
-            sendLogInStatusToClient("bad decipher");
+            sendLogInStatusToClient("fail");
         }
     }
 
@@ -443,10 +443,10 @@ public class ConnectionThread extends Thread {
         result = CipherDecipherChallenges.CreateHash(specification, password);
         if (result.equals(hash)) {
             System.out.println("good hash");
-            sendLogInStatusToClient("good hash");
+            sendLogInStatusToClient("sucess");
         } else {
             System.out.println("bad hash");
-            sendLogInStatusToClient("bad hash");
+            sendLogInStatusToClient("fail");
         }
     }
 
