@@ -43,10 +43,10 @@ public class CipherDecipherChallenges {
         try {
             switch(type){
                 case "AES-128-ECB" -> {
-                    return decrypt("AES/ECB/NoPadding", message, getPasswordWithSalt(password, salt), null);
+                    return decrypt("AES/ECB/PKCS5Padding", message, getPasswordWithSalt(password, salt), null);
                 }
                 case "AES-128-CBC" -> {
-                    return decrypt("AES/CBC/NoPadding", message, getPasswordWithSalt(password, salt), ivVector);
+                    return decrypt("AES/CBC/PKCS5Padding", message, getPasswordWithSalt(password, salt), ivVector);
                 }
                 case "AES-128-CTR" -> {
                     return decrypt("AES/CTR/NoPadding", message, getPasswordWithSalt(password, salt), ivVector);
@@ -55,7 +55,10 @@ public class CipherDecipherChallenges {
                     return decryptVigenere(message.toUpperCase(), generateVigenereKey(message, password).toUpperCase());
                 }
             }
-        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
+        } catch (BadPaddingException ex){
+            return null;
+        }
+        catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException | InvalidKeyException | IllegalBlockSizeException e) {
             e.printStackTrace();
         }
         return null;

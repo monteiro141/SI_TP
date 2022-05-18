@@ -392,6 +392,7 @@ public class controller {
                             challenge_answer_text.setText("Offset :");
                         else
                             challenge_answer_text.setText("Palavra Passe :");
+                        challenge_answer.setDisable(false);
                         break;
                     case "Hash":
                         if (hashResponse.size() == 0 || (int) newValue < 0)
@@ -400,6 +401,7 @@ public class controller {
                         challenge_tips.setText(hashResponse.get((int) newValue).getHash_tips());
                         challenge_content_text.setText("Hash :");
                         challenge_answer_text.setText("Mensagem :");
+                        challenge_answer.setDisable(false);
                         break;
                 }
             }
@@ -415,16 +417,19 @@ public class controller {
             dropdownChoose.getSelectionModel().selectedIndexProperty().removeListener(changeListener);
             challenge_content.setText("");
             challenge_tips.setText("");
+            challenge_answer.setText("");
 
             dropdownChoose.getItems().clear();
             dropdownChoose.getItems().addAll(cipherResponse);
 
             dropdownChoose.getSelectionModel().selectedIndexProperty().addListener(changeListener);
             dropdownChoose.setValue("Escolher Cifra");
+            challenge_answer.setDisable(true);
         }else{
             dropdownChoose.getSelectionModel().selectedIndexProperty().removeListener(changeListener);
             challenge_content.setText("");
             challenge_tips.setText("");
+            challenge_answer.setText("");
             dropdownChoose.getItems().clear();
             dropdownChoose.setDisable(true);
             challenge_answer.setDisable(true);
@@ -439,6 +444,7 @@ public class controller {
 
             dropdownChoose.getSelectionModel().selectedIndexProperty().removeListener(changeListener);
             challenge_content.setText("");
+            challenge_answer.setText("");
             challenge_tips.setText("");
 
             dropdownChoose.getItems().clear();
@@ -446,10 +452,12 @@ public class controller {
 
             dropdownChoose.getSelectionModel().selectedIndexProperty().addListener(changeListener);
             dropdownChoose.setValue("Escolher Hash");
+            challenge_answer.setDisable(true);
         }else{
             dropdownChoose.getSelectionModel().selectedIndexProperty().removeListener(changeListener);
             challenge_content.setText("");
             challenge_tips.setText("");
+            challenge_answer.setText("");
             dropdownChoose.getItems().clear();
             dropdownChoose.setDisable(true);
             challenge_answer.setDisable(true);

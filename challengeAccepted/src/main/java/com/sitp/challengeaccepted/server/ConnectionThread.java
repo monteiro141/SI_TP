@@ -18,9 +18,11 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ConnectionThread extends Thread {
     private final Socket S;
@@ -332,7 +334,16 @@ public class ConnectionThread extends Thread {
 
 
         try {
-            databaseCaller.getStatement().executeUpdate(Queries.createCipherChallenge(userLoggedIn, challengeSpecification, hmac, cryptogram, ivToSave, saltToSave, tips));
+            PreparedStatement ps = databaseCaller.getConnection().prepareStatement(Queries.createCipherChallenge());
+            //"VALUES (" + user.getUser_id() + ", '" + challengeSpecification + "', '" + hmac + "', '" + cryptogram + "', '" + iv + "', '" + salt + "', '" + tips + "');";
+            ps.setInt(1,userLoggedIn.getUser_id());
+            ps.setString(2,challengeSpecification);
+            ps.setString(3,hmac);
+            ps.setString(4,cryptogram);
+            ps.setBytes(5,iv);
+            ps.setBytes(6,salt);
+            ps.setString(7,tips);
+            System.out.println(ps.execute());
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -377,35 +388,43 @@ public class ConnectionThread extends Thread {
     }
 
     private void resolveCipherChallenge(){
+        System.out.println("Cipher resolving");
         String id = finalDecipheredMessage();
         String password = finalDecipheredMessage();
-        String specification, hmac, message, iv, salt, plaintext = "";
+        String specification, hmac, message, plaintext = "";
+        byte [] salt, iv;
         try {
             ResultSet challengeData = databaseCaller.getStatement().executeQuery(Queries.getCipherChallengeData(id));
             challengeData.next();
             specification = challengeData.getString(1);
             hmac = challengeData.getString(2);
             message = challengeData.getString(3);
-            iv = challengeData.getString(4);
-            salt = challengeData.getString(5);
+            iv = challengeData.getBytes(4);
+            salt = challengeData.getBytes(5);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         if (iv != null && !specification.equals("CESAR")) {
-            plaintext = CipherDecipherChallenges.decryptCipher(specification, message, password, salt.getBytes(), new IvParameterSpec(iv.getBytes()));
+            plaintext = CipherDecipherChallenges.decryptCipher(specification, message, password, salt, new IvParameterSpec(iv));
         } else if (!specification.equals("CESAR")) {
-            plaintext = CipherDecipherChallenges.decryptCipher(specification, message, password, salt.getBytes(), null);
+            plaintext = CipherDecipherChallenges.decryptCipher(specification, message, password, salt, null);
         } else {
             plaintext = CipherDecipherChallenges.decryptCesar(message, Integer.parseInt(password));
         }
+        System.out.println("Plaintext");
+        System.out.println(plaintext);
         if (plaintext != null) {
             String hmacPlaintext = GenerateValues.doHMACMessage(plaintext, adminSecretKey);
             if (hmac.equals(hmacPlaintext)) {
+                System.out.println("good decipher");
                 sendLogInStatusToClient("good decipher");
                 sendLogInStatusToClient(plaintext);
             } else {
+                System.out.println("bad decipher");
                 sendLogInStatusToClient("bad decipher");
             }
+        }else {
+            sendLogInStatusToClient("bad decipher");
         }
     }
 
@@ -415,6 +434,7 @@ public class ConnectionThread extends Thread {
         String specification, hash, result = "";
         try {
             ResultSet challengeData = databaseCaller.getStatement().executeQuery(Queries.getHashChallengeData(id));
+            challengeData.next();
             specification = challengeData.getString(1);
             hash = challengeData.getString(2);
         } catch (SQLException e) {
@@ -422,8 +442,10 @@ public class ConnectionThread extends Thread {
         }
         result = CipherDecipherChallenges.CreateHash(specification, password);
         if (result.equals(hash)) {
+            System.out.println("good hash");
             sendLogInStatusToClient("good hash");
         } else {
+            System.out.println("bad hash");
             sendLogInStatusToClient("bad hash");
         }
     }

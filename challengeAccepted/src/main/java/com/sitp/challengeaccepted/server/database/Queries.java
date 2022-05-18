@@ -24,8 +24,8 @@ public class Queries {
                 "cipher_specification CHAR(20) not null, " +
                 "cipher_hmac char(64) not null, " +
                 "cipher_message char(128) not null, " +
-                "iv char(16), " +
-                "salt char(16) not null, " +
+                "iv varbinary(16), " +
+                "salt varbinary(16) not null, " +
                 "cipher_tips char(128), " +
                 "PRIMARY KEY (cipher_id), " +
                 "CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES User(user_id))";
@@ -70,9 +70,10 @@ public class Queries {
                 "WHERE hash_hash = '" + hash + "'";
     }
 
-    public static String createCipherChallenge (User user, String challengeSpecification, String hmac, String cryptogram, String iv, String salt, String tips) {
-        return "INSERT INTO CipherChallenges (user_id, cipher_specification, cipher_hmac, cipher_message, iv, salt, cipher_tips) " +
-                "VALUES (" + user.getUser_id() + ", '" + challengeSpecification + "', '" + hmac + "', '" + cryptogram + "', '" + iv + "', '" + salt + "', '" + tips + "');";
+    public static String createCipherChallenge () {
+        String sql = "INSERT INTO CipherChallenges (user_id, cipher_specification, cipher_hmac, cipher_message, iv, salt, cipher_tips) " +
+               "VALUES(?,?,?,?,?,?,?) ";
+        return sql;
     }
 
     public static String createHashChallenge (User user, String challengeSpecification, String hash, String tips) {
