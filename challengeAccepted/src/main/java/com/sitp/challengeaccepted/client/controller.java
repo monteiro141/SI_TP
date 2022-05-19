@@ -988,7 +988,6 @@ public class controller {
             System.out.println("LOGIN/REGISTER STATUSHASH: " + decipheredResponseStatusHash);
 
             if (getHash(decipheredResponseStatus).equals(decipheredResponseStatusHash)) {
-                //System.out.println("They are the same!");
                 if(Boolean.parseBoolean(decipheredResponseStatus)){
                     System.out.println("Login bem sucedido!");
                     switchMainMenu(event);

@@ -224,6 +224,7 @@ public class ConnectionThread extends Thread {
         if(saltedPassword != null && registerVerification(email,new String(saltedPassword))){
             System.out.println("Register suc");
             sendLogInStatusToClient("true");
+            operationMenu();
         }else{
             System.out.println("Register failed");
             sendLogInStatusToClient("false");
