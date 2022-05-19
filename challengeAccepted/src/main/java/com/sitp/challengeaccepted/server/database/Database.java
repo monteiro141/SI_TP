@@ -105,6 +105,19 @@ public class Database {
                 // Some other problems, e.g. Server down, no permission, etc
                 e.printStackTrace();
             }
+        }
+        try {
+            String solvedTable = Queries.createSolvedTable();
+            statement.executeUpdate(solvedTable);
+            System.out.println("Solved challenges table created.");
+        } catch (SQLException e) {
+            if (e.getErrorCode() == 1007) {
+                // Database already exists error
+                System.out.println("Solved challenges table already exists.");
+            } else {
+                // Some other problems, e.g. Server down, no permission, etc
+                e.printStackTrace();
+            }
         } finally {
             try {
                 if (statement != null) {

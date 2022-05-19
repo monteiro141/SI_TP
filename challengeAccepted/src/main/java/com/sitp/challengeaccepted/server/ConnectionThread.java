@@ -28,6 +28,8 @@ public class ConnectionThread extends Thread {
     private final Socket S;
     private PublicKey publicKey;
     private PrivateKey privateKey;
+    private PublicKey signaturePublicKey;
+    private PrivateKey signaturePrivateKey;
     private SecretKey adminSecretKey;
     private ObjectInputStream is;
     private ObjectOutputStream os;
@@ -79,6 +81,18 @@ public class ConnectionThread extends Thread {
         }
         try {
             privateKey = PrivateKeyReader.get("src/main/java/com/sitp/challengeaccepted/server/keys/privatekey.der");
+        } catch (Exception e) {
+            e.printStackTrace();
+            Thread.currentThread().stop();
+        }
+        try {
+            signaturePublicKey = PublicKeyReader.get("src/main/java/com/sitp/challengeaccepted/server/keys/signaturepublickey.der");
+        } catch (Exception e) {
+            e.printStackTrace();
+            Thread.currentThread().stop();
+        }
+        try {
+            signaturePrivateKey = PrivateKeyReader.get("src/main/java/com/sitp/challengeaccepted/server/keys/signatureprivatekey.der");
         } catch (Exception e) {
             e.printStackTrace();
             Thread.currentThread().stop();
@@ -255,7 +269,6 @@ public class ConnectionThread extends Thread {
                         break;
                     }
                     resolveChallenge();
-                    sendLogInStatusToClient("true");
                     break;
                 case "logout":
                     return;
@@ -308,15 +321,8 @@ public class ConnectionThread extends Thread {
         }
 
         String hmac = GenerateValues.doHMACMessage(message,adminSecretKey);
+        String signature = GenerateValues.signMessage(message, signaturePrivateKey);
         String cryptogram = cipherText;
-        String ivToSave=null;
-        String saltToSave=null;
-        if (iv != null) {
-            ivToSave = new String(iv);
-        }
-        if (salt != null) {
-            saltToSave = new String(salt);
-        }
 
         ResultSet checkHMAC = null;
         try {
@@ -343,6 +349,7 @@ public class ConnectionThread extends Thread {
             ps.setBytes(5,iv);
             ps.setBytes(6,salt);
             ps.setString(7,tips);
+            ps.setString(8, signature);
             System.out.println(ps.execute());
             return true;
         } catch (SQLException e) {
@@ -376,10 +383,12 @@ public class ConnectionThread extends Thread {
             System.out.println(challengeType);
             switch (challengeType) {
                 case "Cifra":
-                    resolveCipherChallenge();
+                    if(resolveCipherChallenge())
+                        return;
                     break;
                 case "Hash":
-                    resolveHashChallenge();
+                    if(resolveHashChallenge())
+                        return;
                     break;
                 default:
                     return;
@@ -387,11 +396,11 @@ public class ConnectionThread extends Thread {
         }while (true);
     }
 
-    private void resolveCipherChallenge(){
+    private boolean resolveCipherChallenge(){
         System.out.println("Cipher resolving");
         String id = finalDecipheredMessage();
         String password = finalDecipheredMessage();
-        String specification, hmac, message, plaintext = "";
+        String specification, hmac, message, signature, plaintext = "";
         byte [] salt, iv;
         try {
             ResultSet challengeData = databaseCaller.getStatement().executeQuery(Queries.getCipherChallengeData(id));
@@ -401,6 +410,7 @@ public class ConnectionThread extends Thread {
             message = challengeData.getString(3);
             iv = challengeData.getBytes(4);
             salt = challengeData.getBytes(5);
+            signature = challengeData.getString(6);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -415,10 +425,24 @@ public class ConnectionThread extends Thread {
         System.out.println(plaintext);
         if (plaintext != null) {
             String hmacPlaintext = GenerateValues.doHMACMessage(plaintext, adminSecretKey);
-            if (hmac.equals(hmacPlaintext)) {
+            boolean verify = GenerateValues.verifySignature(plaintext, signature, signaturePublicKey);
+
+            if(hmac.equals(hmacPlaintext))
+                System.out.println("Hmac is equal");
+            if(verify)
+                System.out.println("Signature is equal");
+
+            if (hmac.equals(hmacPlaintext) && verify) {
                 System.out.println("good decipher");
                 sendLogInStatusToClient("success");
                 sendLogInStatusToClient(plaintext);
+
+                try {
+                    databaseCaller.getStatement().executeUpdate(Queries.resolvedCipher(String.valueOf(userLoggedIn.getUser_id()),id));
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+                return true;
             } else {
                 System.out.println("bad decipher");
                 sendLogInStatusToClient("fail");
@@ -426,9 +450,10 @@ public class ConnectionThread extends Thread {
         }else {
             sendLogInStatusToClient("fail");
         }
+        return false;
     }
 
-    private void resolveHashChallenge() {
+    private boolean resolveHashChallenge() {
         String id = finalDecipheredMessage();
         String password = finalDecipheredMessage();
         String specification, hash, result = "";
@@ -444,10 +469,12 @@ public class ConnectionThread extends Thread {
         if (result.equals(hash)) {
             System.out.println("good hash");
             sendLogInStatusToClient("sucess");
+            return true;
         } else {
             System.out.println("bad hash");
             sendLogInStatusToClient("fail");
         }
+        return false;
     }
 
     private boolean sendChallengesList() {
