@@ -5,9 +5,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.math.BigInteger;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
+import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Base64;
@@ -47,5 +45,27 @@ public class GenerateValues {
         return null;
     }
 
+    public static String signMessage (String message, PrivateKey key) {
+        try {
+            Signature sign = Signature.getInstance("SHA256withRSA");
+            sign.initSign(key);
+            sign.update(message.getBytes());
+            byte [] signature = sign.sign();
+            return Base64.getEncoder().encodeToString(signature);
+        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
+    public static boolean verifySignature (String message, String signature, PublicKey key) {
+        try {
+            Signature sign = Signature.getInstance("SHA256withRSA");
+            sign.initVerify(key);
+            sign.update(message.getBytes());
+            byte [] signed = Base64.getDecoder().decode(signature);
+            return sign.verify(signed);
+        } catch (InvalidKeyException | NoSuchAlgorithmException | SignatureException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

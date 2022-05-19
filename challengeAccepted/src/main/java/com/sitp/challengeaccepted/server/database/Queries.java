@@ -23,10 +23,11 @@ public class Queries {
                 "user_id INTEGER NOT NULL, " +
                 "cipher_specification CHAR(20) not null, " +
                 "cipher_hmac char(64) not null, " +
-                "cipher_message char(128) not null, " +
+                "cipher_message char(255) not null, " +
                 "iv varbinary(16), " +
                 "salt varbinary(16) not null, " +
                 "cipher_tips char(128), " +
+                "signature text not null, " +
                 "PRIMARY KEY (cipher_id), " +
                 "CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES User(user_id))";
     }
@@ -40,6 +41,16 @@ public class Queries {
                 "hash_tips char(128), " +
                 "PRIMARY KEY (hash_id), " +
                 "CONSTRAINT fk_user_id_hash FOREIGN KEY (user_id) REFERENCES User(user_id))";
+    }
+
+    public static String createSolvedTable () {
+        return "CREATE TABLE IF NOT EXISTS SolvedChallenges " +
+                "(user_id INTEGER NOT NULL, " +
+                "cipher_id INTEGER, " +
+                "hash_id INTEGER, " +
+                "CONSTRAINT fk_user_id_solved FOREIGN KEY (user_id) REFERENCES User(user_id), " +
+                "CONSTRAINT fk_cipher_id FOREIGN KEY (cipher_id) REFERENCES CipherChallenges(cipher_id), " +
+                "CONSTRAINT fk_hash_id FOREIGN KEY (hash_id) REFERENCES HashChallenges(hash_id))";
     }
 
     public static String loginUser(String email, String salted_password){
@@ -71,8 +82,8 @@ public class Queries {
     }
 
     public static String createCipherChallenge () {
-        String sql = "INSERT INTO CipherChallenges (user_id, cipher_specification, cipher_hmac, cipher_message, iv, salt, cipher_tips) " +
-               "VALUES(?,?,?,?,?,?,?) ";
+        String sql = "INSERT INTO CipherChallenges (user_id, cipher_specification, cipher_hmac, cipher_message, iv, salt, cipher_tips, signature) " +
+               "VALUES(?,?,?,?,?,?,?,?) ";
         return sql;
     }
 
@@ -81,10 +92,22 @@ public class Queries {
                 "VALUES (" + user.getUser_id() + ", '" + challengeSpecification + "', '" + hash + "', '" + tips + "');";
     }
 
+    public static String resolvedCipher (String user_id, String cipher_id) {
+        return "INSERT INTO SolvedChallenges (user_id, cipher_id) " +
+                "VALUES ('" + user_id + "', '" + cipher_id + "');";
+    }
+
     public static String challengesCipherList(String user_id){
         return "SELECT cipher_id, cipher_specification, cipher_message, cipher_tips "+
-                "FROM CipherChallenges "+
-                "WHERE user_id != '"+user_id+"'";
+                "FROM CipherChallenges c "+
+                "WHERE c.user_id != '"+user_id+"' AND NOT EXISTS (" +
+                "SELECT user_id, cipher_id " +
+                "FROM SolvedChallenges s " +
+                "WHERE c.cipher_id = s.cipher_id AND '"+ user_id + "' = s.user_id)";
+        /* PROBS WRONG (99.9 certainty)
+        return "SELECT cipher_id, cipher_specification, cipher_message, cipher_tips "+
+                "FROM CipherChallenges c, SolvedChallenges s "+
+                "WHERE c.user_id != '"+user_id+"' AND c.user_id = s.user_id AND c.cipher_id != s.cipher_id";*/
     }
 
     public static String challengesHashList(String user_id){
@@ -94,7 +117,7 @@ public class Queries {
     }
 
     public static String getCipherChallengeData(String cipher_id) {
-        return "SELECT cipher_specification, cipher_hmac, cipher_message, iv, salt " +
+        return "SELECT cipher_specification, cipher_hmac, cipher_message, iv, salt, signature " +
                 "FROM CipherChallenges " +
                 "WHERE cipher_id = '" + cipher_id + "'";
     }
