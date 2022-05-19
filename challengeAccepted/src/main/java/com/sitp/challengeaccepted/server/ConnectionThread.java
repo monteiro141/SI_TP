@@ -178,10 +178,10 @@ public class ConnectionThread extends Thread {
         byte[] saltedPassword = CipherDecipher.getSaltToPassword("One1Mor3E4ster6g9".getBytes(),finalDecipheredMessage());
         if(saltedPassword != null && loginVerification(email,new String(saltedPassword))){
             sendLogInStatusToClient("true");
-            System.out.println("Log in success");
+            //System.out.println("Log in success");
             operationMenu();
         }else{
-            System.out.println("Log in failed");
+            //System.out.println("Log in failed");
             sendLogInStatusToClient("false");
         }
     }
@@ -222,11 +222,11 @@ public class ConnectionThread extends Thread {
         String email = finalDecipheredMessage();
         byte[] saltedPassword = CipherDecipher.getSaltToPassword("One1Mor3E4ster6g9".getBytes(),finalDecipheredMessage());
         if(saltedPassword != null && registerVerification(email,new String(saltedPassword))){
-            System.out.println("Register suc");
+            //System.out.println("Register suc");
             sendLogInStatusToClient("true");
             operationMenu();
         }else{
-            System.out.println("Register failed");
+            //System.out.println("Register failed");
             sendLogInStatusToClient("false");
         }
     }
@@ -255,9 +255,9 @@ public class ConnectionThread extends Thread {
     private void operationMenu() {
         String option;
         while (true) {
-            System.out.println("Option:");
+            //System.out.println("Option:");
             option = finalDecipheredMessage();
-            System.out.println(option);
+            //System.out.println(option);
             switch (option) {
                 case "create":
                     if (createChallenge()) {
@@ -323,7 +323,7 @@ public class ConnectionThread extends Thread {
             if(valuesReturned!=null){
                 cipherText = valuesReturned.get(0);
                 tips = valuesReturned.get(1);
-                System.out.println(cipherText);
+                //System.out.println(cipherText);
             }
         }else if(!challengeSpecification.equals("CESAR")){
             cipherText = CipherDecipherChallenges.encryptCipher(challengeSpecification, message, finalDecipheredMessage(), salt, ivVector);
@@ -363,7 +363,7 @@ public class ConnectionThread extends Thread {
             ps.setBytes(6,salt);
             ps.setString(7,tips);
             ps.setString(8, signature);
-            System.out.println(ps.execute());
+            //System.out.println(ps.execute());
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -391,9 +391,9 @@ public class ConnectionThread extends Thread {
     private void resolveChallenge() {
         String challengeType;
          do{
-            System.out.println("ChallengeType:");
+            //System.out.println("ChallengeType:");
              challengeType = finalDecipheredMessage();
-            System.out.println(challengeType);
+            //System.out.println(challengeType);
             switch (challengeType) {
                 case "Cifra":
                     if(resolveCipherChallenge())
@@ -410,7 +410,7 @@ public class ConnectionThread extends Thread {
     }
 
     private boolean resolveCipherChallenge(){
-        System.out.println("Cipher resolving");
+        //System.out.println("Cipher resolving");
         String id = finalDecipheredMessage();
         String password = finalDecipheredMessage();
         String specification, hmac, message, signature, plaintext = "";
@@ -434,19 +434,14 @@ public class ConnectionThread extends Thread {
         } else {
             plaintext = CipherDecipherChallenges.decryptCesar(message, Integer.parseInt(password));
         }
-        System.out.println("Plaintext");
-        System.out.println(plaintext);
+        //System.out.println("Plaintext");
+        //System.out.println(plaintext);
         if (plaintext != null) {
             String hmacPlaintext = GenerateValues.doHMACMessage(plaintext, adminSecretKey);
             boolean verify = GenerateValues.verifySignature(plaintext, signature, signaturePublicKey);
 
-            if(hmac.equals(hmacPlaintext))
-                System.out.println("Hmac is equal");
-            if(verify)
-                System.out.println("Signature is equal");
-
             if (hmac.equals(hmacPlaintext) && verify) {
-                System.out.println("good decipher");
+                //System.out.println("good decipher");
                 sendLogInStatusToClient("success");
                 sendLogInStatusToClient(plaintext);
 
@@ -457,7 +452,7 @@ public class ConnectionThread extends Thread {
                 }
                 return true;
             } else {
-                System.out.println("bad decipher");
+                //System.out.println("bad decipher");
                 sendLogInStatusToClient("fail");
             }
         }else {
@@ -480,11 +475,11 @@ public class ConnectionThread extends Thread {
         }
         result = CipherDecipherChallenges.CreateHash(specification, password);
         if (result.equals(hash)) {
-            System.out.println("good hash");
+            //System.out.println("good hash");
             sendLogInStatusToClient("sucess");
             return true;
         } else {
-            System.out.println("bad hash");
+            //System.out.println("bad hash");
             sendLogInStatusToClient("fail");
         }
         return false;
@@ -531,7 +526,7 @@ public class ConnectionThread extends Thread {
         try {
             ciphersCaller = databaseCaller.getStatement().executeQuery(Queries.challengesCipherList(String.valueOf(user_id)));
             if(!ciphersCaller.next())
-                System.out.println("No ciphers available");
+                return cipherChallengesList;
             else
             do {
 
@@ -541,7 +536,7 @@ public class ConnectionThread extends Thread {
                 String cipher_tips = ciphersCaller.getString(4);
                 cipherChallengesList.add(new CipherChallengesAttributes(challengeId,type_cipher,cipher_message,cipher_tips));
             } while (ciphersCaller.next());
-            System.out.println("Has value: " + cipherChallengesList.size());
+            //System.out.println("Has value: " + cipherChallengesList.size());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -554,7 +549,7 @@ public class ConnectionThread extends Thread {
         try{
             hashCaller = databaseCaller.getStatement().executeQuery(Queries.challengesHashList(String.valueOf(user_id)));
             if(!hashCaller.next())
-                System.out.println("No hashs available");
+                return hashChallengesList;
             else
             do {
                 int hash_id = hashCaller.getInt(1);
@@ -563,7 +558,7 @@ public class ConnectionThread extends Thread {
                 String hash_tips = hashCaller.getString(4);
                 hashChallengesList.add(new HashChallengesAttributes(hash_id,hash_specification,hash_hash,hash_tips));
             }while (hashCaller.next());
-            System.out.println("Has value: " + hashChallengesList.size());
+            //System.out.println("Has value: " + hashChallengesList.size());
         }catch (SQLException e) {
             throw new RuntimeException(e);
         }
