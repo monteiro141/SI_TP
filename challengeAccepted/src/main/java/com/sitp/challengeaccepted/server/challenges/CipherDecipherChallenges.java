@@ -4,13 +4,12 @@ import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.lang.reflect.Array;
 import java.math.BigInteger;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Locale;
 
@@ -196,5 +195,42 @@ public class CipherDecipherChallenges {
             }
         }
         return ciphertext.toString();
+    }
+
+    public static ArrayList<String> encryptElGamal(String message, String yString) {
+        ArrayList<String> valuesToReturn= new ArrayList<>();
+        String ciphertext=null;
+        int P = 992591;
+        int G = 844925;
+        //to do Alice side
+        int x = new SecureRandom().nextInt(2, P-1);
+        System.out.println(x);
+        int X = (int)(Math.pow(G, x) % P);
+
+        //Bob side
+        int y= Integer.parseInt(yString);
+        int Y = (int)(Math.pow(G, y) % P);
+        int key = (int)(Math.pow(X, y) % P);
+        String aesKeyHash = CreateHash("MD5", String.valueOf(X) + key);
+
+        SecretKey keytoencrypt = convertStringToSecretKeyto(aesKeyHash);
+        try {
+            ciphertext = encrypt("AES/ECB/PKCS5Padding", message, keytoencrypt, null);
+        }catch(BadPaddingException ex){
+            return null;
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException | InvalidKeyException | IllegalBlockSizeException e) {
+            e.printStackTrace();
+        }
+        valuesToReturn.add(ciphertext);
+        valuesToReturn.add(String.valueOf(Y));
+        return valuesToReturn;
+    }
+
+    //public ArrayList<String>
+
+    private static SecretKey convertStringToSecretKeyto(String encodedKey) {
+        byte[] decodedKey = Base64.getDecoder().decode(encodedKey);
+        SecretKey originalKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
+        return originalKey;
     }
 }

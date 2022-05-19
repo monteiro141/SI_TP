@@ -18,6 +18,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
+import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -295,7 +296,11 @@ public class ConnectionThread extends Thread {
     private boolean createCipherChallenge () {
         String challengeSpecification = finalDecipheredMessage();
         String message = finalDecipheredMessage();
-        String tips = finalDecipheredMessage();
+        String tips="";
+        if(!challengeSpecification.equals("ELGAMAL")){
+            tips = finalDecipheredMessage();
+        }
+
         byte[] salt = null;
         byte[] iv = null;
         IvParameterSpec ivVector=null;
@@ -312,7 +317,14 @@ public class ConnectionThread extends Thread {
             }
         }
 
-        if(!challengeSpecification.equals("CESAR")){
+        if(challengeSpecification.equals("ELGAMAL")){
+            ArrayList<String> valuesReturned = CipherDecipherChallenges.encryptElGamal(message, finalDecipheredMessage());
+            if(valuesReturned!=null){
+                cipherText = valuesReturned.get(0);
+                tips = valuesReturned.get(1);
+                System.out.println(cipherText);
+            }
+        }else if(!challengeSpecification.equals("CESAR")){
             cipherText = CipherDecipherChallenges.encryptCipher(challengeSpecification, message, finalDecipheredMessage(), salt, ivVector);
         }
         else{

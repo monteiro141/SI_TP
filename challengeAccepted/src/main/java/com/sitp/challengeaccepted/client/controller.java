@@ -135,7 +135,7 @@ public class controller {
     public Button cancelButton;
 
     //list of cipher modes
-    public static String[] cipherModes = {"AES-128-ECB","AES-128-CBC","AES-128-CTR","VIGENERE","CESAR"};
+    public static String[] cipherModes = {"AES-128-ECB","AES-128-CBC","AES-128-CTR","VIGENERE","CESAR","ELGAMAL"};
     //list of hash modes
     public static String[] hashModes = {"MD5","SHA256","SHA512"};
 
@@ -201,6 +201,13 @@ public class controller {
         return false;
     }
 
+    public boolean verifyElGamal(String message){
+        if(message.matches("([2-9]|[1-9][0-9]{1,4}|[1-8][0-9]{5}|9[0-8][0-9]{4}|99[01][0-9]{3}|992[0-4][0-9]{2}|9925[0-8][0-9])")){
+            return true;
+        }
+        return false;
+    }
+
     public void verifyContentTypes(){
         dropdownTypes.showingProperty().addListener((observable, oldValue, newValue) ->{
             messageInsert.clear();
@@ -209,16 +216,20 @@ public class controller {
             insertButton.setDisable(true);
 
             if(dropdownTypes.getValue().equals("CESAR")){
+                tips.setDisable(false);
                 passInsertText.setText("Offset:");
+            }else if(dropdownTypes.getValue().equals("ELGAMAL")){
+                tips.setDisable(true);
+                passInsertText.setText("y (1 < y < 120011728):");
             }else{
+                tips.setDisable(false);
                 passInsertText.setText("Palavra Passe:");
             }
         });
 
-        //TODO: VERIFICATION OF LENGTH OF ELEMENTS
         messageInsert.textProperty().addListener((observable, oldValue, newValue) ->{
             //for cipher challenges
-            if(!passInsert.isDisable() && !newValue.equals("") && !tips.getText().equals("") && !passInsert.getText().equals("") && verify128CharsElements(messageInsert.getText(),tips.getText())){
+            if(!passInsert.isDisable() && !newValue.equals("") && (!tips.getText().equals("") || tips.isDisable()) && !passInsert.getText().equals("") && verify128CharsElements(messageInsert.getText(),tips.getText())){
                 switch (dropdownTypes.getValue()){
                     case "VIGENERE":
                         insertButton.setDisable(!verifyMessageVigCes(messageInsert.getText()) || !verifyMessageVigCes(passInsert.getText()));
@@ -264,13 +275,16 @@ public class controller {
 
        if(!passInsert.isDisable()) {
            passInsert.textProperty().addListener((observable, oldValue, newValue) -> {
-               if(!newValue.equals("") && !tips.getText().equals("") && !messageInsert.getText().equals("") && verify128CharsElements(messageInsert.getText(),tips.getText())){
+               if(!newValue.equals("") && (!tips.getText().equals("") || tips.isDisable()) && !messageInsert.getText().equals("") && verify128CharsElements(messageInsert.getText(),tips.getText())){
                    switch (dropdownTypes.getValue()){
                        case "VIGENERE":
                            insertButton.setDisable(!verifyMessageVigCes(messageInsert.getText()) || !verifyMessageVigCes(passInsert.getText()));
                            break;
                        case "CESAR":
                            insertButton.setDisable(!verifyMessageVigCes(messageInsert.getText()) || !(verifyOffSetCesar(passInsert.getText())));
+                           break;
+                       case "ELGAMAL":
+                           insertButton.setDisable(!verifyAESMessageRegex(messageInsert.getText()) || (!verifyElGamal(passInsert.getText())));
                            break;
                        default:
                            insertButton.setDisable(false);
@@ -296,8 +310,6 @@ public class controller {
             byte[] sendMessage = CipherDecipherClient.encrypt(messageInsert.getText(),Client.client_server,"AES",null);
             byte[] sendMessageHash = CipherDecipherClient.encrypt(getHash(messageInsert.getText()),Client.client_server_hash,"AES",null);
 
-            byte[] sendTips = CipherDecipherClient.encrypt(tips.getText(),Client.client_server,"AES",null);
-            byte[] sendTipsHash = CipherDecipherClient.encrypt(getHash(tips.getText()),Client.client_server_hash,"AES",null);
 
             Client.os.writeObject(sendTypeChallenge);
             Client.os.writeObject(sendTypeChallengeHash);
@@ -311,10 +323,16 @@ public class controller {
             Client.os.writeObject(sendMessageHash);
             Client.os.flush();
 
-            Client.os.writeObject(sendTips);
-            Client.os.writeObject(sendTipsHash);
-            Client.os.flush();
+            //mode chosen is not ElGamal
+            if(!tips.isDisable()){
+                byte[] sendTips = CipherDecipherClient.encrypt(tips.getText(),Client.client_server,"AES",null);
+                byte[] sendTipsHash = CipherDecipherClient.encrypt(getHash(tips.getText()),Client.client_server_hash,"AES",null);
+                Client.os.writeObject(sendTips);
+                Client.os.writeObject(sendTipsHash);
+                Client.os.flush();
+            }
 
+            //type chosen is not hash
             if(!passInsert.isDisable()) {
                 byte[] sendPassword = CipherDecipherClient.encrypt(passInsert.getText(), Client.client_server, "AES", null);
                 byte[] sendPasswordHash = CipherDecipherClient.encrypt(getHash(passInsert.getText()), Client.client_server_hash, "AES", null);
@@ -377,7 +395,6 @@ public class controller {
     public void insertButtonResolve(ActionEvent event){
         //send type of challenge
         String id = "";
-        //System.out.println(dropdownTypeChoose.getValue());
         switch (dropdownTypeChoose.getValue().toString()){
             case "Cifra":
                 id = String.valueOf(((CipherChallengesAttributes)dropdownChoose.getValue()).getChallenge_id());

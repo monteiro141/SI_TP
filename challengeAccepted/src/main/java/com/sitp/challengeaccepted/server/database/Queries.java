@@ -25,7 +25,7 @@ public class Queries {
                 "cipher_hmac char(64) not null, " +
                 "cipher_message char(255) not null, " +
                 "iv varbinary(16), " +
-                "salt varbinary(16) not null, " +
+                "salt varbinary(16), " +
                 "cipher_tips char(128), " +
                 "signature text not null, " +
                 "PRIMARY KEY (cipher_id), " +

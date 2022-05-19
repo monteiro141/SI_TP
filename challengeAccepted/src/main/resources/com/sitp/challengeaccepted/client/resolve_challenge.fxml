@@ -36,12 +36,12 @@
          <children>
             <Text stroke="#f7f1f1" strokeType="OUTSIDE" text="   Tipo:" textAlignment="RIGHT" wrappingWidth="89.33680152893066" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                <font>
-                  <Font size="14.0" />
+                  <Font name="System Bold" size="14.0" />
                </font>
             </Text>
             <Text fx:id="typeText" stroke="#f7f1f1" strokeType="OUTSIDE" text="   Desafio:" textAlignment="RIGHT" wrappingWidth="89.33680152893066" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                <font>
-                  <Font size="14.0" />
+                  <Font name="System Bold" size="14.0" />
                </font>
             </Text>
             <ChoiceBox fx:id="dropdownChoose" disable="true" prefHeight="35.0" prefWidth="340.0" style="-fx-background-color: #FBF9FF;" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
@@ -51,17 +51,17 @@
             </ChoiceBox>
             <Text fx:id="challenge_content_text" stroke="#f7f1f1" strokeType="OUTSIDE" text="   Conteúdo :" textAlignment="RIGHT" wrappingWidth="89.33680152893066" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                <font>
-                  <Font size="14.0" />
+                  <Font name="System Bold" size="14.0" />
                </font>
             </Text>
             <Text fx:id="challenge_tips_text" stroke="#f7f1f1" strokeType="OUTSIDE" text="   Dicas:" textAlignment="RIGHT" wrappingWidth="89.33680152893066" GridPane.rowIndex="3">
                <font>
-                  <Font size="14.0" />
+                  <Font name="System Bold" size="14.0" />
                </font>
             </Text>
             <Text fx:id="challenge_answer_text" stroke="#f7f1f1" strokeType="OUTSIDE" text="   Resposta:" textAlignment="RIGHT" wrappingWidth="89.33680152893066" GridPane.rowIndex="4">
                <font>
-                  <Font size="14.0" />
+                  <Font name="System Bold" size="14.0" />
                </font>
             </Text>
             <Text fx:id="challenge_content1" stroke="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="313.8261604309082" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
