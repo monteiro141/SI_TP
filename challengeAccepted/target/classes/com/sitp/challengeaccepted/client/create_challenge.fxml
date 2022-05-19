@@ -34,6 +34,11 @@
             <RowConstraints maxHeight="146.99997558593753" minHeight="10.0" prefHeight="38.40000610351561" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
+            <Text fx:id="passInsertText" stroke="#f7f1f1" strokeType="OUTSIDE" text="Palavra Passe:" textAlignment="RIGHT" wrappingWidth="141.3367042541504" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Text>
             <MenuButton fx:id="dropdownTypeChallenge" mnemonicParsing="false" popupSide="RIGHT" prefHeight="35.0" prefWidth="200.0" style="-fx-background-color: #FBF9FF;" text="Tipo de Desafio" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
               <items>
                 <MenuItem fx:id="cipherChoice" mnemonicParsing="false" onAction="#cipherChoiceInput" text="Cifra" />
@@ -61,27 +66,22 @@
                   <DropShadow />
                </effect>
             </TextField>
-            <Text stroke="#f7f1f1" strokeType="OUTSIDE" text="Tipo:" textAlignment="CENTER" wrappingWidth="89.33680152893066" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+            <Text stroke="#f7f1f1" strokeType="OUTSIDE" text="Tipo:" textAlignment="RIGHT" wrappingWidth="141.3367042541504" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                <font>
                   <Font size="14.0" />
                </font>
             </Text>
-            <Text fx:id="typeText" stroke="#f7f1f1" strokeType="OUTSIDE" text="Tipo de ... :" textAlignment="CENTER" wrappingWidth="125.3368091583252" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+            <Text fx:id="typeText" stroke="#f7f1f1" strokeType="OUTSIDE" text="Tipo de ... :" textAlignment="RIGHT" wrappingWidth="141.3367042541504" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                <font>
                   <Font size="14.0" />
                </font>
             </Text>
-            <Text stroke="#f7f1f1" strokeType="OUTSIDE" text="Mensagem:" textAlignment="CENTER" wrappingWidth="130.13665962219238" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+            <Text stroke="#f7f1f1" strokeType="OUTSIDE" text="Mensagem:" textAlignment="RIGHT" wrappingWidth="141.3367042541504" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                <font>
                   <Font size="14.0" />
                </font>
             </Text>
-            <Text stroke="#f7f1f1" strokeType="OUTSIDE" text="Dicas:" textAlignment="CENTER" wrappingWidth="94.1367073059082" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Text>
-            <Text stroke="#f7f1f1" strokeType="OUTSIDE" text="Palavra Passe:" textAlignment="CENTER" wrappingWidth="141.3367042541504" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+            <Text stroke="#f7f1f1" strokeType="OUTSIDE" text="Dicas:" textAlignment="RIGHT" wrappingWidth="141.3367042541504" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                <font>
                   <Font size="14.0" />
                </font>

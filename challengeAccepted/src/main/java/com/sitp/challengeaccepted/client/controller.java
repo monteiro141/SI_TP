@@ -47,35 +47,60 @@ public class controller {
     //Group 2 - Login & Register Page Elements
     //elements for login and register page => credentials_client_menu.fxml
     public TextField emailInput;
-    public TextField passwordInput;
+    public PasswordField passwordInput;
     public Text textCredentials;
+    public Button submit;
+    public Button cancelButtonCredentials;
 
     //control variables for credentials_client_menu.fxml
     public static boolean login_access = false;
+    public static boolean email_Valid = false;
 
     //function to submit login or register data to server , as well if user did login or register
     public void submit_data_server(ActionEvent event) throws IOException{
         //warning server if user choosed login or register
-        if(login_access){
+        if(login_access && email_Valid){
             try {
                 send_Login_Register("login");
+                //function to validate register/login done by user
+                verifyLoginRegister(event);
+            } catch (NoSuchPaddingException | BadPaddingException | NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
+        }else if(email_Valid && !(passwordInput.getText().equals(""))){
+            try {
+                send_Login_Register("register");
+                //function to validate register/login done by user
+                verifyLoginRegister(event);
             } catch (NoSuchPaddingException | BadPaddingException | NoSuchAlgorithmException e) {
                 e.printStackTrace();
             }
         }else{
-            try {
-                send_Login_Register("register");
-            } catch (NoSuchPaddingException | BadPaddingException | NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            }
+            textCredentials.setText("Credenciais incorretas!");
         }
         if(event.getSource() instanceof Button){
             Button buttonPressed = (Button) event.getSource();
             String nameOfButton = buttonPressed.getText();
         }
 
-        //function to validate register/login done by user
-        verifyLoginRegister(event);
+    }
+
+    public void listenerElementsCredentialsMenu(){
+        emailInput.textProperty().addListener((observable, oldValue, newValue) ->{
+            if(verifyCredentialEmail(emailInput.getText())){
+                email_Valid=true;
+            }
+            else{
+                email_Valid=false;
+            }
+        });
+    }
+
+    public boolean verifyCredentialEmail(String message){
+        if (message.matches("^(.+)@(.+)$")) {
+            return true;
+        }
+        return false;
     }
 
     public void dataExchange() throws NoSuchPaddingException, IOException, BadPaddingException, NoSuchAlgorithmException, ClassNotFoundException {
@@ -103,6 +128,7 @@ public class controller {
 
     public TextField messageInsert;
     public TextField tips;
+    public Text passInsertText;
     public TextField passInsert;
 
     public Button insertButton;
@@ -115,6 +141,7 @@ public class controller {
 
     public void cipherChoiceInput(ActionEvent event){
         dropdownTypeChallenge.setText("Cifra");
+        typeText.setText("Tipo de Cifra:");
         dropdownTypes.setDisable(false);
         messageInsert.setDisable(false);
         tips.setDisable(false);
@@ -122,7 +149,7 @@ public class controller {
 
         messageInsert.clear();
         tips.clear();
-        passInsert.clear();
+        passInsertText.setText("Palavra Passe:");
         dropdownTypes.getItems().clear();
         dropdownTypes.getItems().addAll(cipherModes);
         dropdownTypes.setValue(cipherModes[0]);
@@ -131,13 +158,15 @@ public class controller {
 
     public void hashChoiceInput(ActionEvent event){
         dropdownTypeChallenge.setText("Hash");
+        typeText.setText("Tipo de Hash:");
         dropdownTypes.setDisable(false);
         messageInsert.setDisable(false);
         tips.setDisable(false);
         passInsert.setDisable(true);
+
         messageInsert.clear();
         tips.clear();
-        passInsert.clear();
+        passInsertText.setText("Palavra Passe:");
         dropdownTypes.getItems().clear();
         dropdownTypes.getItems().addAll(hashModes);
         dropdownTypes.setValue(hashModes[0]);
@@ -145,27 +174,51 @@ public class controller {
     }
 
     public boolean verifyMessageVigCes(String message){
-        if (message.matches("[a-zA-Z]+$")) {
+        if (message.matches("[a-zA-Z\s]+$")) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean verifyAESMessageRegex(String message){
+        if(message.matches("^[ -~]*$")){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean verifyOffSetCesar(String message){
+        if(message.matches("^([1-9]|1[0-9]|2[0-5])$")){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean verify128CharsElements(String message, String tips){
+        if(message.length() <= 128 && tips.length() <= 128) {
             return true;
         }
         return false;
     }
 
     public void verifyContentTypes(){
-
         dropdownTypes.showingProperty().addListener((observable, oldValue, newValue) ->{
             messageInsert.clear();
             tips.clear();
             passInsert.clear();
             insertButton.setDisable(true);
+
+            if(dropdownTypes.getValue().equals("CESAR")){
+                passInsertText.setText("Offset:");
+            }else{
+                passInsertText.setText("Palavra Passe:");
+            }
         });
 
         //TODO: VERIFICATION OF LENGTH OF ELEMENTS
-        //messageInsert.getText().length() <= 128) && (tips.getText().length() <= 128)
-
         messageInsert.textProperty().addListener((observable, oldValue, newValue) ->{
             //for cipher challenges
-            if(!passInsert.isDisable() && !newValue.equals("") && !tips.getText().equals("") && !passInsert.getText().equals("")){
+            if(!passInsert.isDisable() && !newValue.equals("") && !tips.getText().equals("") && !passInsert.getText().equals("") && verify128CharsElements(messageInsert.getText(),tips.getText())){
                 switch (dropdownTypes.getValue()){
                     case "VIGENERE":
                         insertButton.setDisable(!verifyMessageVigCes(messageInsert.getText()) || !verifyMessageVigCes(passInsert.getText()));
@@ -174,10 +227,10 @@ public class controller {
                         insertButton.setDisable(!verifyMessageVigCes(messageInsert.getText()) || !(passInsert.getText().matches("\\d+") && Integer.parseInt(passInsert.getText()) >= 1 && Integer.parseInt(passInsert.getText()) <= 25));
                         break;
                     default:
-                        insertButton.setDisable(false);
+                        insertButton.setDisable(!verifyAESMessageRegex(messageInsert.getText()));
                 }
             }//for hash challenges
-            else if (passInsert.isDisable() && !newValue.equals("") && !tips.getText().equals("")){
+            else if (passInsert.isDisable() && !newValue.equals("") && !tips.getText().equals("") && verify128CharsElements(messageInsert.getText(),tips.getText())){
                 //enable button
                 insertButton.setDisable(false);
             }else {
@@ -188,7 +241,7 @@ public class controller {
 
        tips.textProperty().addListener((observable, oldValue, newValue) ->{
            //for cipher challenges
-           if(!passInsert.isDisable() && !newValue.equals("") && !messageInsert.getText().equals("") && !passInsert.getText().equals("")){
+           if(!passInsert.isDisable() && !newValue.equals("") && !messageInsert.getText().equals("") && !passInsert.getText().equals("") && verify128CharsElements(messageInsert.getText(),tips.getText())){
                switch (dropdownTypes.getValue()){
                    case "VIGENERE":
                        insertButton.setDisable(!verifyMessageVigCes(messageInsert.getText()) || !verifyMessageVigCes(passInsert.getText()));
@@ -200,7 +253,7 @@ public class controller {
                        insertButton.setDisable(false);
                }
            }//for hash challenges
-           else if (passInsert.isDisable() && !newValue.equals("") && !messageInsert.getText().equals("")){
+           else if (passInsert.isDisable() && !newValue.equals("") && !messageInsert.getText().equals("") && verify128CharsElements(messageInsert.getText(),tips.getText())){
                //enable button
                insertButton.setDisable(false);
            }else {
@@ -211,13 +264,13 @@ public class controller {
 
        if(!passInsert.isDisable()) {
            passInsert.textProperty().addListener((observable, oldValue, newValue) -> {
-               if(!newValue.equals("") && !tips.getText().equals("") && !messageInsert.getText().equals("")){
+               if(!newValue.equals("") && !tips.getText().equals("") && !messageInsert.getText().equals("") && verify128CharsElements(messageInsert.getText(),tips.getText())){
                    switch (dropdownTypes.getValue()){
                        case "VIGENERE":
                            insertButton.setDisable(!verifyMessageVigCes(messageInsert.getText()) || !verifyMessageVigCes(passInsert.getText()));
                            break;
                        case "CESAR":
-                           insertButton.setDisable(!verifyMessageVigCes(messageInsert.getText()) || !(passInsert.getText().matches("\\d+") && Integer.parseInt(passInsert.getText()) >= 1 && Integer.parseInt(passInsert.getText()) <= 25));
+                           insertButton.setDisable(!verifyMessageVigCes(messageInsert.getText()) || !(verifyOffSetCesar(passInsert.getText())));
                            break;
                        default:
                            insertButton.setDisable(false);
@@ -485,28 +538,44 @@ public class controller {
     public void switchCredentialsMenuLogin(ActionEvent event) throws IOException, NoSuchAlgorithmException {
         //stage switching and creation
         FXMLLoader fxmlLoader = new FXMLLoader(Client.class.getResource("credentials_client_menu.fxml"));
-        //fxmlLoader.setController(Client.control);
-        root = fxmlLoader.load();
         stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
-        scene = new Scene(root,600,400);
+        scene = new Scene(fxmlLoader.load(),600,400);
         stage.setMinWidth(600);
         stage.setMinHeight(400);
         stage.setScene(scene);
         stage.show();
 
+        //instantiate elements of fxml
+        textCredentials = (Text) fxmlLoader.getNamespace().get("textCredentials");
+        emailInput = (TextField) fxmlLoader.getNamespace().get("emailInput");
+        passwordInput = (PasswordField) fxmlLoader.getNamespace().get("passwordInput");
+        submit = (Button) fxmlLoader.getNamespace().get("submit");
+        cancelButtonCredentials = (Button) fxmlLoader.getNamespace().get("cancelButtonCredentials");
+
         //warning server if user choosed login or register
         login_access = true;
+        email_Valid = false;
+        listenerElementsCredentialsMenu();
     }
 
     public void switchCredentialsMenuRegister(ActionEvent event) throws IOException{
         //stage switching and creation
-        root = FXMLLoader.load(Client.class.getResource("credentials_client_menu.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(Client.class.getResource("credentials_client_menu.fxml"));
         stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
-        scene = new Scene(root,600,400);
+        scene = new Scene(fxmlLoader.load(),600,400);
         stage.setMinWidth(600);
         stage.setMinHeight(400);
         stage.setScene(scene);
         stage.show();
+
+        //instantiate elements of fxml
+        textCredentials = (Text) fxmlLoader.getNamespace().get("textCredentials");
+        emailInput = (TextField) fxmlLoader.getNamespace().get("emailInput");
+        passwordInput = (PasswordField) fxmlLoader.getNamespace().get("passwordInput");
+        submit = (Button) fxmlLoader.getNamespace().get("submit");
+        cancelButtonCredentials = (Button) fxmlLoader.getNamespace().get("cancelButtonCredentials");
+        email_Valid = false;
+        listenerElementsCredentialsMenu();
     }
 
     public void switchMainMenu(ActionEvent event) throws IOException{
@@ -594,12 +663,6 @@ public class controller {
         if(changeView) {
             //stage switching and creation
             FXMLLoader loader = new FXMLLoader(Client.class.getResource("resolve_challenge.fxml"));
-
-            //dropdownTypeChoose = loader.
-
-            //root = FXMLLoader.load(Client.class.getResource("resolve_challenge.fxml"));
-            //String types[] = {"Cifra","Hash"};
-            //dropdownTypeChoose = new ChoiceBox<>(FXCollections.observableArrayList(types));
 
             stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
             scene = new Scene(loader.load(),600,400);
