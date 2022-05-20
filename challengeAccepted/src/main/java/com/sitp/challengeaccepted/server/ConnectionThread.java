@@ -271,6 +271,7 @@ public class ConnectionThread extends Thread {
                         break;
                     }
                     resolveChallenge();
+                    sendLogInStatusToClient("true");
                     break;
                 case "logout":
                     return;
@@ -323,7 +324,7 @@ public class ConnectionThread extends Thread {
             if(valuesReturned!=null){
                 cipherText = valuesReturned.get(0);
                 tips = valuesReturned.get(1);
-                System.out.println(cipherText);
+                iv = valuesReturned.get(2).getBytes();
             }
         }else if(!challengeSpecification.equals("CESAR")){
             cipherText = CipherDecipherChallenges.encryptCipher(challengeSpecification, message, finalDecipheredMessage(), salt, ivVector);
@@ -413,7 +414,7 @@ public class ConnectionThread extends Thread {
         System.out.println("Cipher resolving");
         String id = finalDecipheredMessage();
         String password = finalDecipheredMessage();
-        String specification, hmac, message, signature, plaintext = "";
+        String specification, hmac, message, signature, tips, plaintext = "";
         byte [] salt, iv;
         try {
             ResultSet challengeData = databaseCaller.getStatement().executeQuery(Queries.getCipherChallengeData(id));
@@ -424,10 +425,13 @@ public class ConnectionThread extends Thread {
             iv = challengeData.getBytes(4);
             salt = challengeData.getBytes(5);
             signature = challengeData.getString(6);
+            tips = challengeData.getString(7);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        if (iv != null && !specification.equals("CESAR")) {
+        if(specification.equals("ELGAMAL")){
+            plaintext = CipherDecipherChallenges.decryptElGamal(message, password, tips, new String(iv));
+        }else if (iv != null && !specification.equals("CESAR")) {
             plaintext = CipherDecipherChallenges.decryptCipher(specification, message, password, salt, new IvParameterSpec(iv));
         } else if (!specification.equals("CESAR")) {
             plaintext = CipherDecipherChallenges.decryptCipher(specification, message, password, salt, null);

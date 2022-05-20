@@ -34,32 +34,32 @@
             <RowConstraints maxHeight="157.20000610351565" minHeight="10.0" prefHeight="73.60000610351562" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Text stroke="#f7f1f1" strokeType="OUTSIDE" text="   Tipo:" textAlignment="RIGHT" wrappingWidth="89.33680152893066" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+            <Text stroke="#f7f1f1" strokeType="OUTSIDE" text="   Tipo:" textAlignment="RIGHT" wrappingWidth="136.33680152893066" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
             </Text>
-            <Text fx:id="typeText" stroke="#f7f1f1" strokeType="OUTSIDE" text="   Desafio:" textAlignment="RIGHT" wrappingWidth="89.33680152893066" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+            <Text fx:id="typeText" stroke="#f7f1f1" strokeType="OUTSIDE" text="   Desafio:" textAlignment="RIGHT" wrappingWidth="136.33680152893066" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
             </Text>
-            <ChoiceBox fx:id="dropdownChoose" disable="true" prefHeight="35.0" prefWidth="340.0" style="-fx-background-color: #FBF9FF;" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+            <ChoiceBox fx:id="dropdownChoose" disable="true" prefHeight="35.0" prefWidth="300.0" style="-fx-background-color: #FBF9FF;" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                <effect>
                   <DropShadow />
                </effect>
             </ChoiceBox>
-            <Text fx:id="challenge_content_text" stroke="#f7f1f1" strokeType="OUTSIDE" text="   Conteúdo :" textAlignment="RIGHT" wrappingWidth="89.33680152893066" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+            <Text fx:id="challenge_content_text" stroke="#f7f1f1" strokeType="OUTSIDE" text="   Conteúdo:" textAlignment="RIGHT" wrappingWidth="136.33680152893066" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
             </Text>
-            <Text fx:id="challenge_tips_text" stroke="#f7f1f1" strokeType="OUTSIDE" text="   Dicas:" textAlignment="RIGHT" wrappingWidth="89.33680152893066" GridPane.rowIndex="3">
+            <Text fx:id="challenge_tips_text" stroke="#f7f1f1" strokeType="OUTSIDE" text="   Dicas:" textAlignment="RIGHT" wrappingWidth="136.33680152893066" GridPane.rowIndex="3">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
             </Text>
-            <Text fx:id="challenge_answer_text" stroke="#f7f1f1" strokeType="OUTSIDE" text="   Resposta:" textAlignment="RIGHT" wrappingWidth="89.33680152893066" GridPane.rowIndex="4">
+            <Text fx:id="challenge_answer_text" stroke="#f7f1f1" strokeType="OUTSIDE" text="   Resposta:" textAlignment="RIGHT" wrappingWidth="136.33680152893066" GridPane.rowIndex="4">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
@@ -72,17 +72,17 @@
                   <Bloom />
                </effect>
             </Text>
-            <TextField fx:id="challenge_answer" disable="true" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="36.0" prefWidth="360.0" style="-fx-background-color: #FBF9FF;" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER">
+            <TextField fx:id="challenge_answer" disable="true" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="36.0" prefWidth="300.0" style="-fx-background-color: #FBF9FF;" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER">
                <effect>
                   <DropShadow />
                </effect>
             </TextField>
-            <ChoiceBox fx:id="dropdownTypeChoose" prefHeight="35.0" prefWidth="340.0" style="-fx-background-color: #FBF9FF;" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+            <ChoiceBox fx:id="dropdownTypeChoose" prefHeight="35.0" prefWidth="300.0" style="-fx-background-color: #FBF9FF;" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                <effect>
                   <DropShadow />
                </effect>
             </ChoiceBox>
-            <TextFlow maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="35.0" prefWidth="320.0" style="-fx-background-color: #FBF9FF;" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+            <TextFlow maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="35.0" prefWidth="300.0" style="-fx-background-color: #FBF9FF;" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
                <children>
                   <Text fx:id="challenge_tips" stroke="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="360.2262463569641">
                      <font>
@@ -97,7 +97,7 @@
                   <DropShadow />
                </effect>
             </TextFlow>
-            <TextFlow maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="50.0" prefWidth="320.0" style="-fx-background-color: #FBF9FF;" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+            <TextFlow maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="50.0" prefWidth="300.0" style="-fx-background-color: #FBF9FF;" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                <children>
                   <Text fx:id="challenge_content" stroke="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-bac: #FBF9FF;" textAlignment="CENTER" wrappingWidth="232.79996645450592">
                      <font>

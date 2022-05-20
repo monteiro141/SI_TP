@@ -202,7 +202,7 @@ public class controller {
     }
 
     public boolean verifyElGamal(String message){
-        if(message.matches("([2-9]|[1-9][0-9]{1,4}|[1-8][0-9]{5}|9[0-8][0-9]{4}|99[01][0-9]{3}|992[0-4][0-9]{2}|9925[0-8][0-9])")){
+        if(message.matches("([2-9]|[12][0-9])")){
             return true;
         }
         return false;
@@ -220,7 +220,7 @@ public class controller {
                 passInsertText.setText("Offset:");
             }else if(dropdownTypes.getValue().equals("ELGAMAL")){
                 tips.setDisable(true);
-                passInsertText.setText("y (1 < y < 120011728):");
+                passInsertText.setText("y (1 < y < (31-1)):");
             }else{
                 tips.setDisable(false);
                 passInsertText.setText("Palavra Passe:");
@@ -447,6 +447,22 @@ public class controller {
             }
         });
 
+        dropdownChoose.showingProperty().addListener((observable, oldValue, newValue) ->{
+            if(dropdownChoose.getValue().toString().toLowerCase().contains("cesar")) {
+                challenge_answer_text.setText("Offset:");
+                challenge_tips_text.setText("Dicas:");
+            }
+            else if(dropdownChoose.getValue().toString().toLowerCase().contains("elgamal")){
+                challenge_tips_text.setText("Y:");
+                challenge_answer_text.setText("x (1 < x < (31-1)):");
+            }else if(dropdownChoose.getValue().toString().toLowerCase().contains("sha") || dropdownChoose.getValue().toString().toLowerCase().contains("md5")) {
+                challenge_tips_text.setText("Dicas:");
+                challenge_answer_text.setText("Mensagem:");
+            }else if(!(dropdownChoose.getValue().toString().equals("Escolher"))) {
+                challenge_answer_text.setText("Palavra Passe:");
+                challenge_tips_text.setText("Dicas:");
+            }
+        });
 
         changeListener = new ChangeListener<Number>() {
             @Override
@@ -455,13 +471,10 @@ public class controller {
                     case "Cifra":
                         if (cipherResponse.size() == 0 || (int) newValue < 0)
                             break;
+
                         challenge_content.setText(cipherResponse.get((int) newValue).getCipher_message());
                         challenge_tips.setText(cipherResponse.get((int) newValue).getCipher_tips());
-                        challenge_content_text.setText("Criptograma :");
-                        if(dropdownChoose.getValue().toString().toLowerCase().contains("cesar"))
-                            challenge_answer_text.setText("Offset :");
-                        else
-                            challenge_answer_text.setText("Palavra Passe :");
+                        challenge_content_text.setText("Criptograma:");
                         challenge_answer.setDisable(false);
                         break;
                     case "Hash":
@@ -469,8 +482,9 @@ public class controller {
                             break;
                         challenge_content.setText(hashResponse.get((int) newValue).getHash_hash());
                         challenge_tips.setText(hashResponse.get((int) newValue).getHash_tips());
-                        challenge_content_text.setText("Hash :");
-                        challenge_answer_text.setText("Mensagem :");
+                        challenge_content_text.setText("Hash:");
+                        challenge_answer_text.setText("Mensagem:");
+                        challenge_tips_text.setText("Dicas:");
                         challenge_answer.setDisable(false);
                         break;
                 }
@@ -489,17 +503,24 @@ public class controller {
             challenge_tips.setText("");
             challenge_answer.setText("");
 
+            challenge_content_text.setText("Criptograma:");
+            challenge_answer_text.setText("Palavra Passe:");
+            challenge_tips_text.setText("Dicas:");
+
             dropdownChoose.getItems().clear();
             dropdownChoose.getItems().addAll(cipherResponse);
 
             dropdownChoose.getSelectionModel().selectedIndexProperty().addListener(changeListener);
-            dropdownChoose.setValue("Escolher Cifra");
+            dropdownChoose.setValue("Escolher");
             challenge_answer.setDisable(true);
         }else{
             dropdownChoose.getSelectionModel().selectedIndexProperty().removeListener(changeListener);
             challenge_content.setText("");
             challenge_tips.setText("");
             challenge_answer.setText("");
+            challenge_content_text.setText("Criptograma:");
+            challenge_answer_text.setText("Palavra Passe:");
+            challenge_tips_text.setText("Dicas:");
             dropdownChoose.getItems().clear();
             dropdownChoose.setDisable(true);
             challenge_answer.setDisable(true);
@@ -517,17 +538,26 @@ public class controller {
             challenge_answer.setText("");
             challenge_tips.setText("");
 
+            challenge_content_text.setText("Hash:");
+            challenge_answer_text.setText("Mensagem:");
+            challenge_tips_text.setText("Dicas:");
+
             dropdownChoose.getItems().clear();
             dropdownChoose.getItems().addAll(hashResponse);
 
             dropdownChoose.getSelectionModel().selectedIndexProperty().addListener(changeListener);
-            dropdownChoose.setValue("Escolher Hash");
+            dropdownChoose.setValue("Escolher");
             challenge_answer.setDisable(true);
         }else{
             dropdownChoose.getSelectionModel().selectedIndexProperty().removeListener(changeListener);
             challenge_content.setText("");
             challenge_tips.setText("");
             challenge_answer.setText("");
+
+            challenge_content_text.setText("Hash:");
+            challenge_answer_text.setText("Mensagem:");
+            challenge_tips_text.setText("Dicas:");
+
             dropdownChoose.getItems().clear();
             dropdownChoose.setDisable(true);
             challenge_answer.setDisable(true);

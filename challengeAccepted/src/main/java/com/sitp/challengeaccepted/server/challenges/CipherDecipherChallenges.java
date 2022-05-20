@@ -200,17 +200,22 @@ public class CipherDecipherChallenges {
     public static ArrayList<String> encryptElGamal(String message, String yString) {
         ArrayList<String> valuesToReturn= new ArrayList<>();
         String ciphertext=null;
-        int P = 992591;
-        int G = 844925;
+        int P = 31;
+        int G = 11;
         //to do Alice side
-        int x = new SecureRandom().nextInt(2, P-1);
+        int xGenerated = new SecureRandom().nextInt(2, P-1);
+
+        BigInteger p = new BigInteger(String.valueOf(P));
+        BigInteger g = new BigInteger(String.valueOf(G));
+        BigInteger x = new BigInteger(String.valueOf(xGenerated));
         System.out.println(x);
-        int X = (int)(Math.pow(G, x) % P);
+        BigInteger X =g.pow(xGenerated).remainder(p);
 
         //Bob side
         int y= Integer.parseInt(yString);
-        int Y = (int)(Math.pow(G, y) % P);
-        int key = (int)(Math.pow(X, y) % P);
+        BigInteger Y = g.pow(y).remainder(p);
+
+        BigInteger key = X.pow(y).remainder(p);
         String aesKeyHash = CreateHash("MD5", String.valueOf(X) + key);
 
         SecretKey keytoencrypt = convertStringToSecretKeyto(aesKeyHash);
@@ -223,7 +228,35 @@ public class CipherDecipherChallenges {
         }
         valuesToReturn.add(ciphertext);
         valuesToReturn.add(String.valueOf(Y));
+        valuesToReturn.add(String.valueOf(X));
         return valuesToReturn;
+    }
+
+    public static String decryptElGamal(String message, String xString, String YString, String X) {
+        System.out.println(X);
+        String plaintext=null;
+        int P = 31;
+        int G = 11;
+
+        BigInteger p = new BigInteger(String.valueOf(P));
+        BigInteger Y = new BigInteger(YString);
+        int x = Integer.parseInt(xString);
+
+
+        BigInteger key = Y.pow(x).remainder(p);
+
+        String aesKeyHash = CreateHash("MD5", String.valueOf(X) + key);
+
+        SecretKey keytoencrypt = convertStringToSecretKeyto(aesKeyHash);
+        try {
+            plaintext = decrypt("AES/ECB/PKCS5Padding", message, keytoencrypt, null);
+        }catch(BadPaddingException ex){
+            return null;
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException | InvalidKeyException | IllegalBlockSizeException e) {
+            e.printStackTrace();
+        }
+
+        return plaintext;
     }
 
     //public ArrayList<String>

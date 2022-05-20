@@ -117,7 +117,7 @@ public class Queries {
     }
 
     public static String getCipherChallengeData(String cipher_id) {
-        return "SELECT cipher_specification, cipher_hmac, cipher_message, iv, salt, signature " +
+        return "SELECT cipher_specification, cipher_hmac, cipher_message, iv, salt, signature, cipher_tips " +
                 "FROM CipherChallenges " +
                 "WHERE cipher_id = '" + cipher_id + "'";
     }
