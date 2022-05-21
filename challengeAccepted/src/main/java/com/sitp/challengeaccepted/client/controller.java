@@ -302,13 +302,13 @@ public class controller {
     public void insertButtonInput(ActionEvent event){
         try {
             byte[] sendTypeChallenge = CipherDecipherClient.encrypt(dropdownTypeChallenge.getText(),Client.client_server,"AES",null);
-            byte[] sendTypeChallengeHash = CipherDecipherClient.encrypt(getHash(dropdownTypeChallenge.getText()),Client.client_server_hash,"AES",null);
+            byte[] sendTypeChallengeHash = CipherDecipherClient.encrypt(CipherDecipherClient.doHMACMessage(dropdownTypeChallenge.getText(),Client.client_server_hash),Client.client_server_hash,"AES",null);
 
             byte[] sendType = CipherDecipherClient.encrypt(dropdownTypes.getValue(), Client.client_server,"AES",null);
-            byte[] sendTypeHash = CipherDecipherClient.encrypt(getHash(dropdownTypes.getValue()), Client.client_server_hash,"AES",null);
+            byte[] sendTypeHash = CipherDecipherClient.encrypt(CipherDecipherClient.doHMACMessage(dropdownTypes.getValue(),Client.client_server_hash), Client.client_server_hash,"AES",null);
 
             byte[] sendMessage = CipherDecipherClient.encrypt(messageInsert.getText(),Client.client_server,"AES",null);
-            byte[] sendMessageHash = CipherDecipherClient.encrypt(getHash(messageInsert.getText()),Client.client_server_hash,"AES",null);
+            byte[] sendMessageHash = CipherDecipherClient.encrypt(CipherDecipherClient.doHMACMessage(messageInsert.getText(),Client.client_server_hash),Client.client_server_hash,"AES",null);
 
 
             Client.os.writeObject(sendTypeChallenge);
@@ -326,7 +326,7 @@ public class controller {
             //mode chosen is not ElGamal
             if(!tips.isDisable()){
                 byte[] sendTips = CipherDecipherClient.encrypt(tips.getText(),Client.client_server,"AES",null);
-                byte[] sendTipsHash = CipherDecipherClient.encrypt(getHash(tips.getText()),Client.client_server_hash,"AES",null);
+                byte[] sendTipsHash = CipherDecipherClient.encrypt(CipherDecipherClient.doHMACMessage(tips.getText(),Client.client_server_hash),Client.client_server_hash,"AES",null);
                 Client.os.writeObject(sendTips);
                 Client.os.writeObject(sendTipsHash);
                 Client.os.flush();
@@ -335,7 +335,7 @@ public class controller {
             //type chosen is not hash
             if(!passInsert.isDisable()) {
                 byte[] sendPassword = CipherDecipherClient.encrypt(passInsert.getText(), Client.client_server, "AES", null);
-                byte[] sendPasswordHash = CipherDecipherClient.encrypt(getHash(passInsert.getText()), Client.client_server_hash, "AES", null);
+                byte[] sendPasswordHash = CipherDecipherClient.encrypt(CipherDecipherClient.doHMACMessage(passInsert.getText(),Client.client_server_hash), Client.client_server_hash, "AES", null);
                 Client.os.writeObject(sendPassword);
                 Client.os.writeObject(sendPasswordHash);
                 Client.os.flush();
@@ -415,7 +415,7 @@ public class controller {
     public void sendResolveDataToServer(String sent_data){
         try{
             byte[] sendData = CipherDecipherClient.encrypt(sent_data,Client.client_server,"AES",null);
-            byte[] sendData_Hash = CipherDecipherClient.encrypt(getHash(sent_data),Client.client_server_hash,"AES",null);
+            byte[] sendData_Hash = CipherDecipherClient.encrypt(CipherDecipherClient.doHMACMessage(sent_data,Client.client_server_hash),Client.client_server_hash,"AES",null);
 
             Client.os.writeObject(sendData);
             Client.os.writeObject(sendData_Hash);
@@ -674,7 +674,7 @@ public class controller {
     public void sendOperationMethodstoServer(String data){
         try {
             byte [] sendOperationCreate = CipherDecipherClient.encrypt(data,Client.client_server,"AES",null);
-            byte [] sendOperationCreateHash = CipherDecipherClient.encrypt(getHash(data),Client.client_server_hash,"AES",null);
+            byte [] sendOperationCreateHash = CipherDecipherClient.encrypt(CipherDecipherClient.doHMACMessage(data,Client.client_server_hash),Client.client_server_hash,"AES",null);
 
             Client.os.writeObject(sendOperationCreate);
             Client.os.writeObject(sendOperationCreateHash);
@@ -808,13 +808,13 @@ public class controller {
 
     private void send_Login_Register(String data) throws NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException {
         byte [] login_bytes = CipherDecipherClient.encrypt(data,Client.client_server,"AES",null);
-        byte [] login_bytes_hash = CipherDecipherClient.encrypt(getHash(data),Client.client_server_hash,"AES",null);
+        byte [] login_bytes_hash = CipherDecipherClient.encrypt(CipherDecipherClient.doHMACMessage(data,Client.client_server_hash),Client.client_server_hash,"AES",null);
 
         byte [] email_bytes = CipherDecipherClient.encrypt(emailInput.getText(),Client.client_server,"AES",null);
-        byte [] email_hash_bytes = CipherDecipherClient.encrypt(getHash(emailInput.getText()),Client.client_server_hash,"AES",null);
+        byte [] email_hash_bytes = CipherDecipherClient.encrypt(CipherDecipherClient.doHMACMessage(emailInput.getText(),Client.client_server_hash),Client.client_server_hash,"AES",null);
 
         byte [] password_bytes = CipherDecipherClient.encrypt(passwordInput.getText(),Client.client_server,"AES",null);
-        byte [] password_hash_bytes = CipherDecipherClient.encrypt(getHash(passwordInput.getText()),Client.client_server_hash,"AES",null);
+        byte [] password_hash_bytes = CipherDecipherClient.encrypt(CipherDecipherClient.doHMACMessage(passwordInput.getText(),Client.client_server_hash),Client.client_server_hash,"AES",null);
 
         try{
             Client.os.writeObject(login_bytes);
@@ -843,11 +843,7 @@ public class controller {
             String decipheredtypeResponse = CipherDecipherClient.decrypt(typeResponse,Client.server_client,"AES",null);
             String decipheredtypeResponseHash = CipherDecipherClient.decrypt(typeResponseHash,Client.server_client_hash,"AES",null);
 
-            if(getHash(decipheredtypeResponse).equals(decipheredtypeResponseHash)){
-                //System.out.println("They are the same");
-            }else{
-                System.out.println("Not the same");
-            }
+            compareHmacsValidity(decipheredtypeResponse,decipheredtypeResponseHash);
         } catch (IOException | ClassNotFoundException | InvalidKeyException | IllegalBlockSizeException | NoSuchPaddingException | NoSuchAlgorithmException | BadPaddingException e) {
             e.printStackTrace();
         }
@@ -862,18 +858,24 @@ public class controller {
             String decipheredtypeResponse = CipherDecipherClient.decrypt(typeResponse,Client.server_client,"AES",null);
             String decipheredtypeResponseHash = CipherDecipherClient.decrypt(typeResponseHash,Client.server_client_hash,"AES",null);
 
+            compareHmacsValidity(decipheredtypeResponse,decipheredtypeResponseHash);
+
             if(decipheredtypeResponse.equals("success")){
                 byte[] plaintextResponse = (byte[]) Client.is.readObject();
                 byte[] plaintextResponseHash = (byte[]) Client.is.readObject();
 
                 String decipheredplaintextResponse = CipherDecipherClient.decrypt(plaintextResponse,Client.server_client,"AES",null);
                 String decipheredplaintextResponseHash = CipherDecipherClient.decrypt(plaintextResponseHash,Client.server_client_hash,"AES",null);
+
+                compareHmacsValidity(decipheredplaintextResponse,decipheredplaintextResponseHash);
+
                 try {
                     PopoutEmptyLists.display("Sucesso!","Acertou o desafio! A solução é: " + decipheredplaintextResponse);
                     switchMainMenu(event);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
             }else{
                 try {
                     PopoutEmptyLists.display("Incorreto!","Errou o desafio! Volte a tentar!");
@@ -887,6 +889,9 @@ public class controller {
     }
 
     public void receiveSizeLists(String option, String responseSizeResponse, byte[] data, byte[] dataHash){
+        String response="";
+        String responseHash="";
+
         switch (option){
             case "CIFRA":
                 if(!(responseSizeResponse.equals("empty"))){
@@ -894,15 +899,21 @@ public class controller {
                     try {
                         data = (byte[]) Client.is.readObject();
                         dataHash = (byte[]) Client.is.readObject();
-                    } catch (IOException | ClassNotFoundException e) {
+
+                        response = CipherDecipherClient.decrypt(data,Client.server_client,"AES",null);
+                        responseHash = CipherDecipherClient.decrypt(dataHash,Client.server_client_hash,"AES",null);
+                    } catch (IOException | ClassNotFoundException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
                         e.printStackTrace();
                     }
+
+                    compareHmacsValidity(response,responseHash);
 
                     try {
                         cipherResponse = CipherDecipherClient.CipherdecryptLists(data, Client.server_client, "AES", null);
                     } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
                         e.printStackTrace();
                     }
+
                 }else{
                     cipherResponse = new ArrayList<>();
                 }
@@ -914,9 +925,14 @@ public class controller {
                     try {
                         data = (byte[]) Client.is.readObject();
                         dataHash = (byte[]) Client.is.readObject();
-                    } catch (IOException | ClassNotFoundException e) {
+
+                        response = CipherDecipherClient.decrypt(data,Client.server_client,"AES",null);
+                        responseHash = CipherDecipherClient.decrypt(dataHash,Client.server_client_hash,"AES",null);
+                    } catch (IOException | ClassNotFoundException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
                         e.printStackTrace();
                     }
+
+                    compareHmacsValidity(response,responseHash);
 
                     try {
                         hashResponse = CipherDecipherClient.HashdecryptLists(data, Client.server_client, "AES", null);
@@ -948,8 +964,12 @@ public class controller {
             responseSizeResponse = CipherDecipherClient.decrypt(responseSize,Client.server_client,"AES",null);
             responseSizeHashResponse = CipherDecipherClient.decrypt(responseSizeHash,Client.server_client_hash,"AES",null);
 
+            compareHmacsValidity(responseSizeResponse,responseSizeHashResponse);
+
             responseSizeResponseV2 = CipherDecipherClient.decrypt(responseSizeV2,Client.server_client,"AES",null);
             responseSizeHashResponseV2 = CipherDecipherClient.decrypt(responseSizeHashV2,Client.server_client_hash,"AES",null);
+
+            compareHmacsValidity(responseSizeResponseV2,responseSizeHashResponseV2);
 
         } catch (NoSuchPaddingException | IllegalBlockSizeException | IOException | NoSuchAlgorithmException | BadPaddingException | InvalidKeyException | ClassNotFoundException e) {
             e.printStackTrace();
@@ -991,16 +1011,12 @@ public class controller {
             String decipheredtypeResponse = CipherDecipherClient.decrypt(typeResponse,Client.server_client,"AES",null);
             String decipheredtypeResponseHash = CipherDecipherClient.decrypt(typeResponseHash,Client.server_client_hash,"AES",null);
 
-            System.out.println(decipheredtypeResponse);
-            System.out.println(decipheredtypeResponseHash);
+            compareHmacsValidity(decipheredtypeResponse,decipheredtypeResponseHash);
 
-            if(getHash(decipheredtypeResponse).equals(decipheredtypeResponseHash)){
-                if(decipheredtypeResponse.equals("true")){
-                    return true;
-                }
-            }else{
-                System.out.println("Not the same");
+            if(decipheredtypeResponse.equals("true")){
+                return true;
             }
+
         } catch (IOException | ClassNotFoundException | InvalidKeyException | IllegalBlockSizeException | NoSuchPaddingException | NoSuchAlgorithmException | BadPaddingException e) {
             e.printStackTrace();
         }
@@ -1011,24 +1027,31 @@ public class controller {
         try {
             byte[] statusResponse = (byte[]) Client.is.readObject();
             byte[] statusResponseHash = (byte[]) Client.is.readObject();
+
             String decipheredResponseStatus = CipherDecipherClient.decrypt(statusResponse, Client.server_client, "AES", null);
             String decipheredResponseStatusHash = CipherDecipherClient.decrypt(statusResponseHash, Client.server_client_hash, "AES", null);
 
-            System.out.println("LOGIN/REGISTER STATUS: " + decipheredResponseStatus);
-            System.out.println("LOGIN/REGISTER STATUSHASH: " + decipheredResponseStatusHash);
+            compareHmacsValidity(decipheredResponseStatus,decipheredResponseStatusHash);
 
-            if (getHash(decipheredResponseStatus).equals(decipheredResponseStatusHash)) {
-                if(Boolean.parseBoolean(decipheredResponseStatus)){
-                    System.out.println("Login bem sucedido!");
-                    switchMainMenu(event);
-                }else{
-                    textCredentials.setText("Credenciais incorretas!");
-                }
-            } else {
-                //System.out.println("They are not the same!");
+            if(Boolean.parseBoolean(decipheredResponseStatus)){
+                System.out.println("Login bem sucedido!");
+                switchMainMenu(event);
+            }else{
+                textCredentials.setText("Credenciais incorretas!");
             }
         } catch (IOException | ClassNotFoundException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void compareHmacsValidity(String message, String hash_delivered){
+        //first recalculate HMAC
+        String hash_recalculated = CipherDecipherClient.doHMACMessage(message,Client.server_client_hash);
+        if(hash_recalculated.equals(hash_delivered)){
+            System.out.println("They are the same!");
+        }else{
+            System.out.println("ABORT!");
+            //do popup and abort program
         }
     }
     // END GROUP 3 - Group of operations
