@@ -96,7 +96,7 @@ public class CipherDecipherChallenges {
     }
 
     public static SecretKey getPasswordWithSalt(String password, byte[] salt){
-        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 1045733,128); //65536
+        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 2500000,128); //65536
         try {
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
             System.out.println(Base64.getEncoder().encodeToString(factory.generateSecret(spec).getEncoded()));

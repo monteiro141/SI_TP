@@ -590,7 +590,7 @@ public class ConnectionThread extends Thread {
     }
 
     private String checkHash() {
-        if(getHash(decipheredMessage).equals(decipheredMessageHash)){
+        if(getHash(decipheredMessage,"client").equals(decipheredMessageHash)){
             return decipheredMessage;
         }
         System.out.println("Not the same hash:");
@@ -610,7 +610,7 @@ public class ConnectionThread extends Thread {
 
     private void cipherMessageAndHash(String data,String cipherAlgorithm, IvParameterSpec iv) throws NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException {
         cipheredMessage = CipherDecipher.encrypt(data,connectionKeys.getInfo_server_client(),cipherAlgorithm,iv);
-        cipheredMessageHash = CipherDecipher.encrypt(getHash(data),connectionKeys.getInfo_server_client_hash(),cipherAlgorithm,iv);
+        cipheredMessageHash = CipherDecipher.encrypt(getHash(data, "server"),connectionKeys.getInfo_server_client_hash(),cipherAlgorithm,iv);
     }
 
     private void readCipheredFromClient() throws IOException, ClassNotFoundException {
@@ -623,30 +623,29 @@ public class ConnectionThread extends Thread {
         os.flush();
     }
 
-    private String getHash(String content){
+
+
+    private String getHash(String content, String side){
         if(content == null)
             return null;
+        switch (side){
+            case "server":
+                return GenerateValues.doHMACMessage(content,connectionKeys.getInfo_server_client_hash());
+            case "client":
+                return GenerateValues.doHMACMessage(content,connectionKeys.getInfo_client_server_hash());
+            default:
+                return null;
+        }
 
-        return GenerateValues.doHMACMessage(content,connectionKeys.getInfo_client_server_hash());
     }
+
     private String getHash(ArrayList<?> content){
         if(content == null)
             return null;
-        return GenerateValues.doHMACMessage(String.valueOf(content),connectionKeys.getInfo_client_server_hash());
+        return GenerateValues.doHMACMessage(String.valueOf(content),connectionKeys.getInfo_server_client_hash());
     }
 
-    private String getHash(String content, String hashAlgorithm){
-        if(content == null)
-            return null;
-        try{
-            MessageDigest md = MessageDigest.getInstance(hashAlgorithm);
-            md.update(content.getBytes());
-            return new String(md.digest());
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+
 
     private String getHash(ArrayList<?> content, String hashAlgorithm){
         if(content == null)

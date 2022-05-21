@@ -900,16 +900,14 @@ public class controller {
                         data = (byte[]) Client.is.readObject();
                         dataHash = (byte[]) Client.is.readObject();
 
-                        response = CipherDecipherClient.decrypt(data,Client.server_client,"AES",null);
                         responseHash = CipherDecipherClient.decrypt(dataHash,Client.server_client_hash,"AES",null);
                     } catch (IOException | ClassNotFoundException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
                         e.printStackTrace();
                     }
 
-                    compareHmacsValidity(response,responseHash);
-
                     try {
                         cipherResponse = CipherDecipherClient.CipherdecryptLists(data, Client.server_client, "AES", null);
+                        compareHmacsValidity(String.valueOf(cipherResponse),responseHash);
                     } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
                         e.printStackTrace();
                     }
@@ -925,17 +923,14 @@ public class controller {
                     try {
                         data = (byte[]) Client.is.readObject();
                         dataHash = (byte[]) Client.is.readObject();
-
-                        response = CipherDecipherClient.decrypt(data,Client.server_client,"AES",null);
                         responseHash = CipherDecipherClient.decrypt(dataHash,Client.server_client_hash,"AES",null);
                     } catch (IOException | ClassNotFoundException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
                         e.printStackTrace();
                     }
 
-                    compareHmacsValidity(response,responseHash);
-
                     try {
                         hashResponse = CipherDecipherClient.HashdecryptLists(data, Client.server_client, "AES", null);
+                        compareHmacsValidity(String.valueOf(hashResponse),responseHash);
                     } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
                         e.printStackTrace();
                     }
@@ -1050,6 +1045,8 @@ public class controller {
         if(hash_recalculated.equals(hash_delivered)){
             System.out.println("They are the same!");
         }else{
+            System.out.println(hash_delivered);
+            System.out.println(hash_recalculated);
             System.out.println("ABORT!");
             //do popup and abort program
         }
