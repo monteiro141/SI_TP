@@ -8,6 +8,7 @@ import javax.crypto.spec.IvParameterSpec;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.math.BigInteger;
 import java.security.*;
 import java.util.ArrayList;
 
@@ -110,5 +111,17 @@ public class CipherDecipherClient {
             e.printStackTrace();
         }
         return ch;
+    }
+
+    public static String doHMACMessage(String message, SecretKey key){
+        try {
+            Mac mac = Mac.getInstance("HmacSHA256");
+            mac.init(key);
+            BigInteger hash = new BigInteger(1, mac.doFinal(message.getBytes()));
+            return (hash.toString(16));
+        } catch (NoSuchAlgorithmException | InvalidKeyException e){
+            System.out.println(e.getMessage());
+        }
+        return null;
     }
 }
