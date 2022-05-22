@@ -97,6 +97,11 @@ public class Queries {
                 "VALUES ('" + user_id + "', '" + cipher_id + "');";
     }
 
+    public static String resolvedHash (String user_id, String hash_id) {
+        return "INSERT INTO SolvedChallenges (user_id, hash_id) " +
+                "VALUES ('" + user_id + "', '" + hash_id + "');";
+    }
+
     public static String challengesCipherList(String user_id){
         return "SELECT cipher_id, cipher_specification, cipher_message, cipher_tips "+
                 "FROM CipherChallenges c "+

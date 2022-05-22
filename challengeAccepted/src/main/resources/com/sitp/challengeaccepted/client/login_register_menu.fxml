@@ -32,7 +32,7 @@
                   <DropShadow />
                </effect>
                <font>
-                  <Font name="Tw Cen MT Bold" size="14.0" />
+                   <Font name="System Bold" size="14.0" />
                </font></Button>
          </children>
       </GridPane>

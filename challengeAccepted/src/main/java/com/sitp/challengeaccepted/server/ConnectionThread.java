@@ -484,8 +484,14 @@ public class ConnectionThread extends Thread {
         }
         result = CipherDecipherChallenges.CreateHash(specification, password);
         if (result.equals(hash)) {
+            try {
+                databaseCaller.getStatement().executeUpdate(Queries.resolvedHash(String.valueOf(userLoggedIn.getUser_id()),id));
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
             System.out.println("good hash");
-            sendLogInStatusToClient("sucess");
+            sendLogInStatusToClient("success");
+            sendLogInStatusToClient(password);
             return true;
         } else {
             System.out.println("bad hash");
