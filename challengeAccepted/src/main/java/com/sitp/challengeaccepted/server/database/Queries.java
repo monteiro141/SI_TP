@@ -104,16 +104,15 @@ public class Queries {
                 "SELECT user_id, cipher_id " +
                 "FROM SolvedChallenges s " +
                 "WHERE c.cipher_id = s.cipher_id AND '"+ user_id + "' = s.user_id)";
-        /* PROBS WRONG (99.9 certainty)
-        return "SELECT cipher_id, cipher_specification, cipher_message, cipher_tips "+
-                "FROM CipherChallenges c, SolvedChallenges s "+
-                "WHERE c.user_id != '"+user_id+"' AND c.user_id = s.user_id AND c.cipher_id != s.cipher_id";*/
     }
 
     public static String challengesHashList(String user_id){
         return "SELECT hash_id, hash_specification, hash_hash, hash_tips "+
-                "FROM HashChallenges "+
-                "WHERE user_id != '"+user_id+"'";
+                "FROM HashChallenges h "+
+                "WHERE h.user_id != '"+user_id+"' AND NOT EXISTS (" +
+                "SELECT user_id, hash_id " +
+                "FROM SolvedChallenges s " +
+                "WHERE h.hash_id = s.hash_id AND '" + user_id + "' = s.user_id)";
     }
 
     public static String getCipherChallengeData(String cipher_id) {
