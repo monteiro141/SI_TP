@@ -175,7 +175,20 @@ public class ConnectionThread extends Thread {
 
     private void respondToClientLogin() {
         String email = finalDecipheredMessage();
-        byte[] saltedPassword = CipherDecipher.getSaltToPassword("One1Mor3E4ster6g9".getBytes(),finalDecipheredMessage());
+        byte[]salt;
+        try {
+            ResultSet resultSet = databaseCaller.getStatement().executeQuery(Queries.getLoginSalt(email));
+            if(!resultSet.next()){
+                System.out.println("Log in failed");
+                sendLogInStatusToClient("false");
+                return;
+            }
+            salt = resultSet.getBytes(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return;
+        }
+        byte[] saltedPassword = CipherDecipher.getSaltToPassword(salt,finalDecipheredMessage());
         if(saltedPassword != null && loginVerification(email,new String(saltedPassword))){
             sendLogInStatusToClient("true");
             System.out.println("Log in success");
@@ -220,8 +233,9 @@ public class ConnectionThread extends Thread {
 
     private void respondToClientRegister() {
         String email = finalDecipheredMessage();
-        byte[] saltedPassword = CipherDecipher.getSaltToPassword("One1Mor3E4ster6g9".getBytes(),finalDecipheredMessage());
-        if(saltedPassword != null && registerVerification(email,new String(saltedPassword))){
+        byte[] salt = GenerateValues.getSalt();
+        byte[] saltedPassword = CipherDecipher.getSaltToPassword(salt,finalDecipheredMessage());
+        if(saltedPassword != null && registerVerification(email,new String(saltedPassword), salt)){
             System.out.println("Register suc");
             sendLogInStatusToClient("true");
             operationMenu();
@@ -231,12 +245,18 @@ public class ConnectionThread extends Thread {
         }
     }
 
-    private boolean registerVerification(String email, String password) {
+    private boolean registerVerification(String email, String password, byte[]salt) {
+
         try {
+
             ResultSet resultSet = databaseCaller.getStatement().executeQuery(Queries.loginUser(email));
             if(resultSet.next())
                return false;
-            databaseCaller.getStatement().executeUpdate(Queries.registerUser(email,password));
+            PreparedStatement ps = databaseCaller.getConnection().prepareStatement(Queries.registerUser());
+            ps.setString(1,email);
+            ps.setString(2,password);
+            ps.setBytes(3,salt);
+            ps.execute();
             ResultSet resultSet2 = databaseCaller.getStatement().executeQuery(Queries.loginUser(email));
             resultSet2.next();
             userLoggedIn = new User();
@@ -650,8 +670,6 @@ public class ConnectionThread extends Thread {
             return null;
         return GenerateValues.doHMACMessage(String.valueOf(content),connectionKeys.getInfo_server_client_hash());
     }
-
-
 
     private String getHash(ArrayList<?> content, String hashAlgorithm){
         if(content == null)

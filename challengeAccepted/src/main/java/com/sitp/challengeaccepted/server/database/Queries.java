@@ -14,6 +14,7 @@ public class Queries {
                 "(user_id INTEGER NOT NULL AUTO_INCREMENT, " +
                 "email CHAR(50) not null, " +
                 "user_password_salted CHAR(32) not null, " +
+                "salt varbinary(16), "+
                 "PRIMARY KEY (user_id))";
     }
 
@@ -59,15 +60,24 @@ public class Queries {
                 " WHERE email = '" + email +"'" +
                 " AND user_password_salted = '"+ salted_password+"'";
     }
+
+    public static String getLoginSalt(String email){
+        return "SELECT salt "+
+                "FROM User" +
+                " WHERE email = '" + email +"'";
+    }
+
     public static String loginUser(String email){
         return "SELECT user_id, email "+
                 "FROM User" +
                 " WHERE email = '" + email+"'";
     }
-    public static String registerUser(String email, String salted_password){
-        return "INSERT INTO User (email, user_password_salted) " +
-                "VALUES ('" + email + "', '" + salted_password + "');";
+
+    public static String registerUser(){
+        return "INSERT INTO User (email, user_password_salted, salt) " +
+                "VALUES (?,?,?);";
     }
+
     public static String checkHMAC (String hmac, String cipher_specification) {
         return "SELECT cipher_hmac " +
                 "FROM CipherChallenges " +
