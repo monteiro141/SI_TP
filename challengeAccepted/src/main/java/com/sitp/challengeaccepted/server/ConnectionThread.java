@@ -291,7 +291,6 @@ public class ConnectionThread extends Thread {
                         break;
                     }
                     resolveChallenge();
-                    sendLogInStatusToClient("true");
                     break;
                 case "logout":
                     return;
@@ -351,11 +350,12 @@ public class ConnectionThread extends Thread {
         }
         else{
             // Password in the case of cesar's cipher is a offset
-            cipherText = CipherDecipherChallenges.encryptCesar(message.toUpperCase(), Integer.parseInt(finalDecipheredMessage()));
+            cipherText = CipherDecipherChallenges.encryptCesar(message, Integer.parseInt(finalDecipheredMessage()));
         }
 
         String hmac = GenerateValues.doHMACMessage(message,adminSecretKey);
         String signature = GenerateValues.signMessage(message, signaturePrivateKey);
+
         String cryptogram = cipherText;
 
         ResultSet checkHMAC = null;
@@ -425,6 +425,7 @@ public class ConnectionThread extends Thread {
                         return;
                     break;
                 default:
+                    sendLogInStatusToClient("true");
                     return;
             }
         }while (true);
@@ -456,7 +457,7 @@ public class ConnectionThread extends Thread {
         } else if (!specification.equals("CESAR")) {
             plaintext = CipherDecipherChallenges.decryptCipher(specification, message, password, salt, null);
         } else {
-            plaintext = CipherDecipherChallenges.decryptCesar(message, Integer.parseInt(password));
+            plaintext = CipherDecipherChallenges.decryptCesar(message.toUpperCase(), Integer.parseInt(password));
         }
         System.out.println("Plaintext");
         System.out.println(plaintext);

@@ -57,20 +57,20 @@ public class Queries {
     public static String loginUser(String email, String salted_password){
         return "SELECT user_id, email "+
                 "FROM User" +
-                " WHERE email = '" + email +"'" +
+                " WHERE BINARY email = '" + email +"'" +
                 " AND user_password_salted = '"+ salted_password+"'";
     }
 
     public static String getLoginSalt(String email){
         return "SELECT salt "+
                 "FROM User" +
-                " WHERE email = '" + email +"'";
+                " WHERE BINARY email = '" + email +"'";
     }
 
     public static String loginUser(String email){
         return "SELECT user_id, email "+
                 "FROM User" +
-                " WHERE email = '" + email+"'";
+                " WHERE BINARY email = '" + email+"'";
     }
 
     public static String registerUser(){

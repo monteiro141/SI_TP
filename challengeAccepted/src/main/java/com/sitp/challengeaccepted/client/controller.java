@@ -174,7 +174,7 @@ public class controller {
     }
 
     public boolean verifyMessageVigCes(String message){
-        if (message.matches("[a-zA-Z\s]+$")) {
+        if (message.matches("[A-Z\s]+$")) {
             return true;
         }
         return false;
@@ -440,7 +440,23 @@ public class controller {
         });
 
         challenge_answer.textProperty().addListener((observable, oldValue, newValue) ->{
-            if(!(challenge_answer.getText().equals(""))){
+
+            if(dropdownChoose.getValue().toString().toLowerCase().contains("vigenere") && !(challenge_answer.getText().equals(""))){
+                if(verifyMessageVigCes(challenge_answer.getText()))
+                    insertButtonChoose.setDisable(false);
+                else
+                    insertButtonChoose.setDisable(true);
+            } else if(dropdownChoose.getValue().toString().toLowerCase().contains("cesar")){
+                if(verifyOffSetCesar(challenge_answer.getText()))
+                    insertButtonChoose.setDisable(false);
+                else
+                    insertButtonChoose.setDisable(true);
+            } else if(dropdownChoose.getValue().toString().toLowerCase().contains("elgamal")){
+                if(verifyElGamal(challenge_answer.getText()))
+                    insertButtonChoose.setDisable(false);
+                else
+                    insertButtonChoose.setDisable(true);
+            }else if(!(challenge_answer.getText().equals(""))){
                 insertButtonChoose.setDisable(false);
             }else{
                 insertButtonChoose.setDisable(true);
@@ -870,7 +886,7 @@ public class controller {
                 compareHmacsValidity(decipheredplaintextResponse,decipheredplaintextResponseHash);
 
                 try {
-                    PopoutEmptyLists.display("Sucesso!","Acertou o desafio! A solução é: " + decipheredplaintextResponse);
+                    PopoutEmptyLists.display("Sucesso!","Acertou o desafio! A mensagem é: " + decipheredplaintextResponse);
                     switchMainMenu(event);
                 } catch (Exception e) {
                     e.printStackTrace();

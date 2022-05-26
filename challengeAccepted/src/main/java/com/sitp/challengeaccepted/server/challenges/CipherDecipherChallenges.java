@@ -29,7 +29,10 @@ public class CipherDecipherChallenges {
                     return encrypt("AES/CTR/NoPadding", message, getPasswordWithSalt(password, salt), ivVector);
                 }
                 case "VIGENERE" -> {
-                    return encryptVigenere(message.toUpperCase(), generateVigenereKey(message, password).toUpperCase());
+                    System.out.println("||||");
+                    System.out.println(message.toUpperCase());
+                    System.out.println(generateVigenereKey(message, password).toUpperCase());
+                    return encryptVigenere(message, generateVigenereKey(message, password));
                 }
             }
         } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
@@ -51,7 +54,7 @@ public class CipherDecipherChallenges {
                     return decrypt("AES/CTR/NoPadding", message, getPasswordWithSalt(password, salt), ivVector);
                 }
                 case "VIGENERE" -> {
-                    return decryptVigenere(message.toUpperCase(), generateVigenereKey(message, password).toUpperCase());
+                    return decryptVigenere(message, generateVigenereKey(message, password));
                 }
             }
         } catch (BadPaddingException ex){
@@ -189,6 +192,8 @@ public class CipherDecipherChallenges {
         for(char character : message.toCharArray()){
             if(character != ' '){
                 int newCharacter = ((character - 'A') - offset) % 26;
+                if(newCharacter < 0)
+                    newCharacter = newCharacter + 26;
                 ciphertext.append((char)('A' + newCharacter));
             }else{
                 ciphertext.append(character);
