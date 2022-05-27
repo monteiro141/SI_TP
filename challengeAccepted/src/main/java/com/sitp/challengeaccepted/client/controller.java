@@ -1211,7 +1211,7 @@ public class controller {
     }
 
     /**
-     * function to verify if the hmacs are the same or not (to prevent man in the middle attack)
+     * function to verify if the hmacs are the same or not (to prevent active man in the middle attack)
      * @param message message that was received by server side
      * @param hash_delivered hash received by server side
      */

@@ -13,7 +13,18 @@ import java.security.*;
 import java.util.ArrayList;
 
 public class CipherDecipherClient {
-    public CipherDecipherClient(){}
+    public CipherDecipherClient(){
+
+    }
+    /**
+     * Encrypt a message with RSA public key
+     * @param data_key the data to encrypt
+     * @param key the server public key
+     * @return the ciphertext
+     * @throws BadPaddingException
+     * @throws NoSuchPaddingException
+     * @throws NoSuchAlgorithmException
+     */
     public static byte[] encrypt(String data_key, PublicKey key) throws BadPaddingException, NoSuchPaddingException, NoSuchAlgorithmException {
         try {
             Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
@@ -26,12 +37,35 @@ public class CipherDecipherClient {
         }
         return null;
     }
+
+    /**
+     * Decrypt a ciphertext with RSA private key
+     * @param data the data
+     * @param privateKey the server private key
+     * @return the plaintext
+     * @throws NoSuchPaddingException
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeyException
+     * @throws BadPaddingException
+     * @throws IllegalBlockSizeException
+     */
     public static String decrypt(byte[] data, PrivateKey privateKey) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
         return new String(cipher.doFinal(data));
     }
 
+    /**
+     * Encrypt a message with a secret key
+     * @param data the data
+     * @param secretKey the Secret key to use
+     * @param cipherString the algorithm of encryption to use
+     * @param iv the iv
+     * @return the  ciphertext
+     * @throws BadPaddingException
+     * @throws NoSuchPaddingException
+     * @throws NoSuchAlgorithmException
+     */
     public static byte[] encrypt(String data, SecretKey secretKey, String cipherString, IvParameterSpec iv) throws BadPaddingException, NoSuchPaddingException, NoSuchAlgorithmException {
         if(iv == null) {
             try {
@@ -55,6 +89,19 @@ public class CipherDecipherClient {
         return null;
     }
 
+    /**
+     * Decrypts a message with a secret key
+     * @param data the data
+     * @param secretKey the Secret key to use
+     * @param cipherString the algorithm of encryption to use
+     * @param iv the iv
+     * @return the  ciphertext
+     * @throws NoSuchPaddingException
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeyException
+     * @throws BadPaddingException
+     * @throws IllegalBlockSizeException
+     */
     public static String decrypt(byte[] data, SecretKey secretKey, String cipherString, IvParameterSpec iv) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
         if(iv == null){
             Cipher cipher = Cipher.getInstance(cipherString);
@@ -73,6 +120,19 @@ public class CipherDecipherClient {
         }
     }
 
+    /**
+     * Decrypts the lists of cipher challenges
+     * @param data the data
+     * @param secretKey the Secret key to use
+     * @param cipherString the algorithm of encryption to use
+     * @param iv the iv
+     * @return the arraylist of cipher challenges
+     * @throws NoSuchPaddingException
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeyException
+     * @throws BadPaddingException
+     * @throws IllegalBlockSizeException
+     */
     public static ArrayList<CipherChallengesAttributes> CipherdecryptLists(byte[] data, SecretKey secretKey, String cipherString, IvParameterSpec iv) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
         ArrayList<CipherChallengesAttributes> ch = new ArrayList<>();
         Cipher cipher = Cipher.getInstance(cipherString);
@@ -93,6 +153,19 @@ public class CipherDecipherClient {
         return ch;
     }
 
+    /**
+     * Decrypts the lists of hash challenges
+     * @param data the data
+     * @param secretKey the Secret key to use
+     * @param cipherString the algorithm of encryption to use
+     * @param iv the iv
+     * @return the arraylist of hash challenges
+     * @throws NoSuchPaddingException
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeyException
+     * @throws BadPaddingException
+     * @throws IllegalBlockSizeException
+     */
     public static ArrayList<HashChallengesAttributes> HashdecryptLists(byte[] data, SecretKey secretKey, String cipherString, IvParameterSpec iv) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
         ArrayList<HashChallengesAttributes> ch = new ArrayList<>();
         Cipher cipher = Cipher.getInstance(cipherString);
@@ -113,6 +186,12 @@ public class CipherDecipherClient {
         return ch;
     }
 
+    /**
+     * Function to create Hmac message
+     * @param message message to create hmac with
+     * @param key secret key to be used when creating hmac
+     * @return hmac
+     */
     public static String doHMACMessage(String message, SecretKey key){
         try {
             Mac mac = Mac.getInstance("HmacSHA256");

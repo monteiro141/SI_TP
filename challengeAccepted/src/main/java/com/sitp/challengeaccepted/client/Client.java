@@ -36,21 +36,34 @@ public class Client extends Application {
     public static SecretKey server_client_hash;
     public static ObjectInputStream is;
     public static ObjectOutputStream os;
-    public static controller control;
 
     public Client(){
 
     }
 
+    /**
+     * Function to launch initial menu for user
+     * @param stage stage of the application
+     * @throws IOException
+     */
     @Override
-    public void start(Stage stage) throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, BadPaddingException, ClassNotFoundException {
+    public void start(Stage stage) throws IOException{
         initiateMenu(stage);
     }
 
-    public static void main(String[] args) throws NoSuchPaddingException, IOException, BadPaddingException, NoSuchAlgorithmException, ClassNotFoundException {
+    /**
+     * Function to launch the application
+     * @param args
+     */
+    public static void main(String[] args){
         launch();
     }
 
+    /**
+     * Function to initiate first menu for user
+     * @param stage stage of the application
+     * @throws IOException
+     */
     //function to initiate main menu of application
     private void initiateMenu(Stage stage) throws IOException {
         FXMLLoader fxloader = new FXMLLoader(Client.class.getResource("login_register_menu.fxml"));
