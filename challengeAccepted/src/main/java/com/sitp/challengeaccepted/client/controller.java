@@ -1064,7 +1064,12 @@ public class controller {
             System.out.println(hash_delivered);
             System.out.println(hash_recalculated);
             System.out.println("ABORT!");
-            //do popup and abort program
+            try {
+                PopoutEmptyLists.display("Ligação não segura!","A terminar aplicação...");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            System.exit(0);
         }
     }
     // END GROUP 3 - Group of operations
