@@ -11,6 +11,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
@@ -31,6 +32,8 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class controller {
+
+    String imagePath = "file:src/main/resources/com/sitp/challengeaccepted/client/cyber-security.png";
 
     //Group 1 - Main Page Elements
     //elements for main menu page => login_register_menu.fxml
@@ -678,6 +681,8 @@ public class controller {
         root = FXMLLoader.load(Client.class.getResource("login_register_menu.fxml"));
         stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
         scene = new Scene(root,600,400);
+        stage.getIcons().add(new Image(imagePath));
+        stage.setResizable(false);
         stage.setMinWidth(600);
         stage.setMinHeight(400);
         stage.setScene(scene);
@@ -694,6 +699,8 @@ public class controller {
         FXMLLoader fxmlLoader = new FXMLLoader(Client.class.getResource("credentials_client_menu.fxml"));
         stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
         scene = new Scene(fxmlLoader.load(),600,400);
+        stage.getIcons().add(new Image(imagePath));
+        stage.setResizable(false);
         stage.setMinWidth(600);
         stage.setMinHeight(400);
         stage.setScene(scene);
@@ -722,6 +729,8 @@ public class controller {
         FXMLLoader fxmlLoader = new FXMLLoader(Client.class.getResource("credentials_client_menu.fxml"));
         stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
         scene = new Scene(fxmlLoader.load(),600,400);
+        stage.getIcons().add(new Image(imagePath));
+        stage.setResizable(false);
         stage.setMinWidth(600);
         stage.setMinHeight(400);
         stage.setScene(scene);
@@ -747,6 +756,8 @@ public class controller {
         root = FXMLLoader.load(Client.class.getResource("main_menu.fxml"));
         stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
         scene = new Scene(root,600,400);
+        stage.getIcons().add(new Image(imagePath));
+        stage.setResizable(false);
         stage.setMinWidth(600);
         stage.setMinHeight(400);
         stage.setScene(scene);
@@ -769,6 +780,8 @@ public class controller {
         root = FXMLLoader.load(Client.class.getResource("main_menu.fxml"));
         stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
         scene = new Scene(root,600,400);
+        stage.getIcons().add(new Image(imagePath));
+        stage.setResizable(false);
         stage.setMinWidth(600);
         stage.setMinHeight(400);
         stage.setScene(scene);
@@ -791,6 +804,8 @@ public class controller {
         root = FXMLLoader.load(Client.class.getResource("main_menu.fxml"));
         stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
         scene = new Scene(root,600,400);
+        stage.getIcons().add(new Image(imagePath));
+        stage.setResizable(false);
         stage.setMinWidth(600);
         stage.setMinHeight(400);
         stage.setScene(scene);
@@ -828,6 +843,8 @@ public class controller {
         root = FXMLLoader.load(Client.class.getResource("create_challenge.fxml"));
         stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
         scene = new Scene(root,600,400);
+        stage.getIcons().add(new Image(imagePath));
+        stage.setResizable(false);
         stage.setMinWidth(600);
         stage.setMinHeight(400);
         stage.setScene(scene);
@@ -853,6 +870,8 @@ public class controller {
 
             stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
             scene = new Scene(loader.load(),600,400);
+            stage.getIcons().add(new Image(imagePath));
+            stage.setResizable(false);
             stage.setMinWidth(600);
             stage.setMinHeight(400);
             stage.setScene(scene);
@@ -923,9 +942,8 @@ public class controller {
      */
     //function to initiate socket connection to server
     private void initiateSocket() throws IOException{
-        //Socket S = new Socket("169.254.65.233",1099);
-        Socket S = new Socket("127.0.0.1",1099);
-        //Socket S = new Socket("5.tcp.eu.ngrok.io",16672);
+        //Socket S = new Socket("127.0.0.1",1099);
+        Socket S = new Socket("6.tcp.eu.ngrok.io",12649);
         Client.os = new ObjectOutputStream(S.getOutputStream());
         Client.is = new ObjectInputStream(S.getInputStream());
     }

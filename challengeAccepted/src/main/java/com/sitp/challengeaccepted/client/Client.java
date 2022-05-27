@@ -7,6 +7,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.NumberBinding;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -36,6 +37,8 @@ public class Client extends Application {
     public static SecretKey server_client_hash;
     public static ObjectInputStream is;
     public static ObjectOutputStream os;
+
+    String imagePath = "file:src/main/resources/com/sitp/challengeaccepted/client/cyber-security.png";
 
     public Client(){
 
@@ -68,6 +71,8 @@ public class Client extends Application {
     private void initiateMenu(Stage stage) throws IOException {
         FXMLLoader fxloader = new FXMLLoader(Client.class.getResource("login_register_menu.fxml"));
         Scene scene = new Scene(fxloader.load(), 600, 400);
+        stage.getIcons().add(new Image(imagePath));
+        stage.setResizable(false);
         stage.setMinWidth(600);
         stage.setMinHeight(400);
         stage.setTitle("Challenge Accepted");
