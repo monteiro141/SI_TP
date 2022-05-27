@@ -33,6 +33,7 @@ public class Database {
         this.statement = statement;
     }
 
+    // Create the database
     public static void main (String [] args) {
         Connection connection = null;
         Statement statement = null;
