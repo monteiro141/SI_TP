@@ -56,7 +56,11 @@ public class controller {
     public static boolean login_access = false;
     public static boolean email_Valid = false;
 
-    //function to submit login or register data to server , as well if user did login or register
+    /**
+     * function to submit login or register data to server , as well if user did login or register
+     * @param event action event for button "submeter" in credentials_client_menu.fxml
+     */
+
     public void submit_data_server(ActionEvent event) throws IOException{
         //warning server if user choosed login or register
         if(login_access && email_Valid){
@@ -85,6 +89,9 @@ public class controller {
 
     }
 
+    /**
+     * listener for email input in credentials menu of the application
+     */
     public void listenerElementsCredentialsMenu(){
         emailInput.textProperty().addListener((observable, oldValue, newValue) ->{
             if(verifyCredentialEmail(emailInput.getText())){
@@ -96,6 +103,11 @@ public class controller {
         });
     }
 
+    /**
+     * regex to verify if the email introduced by the user is valid or not
+     * @param message message to apply regex on
+     * @return boolean value (true if verifies or false if not)
+     */
     public boolean verifyCredentialEmail(String message){
         if (message.matches("^(.+)@(.+)$")) {
             return true;
@@ -103,6 +115,14 @@ public class controller {
         return false;
     }
 
+    /**
+     * function that groups important initial functions when starting application
+     * @throws NoSuchPaddingException
+     * @throws IOException
+     * @throws BadPaddingException
+     * @throws NoSuchAlgorithmException
+     * @throws ClassNotFoundException
+     */
     public void dataExchange() throws NoSuchPaddingException, IOException, BadPaddingException, NoSuchAlgorithmException, ClassNotFoundException {
         initiateSocket();
         generateKeys();
@@ -118,7 +138,7 @@ public class controller {
 
     //END GROUP 3 -------------------------------
 
-    //Group 4 - Elements of create challenge menu
+    //Group 4 - Elements of create challenge menu => create_challenge.fxml
     public Text createChallengeText;
     public MenuButton dropdownTypeChallenge;
     public MenuItem cipherChoice;
@@ -139,6 +159,11 @@ public class controller {
     //list of hash modes
     public static String[] hashModes = {"MD5","SHA256","SHA512"};
 
+    /**
+     * function to apply changes on interface when choosing a cipher challenge in challenge menu
+     * @param event action event to register input by user on the choice
+     */
+
     public void cipherChoiceInput(ActionEvent event){
         dropdownTypeChallenge.setText("Cifra");
         typeText.setText("Tipo de Cifra:");
@@ -155,6 +180,11 @@ public class controller {
         dropdownTypes.setValue(cipherModes[0]);
         verifyContentTypes();
     }
+
+    /**
+     * function to apply changes on interface when choosing a hash challenge in challenge menu
+     * @param event action event to register input by user on the choice
+     */
 
     public void hashChoiceInput(ActionEvent event){
         dropdownTypeChallenge.setText("Hash");
@@ -173,6 +203,12 @@ public class controller {
         verifyContentTypes();
     }
 
+    //GROUP REGEX
+    /**
+     * regex to verify if message introduced by user is valid by Cesar and/or Vigenere standards
+     * @param message message to apply regex on
+     * @return boolean (true if verifies or false if not)
+     */
     public boolean verifyMessageVigCes(String message){
         if (message.matches("[A-Z\s]+$")) {
             return true;
@@ -180,6 +216,11 @@ public class controller {
         return false;
     }
 
+    /**
+     * regex to verify if message introduced by user is valid by AES standards
+     * @param message message to apply regex on
+     * @return boolean (true if verifies or false if not)
+     */
     public boolean verifyAESMessageRegex(String message){
         if(message.matches("^[ -~]*$")){
             return true;
@@ -187,6 +228,11 @@ public class controller {
         return false;
     }
 
+    /**
+     * regex to verify if offset (answer introduced by user in resolve_challenge.fxml in Cesar challenge) is between 1 and 25
+     * @param message message to apply regex on
+     * @return boolean (true if verifies or false if not)
+     */
     public boolean verifyOffSetCesar(String message){
         if(message.matches("^([1-9]|1[0-9]|2[0-5])$")){
             return true;
@@ -194,6 +240,12 @@ public class controller {
         return false;
     }
 
+    /**
+     * regex to verify if message and tips lengths don't get over the 128 characters limit (fields in create_challenge.fxml)
+     * @param message message to apply regex on
+     * @param tips message to apply regex on
+     * @return boolean (true if verifies or false if not)
+     */
     public boolean verify128CharsElements(String message, String tips){
         if(message.length() <= 128 && tips.length() <= 128) {
             return true;
@@ -201,6 +253,11 @@ public class controller {
         return false;
     }
 
+    /**
+     * regex to verify if answer (in case of ElGamal challenge in resolve_challenge.fxml) is valid
+     * @param message message to apply regex on
+     * @return boolean (true if verifies or false if not)
+     */
     public boolean verifyElGamal(String message){
         if(message.matches("([2-9]|[12][0-9])")){
             return true;
@@ -208,6 +265,11 @@ public class controller {
         return false;
     }
 
+    //END GROUP REGEX -------------------------------
+
+    /**
+     * function with listeners to perform changes in interface create_challenge.fxml when user chooses type of challenge (hash or cipher)
+     */
     public void verifyContentTypes(){
         dropdownTypes.showingProperty().addListener((observable, oldValue, newValue) ->{
             messageInsert.clear();
@@ -298,7 +360,10 @@ public class controller {
        }
     }
 
-    //after values are inserted in create challenge send types of data according to type of challenge selected
+    /**
+     * function to send information (type of challenge, challenge mode, message, tips, password) introduced by user in create challenge menu to the server side
+     * @param event action event to handle user input
+     */
     public void insertButtonInput(ActionEvent event){
         try {
             byte[] sendTypeChallenge = CipherDecipherClient.encrypt(dropdownTypeChallenge.getText(),Client.client_server,"AES",null);
@@ -391,7 +456,10 @@ public class controller {
     private static ArrayList<CipherChallengesAttributes> cipherResponse;
     private static ArrayList<HashChallengesAttributes> hashResponse;
 
-    //function for button insert in resolve challenge menu
+    /**
+     * function to handle information introduced by user in resolve_challenge.fxml and send it to the server side (sends type of challenge, id of the challenge and answer of the challenge)
+     * @param event action event to handle user input
+     */
     public void insertButtonResolve(ActionEvent event){
         //send type of challenge
         String id = "";
@@ -412,6 +480,10 @@ public class controller {
         verifyResponsesResolve(event);
     }
 
+    /**
+     * function to send information to server side when user resolves a challenge
+     * @param sent_data data to send to server side
+     */
     public void sendResolveDataToServer(String sent_data){
         try{
             byte[] sendData = CipherDecipherClient.encrypt(sent_data,Client.client_server,"AES",null);
@@ -425,6 +497,9 @@ public class controller {
         }
     }
 
+    /**
+     * function to perform changes on interface of resolve_challenge.fxml using listeners for each field
+     */
     public void controlResolveElements(){
         dropdownTypeChoose.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) ->{
                 switch ((int) newValue){
@@ -508,6 +583,9 @@ public class controller {
         };
     }
 
+    /**
+     * function to perform changes on interface resolve_challenge.fxml according to type of challenge chosen (in this case Cipher challenge)
+     */
     //when user chooses type "Cifra"
     public void cipherChoose_resolve(){
         if(cipherResponse.size() != 0) {
@@ -543,7 +621,9 @@ public class controller {
         }
     }
 
-    //when user chooses type "Hash"
+    /**
+     * function to perform changes on interface resolve_challenge.fxml according to type of challenge chosen (in this case Hash challenge)
+     */
     public void hashChoose_resolve(){
         if(hashResponse.size() != 0) {
             dropdownChoose.setDisable(false);
@@ -582,6 +662,12 @@ public class controller {
     //END GROUP 5 -------------------------------
 
     //Group Scenes - Functions to change scenes => to change fxml files (pages)
+
+    /**
+     * function to switch user to login_register_menu.fxml (initial menu page when application starts)
+     * @param event action event to handle user input
+     * @throws IOException
+     */
     public void switchLoginMenu(ActionEvent event) throws IOException{
 
         login_access = false;
@@ -598,7 +684,12 @@ public class controller {
         stage.show();
     }
 
-    public void switchCredentialsMenuLogin(ActionEvent event) throws IOException, NoSuchAlgorithmException {
+    /**
+     * function to switch user to credentials_client_menu.fxml (menu where user inputs his credentials)
+     * @param event action event to handle user input
+     * @throws IOException
+     */
+    public void switchCredentialsMenuLogin(ActionEvent event) throws IOException{
         //stage switching and creation
         FXMLLoader fxmlLoader = new FXMLLoader(Client.class.getResource("credentials_client_menu.fxml"));
         stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
@@ -621,6 +712,11 @@ public class controller {
         listenerElementsCredentialsMenu();
     }
 
+    /**
+     * function to switch user to credentials_client_menu.fxml (menu where user inputs his credentials)
+     * @param event action event to handle user input
+     * @throws IOException
+     */
     public void switchCredentialsMenuRegister(ActionEvent event) throws IOException{
         //stage switching and creation
         FXMLLoader fxmlLoader = new FXMLLoader(Client.class.getResource("credentials_client_menu.fxml"));
@@ -641,6 +737,11 @@ public class controller {
         listenerElementsCredentialsMenu();
     }
 
+    /**
+     * function to switch user to main_menu.fxml (main page when user logins successfully)
+     * @param event action event to handle user input
+     * @throws IOException
+     */
     public void switchMainMenu(ActionEvent event) throws IOException{
         //stage switching and creation
         root = FXMLLoader.load(Client.class.getResource("main_menu.fxml"));
@@ -652,6 +753,11 @@ public class controller {
         stage.show();
     }
 
+    /**
+     * function to switch user to main_menu.fxml (when user cancels operations in create challenge menu)
+     * @param event action event to handle user input
+     * @throws IOException
+     */
     public void switchMainMenuCreateChallenge(ActionEvent event) throws IOException{
 
         //send operation "cancel" to server
@@ -669,6 +775,11 @@ public class controller {
         stage.show();
     }
 
+    /**
+     * function to switch user to main_menu.fxml (when user cancels operations in resolve challenge menu)
+     * @param event action event to handle user input
+     * @throws IOException
+     */
     public void switchMainMenuChooseChallenge(ActionEvent event) throws IOException{
 
         //send operation "cancel" to server
@@ -686,7 +797,10 @@ public class controller {
         stage.show();
     }
 
-    //before going to create_challenge_menu ,send type of operation chosen
+    /**
+     * function to send operation chosen by user in main menu
+     * @param data sends the type of operation chosen by user
+     */
     public void sendOperationMethodstoServer(String data){
         try {
             byte [] sendOperationCreate = CipherDecipherClient.encrypt(data,Client.client_server,"AES",null);
@@ -700,6 +814,11 @@ public class controller {
         }
     }
 
+    /**
+     * function to switch user to create_challenge.fxml, in this case the create challenge menu (when user chooses to create a challenge in main menu)
+     * @param event action event to handle user input
+     * @throws IOException
+     */
     public void switchCreateChallengeMenu(ActionEvent event) throws IOException{
 
         //send type of operation "create" to inform server that user has chosen to create a challenge
@@ -715,6 +834,11 @@ public class controller {
         stage.show();
     }
 
+    /**
+     * function to switch user to resolve_challenge.fxml, in this case the resolve challenge menu (when user chooses to resolve a challenge in main menu)
+     * @param event action event to handle user input
+     * @throws IOException
+     */
     public void switchChooseChallengeMenu(ActionEvent event) throws IOException{
 
         //send type of operation "resolve" to inform server that user has chosen to resolve a challenge
@@ -768,9 +892,12 @@ public class controller {
     }
     //END GROUP SCENES -------------------------------
 
-    //Group 3 - Group of operations
+    //Group 6 - Group of operations
 
-    // generate 4 keys for client
+    /**
+     * function to generate 4 keys to exchange with server side (2 for communications client -> server and other 2 for communications server -> client)
+     * @throws NoSuchAlgorithmException
+     */
     private void generateKeys() throws NoSuchAlgorithmException {
         Client.client_server = generateKey("AES",128);
         Client.client_server_hash = generateKey("AES",128);
@@ -778,15 +905,24 @@ public class controller {
         Client.server_client_hash = generateKey("AES",128);
     }
 
-    //function to generate first 4 keys of the client
+    /**
+     * function to generate a secret key
+     * @param cipher_mode type of cipher mode to be used to create the key
+     * @param sizeKey size of the key to be determined
+     * @throws NoSuchAlgorithmException
+     */
     private static SecretKey generateKey(String cipher_mode, int sizeKey) throws NoSuchAlgorithmException {
         KeyGenerator keyGenerated = KeyGenerator.getInstance(cipher_mode);
         keyGenerated.init(sizeKey);
         return keyGenerated.generateKey();
     }
 
+    /**
+     * function to initiate socket with server (connection with server) and respective input e output streams to handle data receiving and giving
+     * @throws IOException
+     */
     //function to initiate socket connection to server
-    private void initiateSocket() throws IOException, NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, ClassNotFoundException {
+    private void initiateSocket() throws IOException{
         //Socket S = new Socket("169.254.65.233",1099);
         Socket S = new Socket("127.0.0.1",1099);
         //Socket S = new Socket("5.tcp.eu.ngrok.io",16672);
@@ -794,6 +930,16 @@ public class controller {
         Client.is = new ObjectInputStream(S.getInputStream());
     }
 
+    /**
+     * function to encrypt the 4 keys generated previously and send them to the server side
+     * @param public_key_server key received by server side to encrypt the 4 keys created
+     * @param send_server output stream used to send data to server
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @throws NoSuchPaddingException
+     * @throws BadPaddingException
+     * @throws NoSuchAlgorithmException
+     */
     private void cipherKeys(ObjectInputStream public_key_server, ObjectOutputStream send_server) throws IOException, ClassNotFoundException, NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException {
         PublicKey key_server = (PublicKey) public_key_server.readObject();
 
@@ -811,17 +957,13 @@ public class controller {
         send_server.flush();
     }
 
-    private String getHash(String content){
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(content.getBytes());
-            return new String(md.digest());
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
+    /**
+     * function to send to server side operation chosen (login or register operation) and credentials that were introduced by user in credentials menu
+     * @param data operation chosen by user (login or register operation)
+     * @throws NoSuchPaddingException
+     * @throws BadPaddingException
+     * @throws NoSuchAlgorithmException
+     */
     private void send_Login_Register(String data) throws NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException {
         byte [] login_bytes = CipherDecipherClient.encrypt(data,Client.client_server,"AES",null);
         byte [] login_bytes_hash = CipherDecipherClient.encrypt(CipherDecipherClient.doHMACMessage(data,Client.client_server_hash),Client.client_server_hash,"AES",null);
@@ -850,7 +992,9 @@ public class controller {
 
     }
 
-    //function to verify if the keys are the same by comparing hash
+    /**
+     * function to decrypt data received by server side regarding data when switching menus
+     */
     public void verifyResponses(){
         try {
             byte[] typeResponse = (byte[]) Client.is.readObject();
@@ -865,7 +1009,10 @@ public class controller {
         }
     }
 
-    //function to verify result of challenges
+    /**
+     * function to decrypt data received by server side and verify some status of operations chosen by the user
+     * @param event action event to handle user input
+     */
     public void verifyResponsesResolve(ActionEvent event){
         try {
             byte[] typeResponse = (byte[]) Client.is.readObject();
@@ -904,6 +1051,13 @@ public class controller {
         }
     }
 
+    /**
+     * function to receive arraylists of cipher and/or hash challenges sent by server side
+     * @param option type of option chosen (cipher or hash)
+     * @param responseSizeResponse content received through server side (determines if arraylist received is empty or not)
+     * @param data array of bytes regarding content of response received by server side
+     * @param dataHash array of bytes regarding content of hash response received by server side
+     */
     public void receiveSizeLists(String option, String responseSizeResponse, byte[] data, byte[] dataHash){
         String response="";
         String responseHash="";
@@ -957,6 +1111,10 @@ public class controller {
         }
     }
 
+    /**
+     * function to verify size of lists of challenges received by server side
+     * @return boolean (true if one of the lists is not empty or false if both are empty)
+     */
     public boolean verifyResponsesLists(){
         String responseSizeResponse="";
         String responseSizeHashResponse="";
@@ -998,22 +1156,15 @@ public class controller {
 
             //hash received second
             receiveSizeLists("HASH",responseSizeResponseV2,responseHash,responseHashHash);
-
-            for (CipherChallengesAttributes element : cipherResponse) {
-                System.out.println(element.toString());
-            }
-
-            System.out.println("---------------------------");
-
-            for (HashChallengesAttributes element : hashResponse) {
-                System.out.println(element.toString());
-            }
             return true;
         }
         return false;
     }
 
-    //function to verify if operation is valid or invalid
+    /**
+     * function to verify is the response sent by server is valid or not for creating challenge
+     * @return boolean (true if challenge was created succesfully or false if not)
+     */
     public boolean verifyResponsesValid(){
         try {
             byte[] typeResponse = (byte[]) Client.is.readObject();
@@ -1034,6 +1185,10 @@ public class controller {
         return false;
     }
 
+    /**
+     * function to verify if user has performed a sucessfull login or not
+     * @param event action event to handle user input
+     */
     public void verifyLoginRegister(ActionEvent event) {
         try {
             byte[] statusResponse = (byte[]) Client.is.readObject();
@@ -1055,15 +1210,17 @@ public class controller {
         }
     }
 
+    /**
+     * function to verify if the hmacs are the same or not (to prevent man in the middle attack)
+     * @param message message that was received by server side
+     * @param hash_delivered hash received by server side
+     */
     public void compareHmacsValidity(String message, String hash_delivered){
         //first recalculate HMAC
         String hash_recalculated = CipherDecipherClient.doHMACMessage(message,Client.server_client_hash);
         if(hash_recalculated.equals(hash_delivered)){
-            System.out.println("They are the same!");
+            System.out.println("Hmacs are the same!");
         }else{
-            System.out.println(hash_delivered);
-            System.out.println(hash_recalculated);
-            System.out.println("ABORT!");
             try {
                 PopoutEmptyLists.display("Ligação não segura!","A terminar aplicação...");
             } catch (Exception e) {
@@ -1072,5 +1229,5 @@ public class controller {
             System.exit(0);
         }
     }
-    // END GROUP 3 - Group of operations
+    // END GROUP 6 - Group of operations
 }
