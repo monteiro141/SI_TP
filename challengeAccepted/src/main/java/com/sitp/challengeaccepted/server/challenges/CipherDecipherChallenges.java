@@ -16,6 +16,15 @@ import java.util.Locale;
 public class CipherDecipherChallenges {
     public CipherDecipherChallenges(){}
 
+    /**
+     * Encrypt a plaintext with a specified key for cipher mode. The key is derivated from a password.
+     * @param type the type of encryption: AES-128-ECB; AES-128-CBC; AES-128-CTR; Vigenere
+     * @param message the plaintext to encrypt
+     * @param password the password
+     * @param salt the salt used to derivate the password
+     * @param ivVector the iv vector for some types of encryption: AES-128-CBC; AES-128-CTR
+     * @return the ciphertext
+     */
     public static String encryptCipher(String type, String message, String password, byte[] salt, IvParameterSpec ivVector){
         try {
             switch(type){
@@ -29,9 +38,6 @@ public class CipherDecipherChallenges {
                     return encrypt("AES/CTR/NoPadding", message, getPasswordWithSalt(password, salt), ivVector);
                 }
                 case "VIGENERE" -> {
-                    System.out.println("||||");
-                    System.out.println(message.toUpperCase());
-                    System.out.println(generateVigenereKey(message, password).toUpperCase());
                     return encryptVigenere(message, generateVigenereKey(message, password));
                 }
             }
@@ -41,6 +47,15 @@ public class CipherDecipherChallenges {
         return null;
     }
 
+    /**
+     * Decrypt a ciphertext with a specified key for cipher mode. The key is derivated from a password.
+     * @param type the type of decryption: AES-128-ECB; AES-128-CBC; AES-128-CTR; Vigenere
+     * @param message the ciphertext to decrypt
+     * @param password the password
+     * @param salt the salt used to derivate the password
+     * @param ivVector the iv vector for some types of decryption: AES-128-CBC; AES-128-CTR
+     * @return the plaintext
+     */
     public static String decryptCipher (String type, String message, String password, byte[] salt, IvParameterSpec ivVector) {
         try {
             switch(type){
@@ -66,6 +81,20 @@ public class CipherDecipherChallenges {
         return null;
     }
 
+    /**
+     * Encrypt a plaintext with the specified type
+     * @param algorithm the algorithm of encryption
+     * @param input the plaintext to encrypt
+     * @param key the Secret key to use
+     * @param iv the iv vector
+     * @return the ciphertext
+     * @throws NoSuchPaddingException
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidAlgorithmParameterException
+     * @throws InvalidKeyException
+     * @throws BadPaddingException
+     * @throws IllegalBlockSizeException
+     */
     public static String encrypt(String algorithm, String input, SecretKey key,
                                  IvParameterSpec iv) throws NoSuchPaddingException, NoSuchAlgorithmException,
             InvalidAlgorithmParameterException, InvalidKeyException,
@@ -82,6 +111,20 @@ public class CipherDecipherChallenges {
                 .encodeToString(cipherText);
     }
 
+    /**
+     * Decrypt a ciphertext with a specified type
+     * @param algorithm the algorithm of decryption
+     * @param cipherText the ciphertext to decrypt
+     * @param key the Secret key to use
+     * @param iv the iv vector
+     * @return the plaintext
+     * @throws NoSuchPaddingException
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidAlgorithmParameterException
+     * @throws InvalidKeyException
+     * @throws BadPaddingException
+     * @throws IllegalBlockSizeException
+     */
     public static String decrypt(String algorithm, String cipherText, SecretKey key,
                                  IvParameterSpec iv) throws NoSuchPaddingException, NoSuchAlgorithmException,
             InvalidAlgorithmParameterException, InvalidKeyException,
@@ -98,6 +141,12 @@ public class CipherDecipherChallenges {
         return new String(plainText);
     }
 
+    /**
+     * Derivate a Secret Key from a password
+     * @param password the password inserted by the user
+     * @param salt the salt random generated
+     * @return the secret key to use in encryption or decryption
+     */
     public static SecretKey getPasswordWithSalt(String password, byte[] salt){
         KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 2500000,128); //65536
         try {
@@ -110,6 +159,13 @@ public class CipherDecipherChallenges {
 
         return null;
     }
+
+    /**
+     * Create a Hash of a specified message
+     * @param algorithm the Hash algorithm to use: MD5; SHA256; SHA512
+     * @param message the message
+     * @return the hash
+     */
     public static String CreateHash(String algorithm, String message) {
         MessageDigest digest = null;
         try {
@@ -119,7 +175,6 @@ public class CipherDecipherChallenges {
         }
         if(digest!=null){
             digest.update(message.getBytes());
-            //Convert o array de bytes (digest.digest()) na sua representação de magnitude de sinal
             //Convert into Hex Value
             BigInteger hash = new BigInteger(1, digest.digest());
             //16 means Hexadecimal
@@ -127,6 +182,13 @@ public class CipherDecipherChallenges {
         }
         return null;
     }
+
+    /**
+     * Encrypt a message using vigenere
+     * @param message the plaintext to encrypt
+     * @param password the password
+     * @return the ciphertext
+     */
     public static String encryptVigenere(String message, String password){
         StringBuilder ciphertext = new StringBuilder();
         for (int i =0 ;i <message.length();i++) {
@@ -140,6 +202,12 @@ public class CipherDecipherChallenges {
         return ciphertext.toString();
     }
 
+    /**
+     * Decrypt a message using vigenere
+     * @param message the ciphertext to decrypt
+     * @param password the password to use
+     * @return the plaintext
+     */
     public static String decryptVigenere(String message, String password){
         StringBuilder ciphertext = new StringBuilder();
         for (int i =0 ;i <message.length();i++) {
@@ -153,6 +221,12 @@ public class CipherDecipherChallenges {
         return ciphertext.toString();
     }
 
+    /**
+     * Generate the vigenere key to use in encryption or decryption
+     * @param message the message(can be the ciphertext or plaintext)
+     * @param password the password
+     * @return return the key with the lenght needed to encrypt or decrypt
+     */
     private static String generateVigenereKey(String message, String password){
         if(message.length()==password.length()){
             return password;
@@ -174,6 +248,12 @@ public class CipherDecipherChallenges {
         return key.toString();
     }
 
+    /**
+     * Encrypt a plaintext with caesar cipher with a offset
+     * @param message the message to encrypt
+     * @param offset the offset to use
+     * @return the ciphertext
+     */
     public static String encryptCesar(String message, int offset){
         StringBuilder ciphertext = new StringBuilder();
         for(char character : message.toCharArray()){
@@ -187,6 +267,12 @@ public class CipherDecipherChallenges {
         return ciphertext.toString();
     }
 
+    /**
+     * Decrypt a ciphertext with caesar cipher with a offset
+     * @param message the message to decrypt
+     * @param offset the offset to use
+     * @return the plaintext
+     */
     public static String decryptCesar(String message, int offset){
         StringBuilder ciphertext = new StringBuilder();
         for(char character : message.toCharArray()){
@@ -202,6 +288,12 @@ public class CipherDecipherChallenges {
         return ciphertext.toString();
     }
 
+    /**
+     * Encrypt a plaintext using ElGamal
+     * @param message the message
+     * @param yString the y that the user has entered
+     * @return the ciphertext
+     */
     public static ArrayList<String> encryptElGamal(String message, String yString) {
         ArrayList<String> valuesToReturn= new ArrayList<>();
         String ciphertext=null;
@@ -213,7 +305,6 @@ public class CipherDecipherChallenges {
         BigInteger p = new BigInteger(String.valueOf(P));
         BigInteger g = new BigInteger(String.valueOf(G));
         BigInteger x = new BigInteger(String.valueOf(xGenerated));
-        System.out.println(x);
         BigInteger X =g.pow(xGenerated).remainder(p);
 
         //Bob side
@@ -237,6 +328,14 @@ public class CipherDecipherChallenges {
         return valuesToReturn;
     }
 
+    /**
+     * Decrypt a ciphertext using ElGamal
+     * @param message the message
+     * @param xString the x that the user has entered
+     * @param YString the Y
+     * @param X the X
+     * @return the plaintext
+     */
     public static String decryptElGamal(String message, String xString, String YString, String X) {
         System.out.println(X);
         String plaintext=null;
@@ -264,8 +363,12 @@ public class CipherDecipherChallenges {
         return plaintext;
     }
 
-    //public ArrayList<String>
 
+    /**
+     * Convert a String to a Secretkey
+     * @param encodedKey the encodedKey
+     * @return the Secretkey
+     */
     private static SecretKey convertStringToSecretKeyto(String encodedKey) {
         byte[] decodedKey = Base64.getDecoder().decode(encodedKey);
         SecretKey originalKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");

@@ -10,6 +10,16 @@ import java.util.ArrayList;
 
 public class CipherDecipher {
     public CipherDecipher(){}
+
+    /**
+     * Encrypt a message with RSA public key
+     * @param data the data to encrypt
+     * @param publicKey the server public key
+     * @return the ciphertext
+     * @throws BadPaddingException
+     * @throws NoSuchPaddingException
+     * @throws NoSuchAlgorithmException
+     */
     public static byte[] encrypt(String data, PublicKey publicKey) throws BadPaddingException, NoSuchPaddingException, NoSuchAlgorithmException {
         try {
             Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
@@ -22,12 +32,35 @@ public class CipherDecipher {
         }
         return null;
     }
+
+    /**
+     * Decrypt a ciphertext with RSA private key
+     * @param data the data
+     * @param privateKey the server private key
+     * @return the plaintext
+     * @throws NoSuchPaddingException
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeyException
+     * @throws BadPaddingException
+     * @throws IllegalBlockSizeException
+     */
     public static String decrypt(byte[] data, PrivateKey privateKey) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
         return new String(cipher.doFinal(data));
     }
 
+    /**
+     * Encrypt a message with a secret key
+     * @param data the data
+     * @param secretKey the Secret key to use
+     * @param cipherString the algorithm of encryption to use
+     * @param iv the iv
+     * @return the  ciphertext
+     * @throws BadPaddingException
+     * @throws NoSuchPaddingException
+     * @throws NoSuchAlgorithmException
+     */
     public static byte[] encrypt(String data, SecretKey secretKey, String cipherString, IvParameterSpec iv) throws BadPaddingException, NoSuchPaddingException, NoSuchAlgorithmException {
         if(iv == null) {
             try {
@@ -51,6 +84,17 @@ public class CipherDecipher {
         return null;
     }
 
+    /**
+     * Encrypt ArrayList(list of challenges to send to the client) with a secretkey
+     * @param data the data
+     * @param secretKey the Secret key
+     * @param cipherString the algorithm to use
+     * @param iv the iv
+     * @return the ciphertext
+     * @throws BadPaddingException
+     * @throws NoSuchPaddingException
+     * @throws NoSuchAlgorithmException
+     */
     public static byte[] encrypt(ArrayList<?> data, SecretKey secretKey, String cipherString, IvParameterSpec iv) throws BadPaddingException, NoSuchPaddingException, NoSuchAlgorithmException {
         if(iv == null) {
             try {
@@ -74,6 +118,11 @@ public class CipherDecipher {
         return null;
     }
 
+    /**
+     * Convert an arrayList in a byte array
+     * @param data the arrayList
+     * @return the byte array
+     */
     public static byte[] bytesFromArrayList(ArrayList<?> data) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
@@ -86,6 +135,19 @@ public class CipherDecipher {
         return baos.toByteArray();
     }
 
+    /**
+     * Decrypt a message with a secret key
+     * @param data the data
+     * @param secretKey the Secret key to use
+     * @param cipherString the algorithm of encryption to use
+     * @param iv the iv
+     * @return the plaintext
+     * @throws NoSuchPaddingException
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeyException
+     * @throws BadPaddingException
+     * @throws IllegalBlockSizeException
+     */
     public static String decrypt(byte[] data, SecretKey secretKey, String cipherString, IvParameterSpec iv) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
         if(iv == null){
             Cipher cipher = Cipher.getInstance(cipherString);
@@ -104,6 +166,12 @@ public class CipherDecipher {
         }
     }
 
+    /**
+     * Derivate a password with a specified salt
+     * @param salt the salt
+     * @param password the password
+     * @return the password salted
+     */
     public static byte[] getSaltToPassword(byte[] salt, String password){
         SecretKeyFactory secretKeyFactory = null;
         try {

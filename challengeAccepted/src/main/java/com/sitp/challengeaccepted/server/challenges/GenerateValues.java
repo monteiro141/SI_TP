@@ -13,6 +13,10 @@ import java.util.Base64;
 public class GenerateValues {
     public GenerateValues(){}
 
+    /**
+     * Generate a random salt with 16 bytes
+     * @return the salt
+     */
     public static byte[] getSalt(){
         byte[] salt = new byte[16];
         SecureRandom rand = new SecureRandom();
@@ -20,6 +24,10 @@ public class GenerateValues {
         return salt;
     }
 
+    /**
+     * Generate a random Iv
+     * @return the iv
+     */
     public static byte[] getIvVector() {
         SecureRandom random = null;
         try {
@@ -33,6 +41,12 @@ public class GenerateValues {
         return null;
     }
 
+    /**
+     * Create a HMAC with a specify message and Secret Key
+     * @param message the message
+     * @param key the Secret Key
+     * @return the HMAC
+     */
     public static String doHMACMessage(String message, SecretKey key){
         try {
             Mac mac = Mac.getInstance("HmacSHA256");
@@ -45,6 +59,12 @@ public class GenerateValues {
         return null;
     }
 
+    /**
+     * Do the signature of a message
+     * @param message the message
+     * @param key the private key to use
+     * @return the signature
+     */
     public static String signMessage (String message, PrivateKey key) {
         try {
             Signature sign = Signature.getInstance("SHA256withRSA");
@@ -57,6 +77,13 @@ public class GenerateValues {
         }
     }
 
+    /**
+     * Verify if a signature is valid
+     * @param message the message
+     * @param signature the signature
+     * @param key the public key
+     * @return true if it is valid or false if not
+     */
     public static boolean verifySignature (String message, String signature, PublicKey key) {
         try {
             Signature sign = Signature.getInstance("SHA256withRSA");
