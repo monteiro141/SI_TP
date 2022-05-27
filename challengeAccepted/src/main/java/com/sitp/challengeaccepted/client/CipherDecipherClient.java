@@ -39,23 +39,6 @@ public class CipherDecipherClient {
     }
 
     /**
-     * Decrypt a ciphertext with RSA private key
-     * @param data the data
-     * @param privateKey the server private key
-     * @return the plaintext
-     * @throws NoSuchPaddingException
-     * @throws NoSuchAlgorithmException
-     * @throws InvalidKeyException
-     * @throws BadPaddingException
-     * @throws IllegalBlockSizeException
-     */
-    public static String decrypt(byte[] data, PrivateKey privateKey) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
-        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-        cipher.init(Cipher.DECRYPT_MODE, privateKey);
-        return new String(cipher.doFinal(data));
-    }
-
-    /**
      * Encrypt a message with a secret key
      * @param data the data
      * @param secretKey the Secret key to use
