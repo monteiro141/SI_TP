@@ -942,8 +942,8 @@ public class controller {
      */
     //function to initiate socket connection to server
     private void initiateSocket() throws IOException{
-        //Socket S = new Socket("127.0.0.1",1099);
-        Socket S = new Socket("6.tcp.eu.ngrok.io",12649);
+        Socket S = new Socket("127.0.0.1",1099);
+        //Socket S = new Socket("6.tcp.eu.ngrok.io",12649);
         Client.os = new ObjectOutputStream(S.getOutputStream());
         Client.is = new ObjectInputStream(S.getInputStream());
     }
